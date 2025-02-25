@@ -21,7 +21,7 @@
     "react-dom": "^18.2.0"
   },
   "engines": {
-    "node": ">=18",
+    "node": ">=18.17.1",
     "npm": ">=8"
   },
   "devDependencies": {
