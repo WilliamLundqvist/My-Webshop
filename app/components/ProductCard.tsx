@@ -22,7 +22,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           ) : (
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-secondary text-sm">
-              No image available
+              <Image
+                src="https://placehold.co/300x300"
+                alt="No image available"
+                width={300}
+                height={300}
+                className="w-full h-full object-cover opacity-50"
+              />
             </div>
           )}
         </div>

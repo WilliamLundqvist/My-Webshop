@@ -1,20 +1,108 @@
-"use client"
-
 import Link from "next/link"
 import { useState } from "react"
+import { Menu, Search, ShoppingCart, User, X } from "lucide-react"
 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function HomePage() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background">
+        <div className="container flex h-16 items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col gap-4">
+                <Link href="/" className="text-xl font-bold">
+                  POWERFIT
+                </Link>
+                <Link href="#" className="text-lg">
+                  Equipment
+                </Link>
+                <Link href="#" className="text-lg">
+                  Weights
+                </Link>
+                <Link href="#" className="text-lg">
+                  Machines
+                </Link>
+                <Link href="#" className="text-lg">
+                  Accessories
+                </Link>
+                <Link href="#" className="text-lg">
+                  New Arrivals
+                </Link>
+                <Link href="#" className="text-lg">
+                  Sale
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          <Link href="/" className="mr-6 flex items-center space-x-2">
+            <span className="text-xl font-bold">POWERFIT</span>
+          </Link>
+          <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-6">
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              Equipment
+            </Link>
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              Weights
+            </Link>
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              Machines
+            </Link>
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              Accessories
+            </Link>
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              New Arrivals
+            </Link>
+            <Link href="#" className="text-sm font-medium transition-colors hover:text-primary">
+              Sale
+            </Link>
+          </nav>
+          <div className="flex items-center space-x-4">
+            {isSearchOpen ? (
+              <div className="relative flex items-center">
+                <Input type="search" placeholder="Search..." className="w-[200px] pr-8 md:w-[300px]" autoFocus />
+                <Button variant="ghost" size="icon" className="absolute right-0" onClick={() => setIsSearchOpen(false)}>
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close search</span>
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Search</span>
+              </Button>
+            )}
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+              <span className="sr-only">Account</span>
+            </Button>
+            <Button variant="ghost" size="icon" className="relative">
+              <ShoppingCart className="h-5 w-5" />
+              <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                3
+              </Badge>
+              <span className="sr-only">Cart</span>
+            </Button>
+          </div>
+        </div>
+      </header>
 
-    
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative">
@@ -22,12 +110,12 @@ export default function HomePage() {
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: "url('https://placehold.co/1920x1080')",
+                backgroundImage: "url('/placeholder.svg?height=1080&width=1920')",
               }}
             >
               <div className="absolute inset-0 bg-black/40" />
             </div>
-            <div className="container mx-auto relative flex h-full flex-col items-start justify-center gap-4 text-white">
+            <div className="container relative flex h-full flex-col items-start justify-center gap-4 text-white">
               <h1 className="max-w-xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
                 Elevate Your Workout Experience
               </h1>
@@ -42,25 +130,25 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </section>  
+        </section>
 
         {/* Category Navigation */}
-        <section className="border-b py-8">
-          <div className="container mx-auto">
+        <section className="border-b py-8 mx-auto">
+          <div className="container">
             <h2 className="mb-6 text-2xl font-bold">Shop By Category</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {[
-                { name: "Dumbbells", image: "https://placehold.co/300x300" },
-                { name: "Kettlebells", image: "https://placehold.co/300x300" },
-                { name: "Barbells", image: "https://placehold.co/300x300" },
-                { name: "Benches", image: "https://placehold.co/300x300" },
-                { name: "Racks", image: "https://placehold.co/300x300" },
-                { name: "Accessories", image: "https://placehold.co/300x300" },
+                { name: "Dumbbells", image: "/placeholder.svg?height=300&width=300" },
+                { name: "Kettlebells", image: "/placeholder.svg?height=300&width=300" },
+                { name: "Barbells", image: "/placeholder.svg?height=300&width=300" },
+                { name: "Benches", image: "/placeholder.svg?height=300&width=300" },
+                { name: "Racks", image: "/placeholder.svg?height=300&width=300" },
+                { name: "Accessories", image: "/placeholder.svg?height=300&width=300" },
               ].map((category) => (
                 <Link key={category.name} href="#" className="group flex flex-col items-center gap-2 text-center">
                   <div className="overflow-hidden rounded-full">
                     <img
-                      src={category.image || "https://placehold.co/300x300"}
+                      src={category.image || "/placeholder.svg"}
                       alt={category.name}
                       width={150}
                       height={150}
@@ -96,28 +184,28 @@ export default function HomePage() {
                     {
                       name: "Pro Series Adjustable Dumbbell Set",
                       price: 299.99,
-                      image: "https://placehold.co/400x400",
+                      image: "/placeholder.svg?height=400&width=400",
                       rating: 4.8,
                       reviews: 156,
                     },
                     {
                       name: "Olympic Barbell - 20kg",
                       price: 249.99,
-                      image: "https://placehold.co/400x400",
+                      image: "/placeholder.svg?height=400&width=400",
                       rating: 4.9,
                       reviews: 203,
                     },
                     {
                       name: "Adjustable Weight Bench",
                       price: 179.99,
-                      image: "https://placehold.co/400x400",
+                      image: "/placeholder.svg?height=400&width=400",
                       rating: 4.7,
                       reviews: 128,
                     },
                     {
                       name: "Competition Kettlebell Set",
                       price: 349.99,
-                      image: "https://placehold.co/400x400",
+                      image: "/placeholder.svg?height=400&width=400",
                       rating: 4.8,
                       reviews: 97,
                     },
@@ -125,7 +213,7 @@ export default function HomePage() {
                     <Card key={index} className="overflow-hidden border-0 shadow-sm">
                       <div className="aspect-square overflow-hidden">
                         <img
-                          src={product.image || "https://placehold.co/400x400"}
+                          src={product.image || "/placeholder.svg"}
                           alt={product.name}
                           width={400}
                           height={400}
@@ -171,7 +259,7 @@ export default function HomePage() {
 
         {/* Featured Collection */}
         <section className="bg-muted py-12">
-          <div className="container mx-auto">
+          <div className="container">
             <div className="grid gap-8 md:grid-cols-2">
               <div className="flex flex-col justify-center">
                 <h2 className="mb-4 text-3xl font-bold">The Home Gym Collection</h2>
@@ -187,7 +275,7 @@ export default function HomePage() {
               </div>
               <div className="relative h-[300px] overflow-hidden rounded-lg md:h-auto">
                 <img
-                  src="https://placehold.co/800x600"
+                  src="/placeholder.svg?height=600&width=800"
                   alt="Home Gym Collection"
                   className="h-full w-full object-cover"
                 />
@@ -198,7 +286,7 @@ export default function HomePage() {
 
         {/* Benefits Section */}
         <section className="py-12">
-          <div className="container mx-auto">
+          <div className="container">
             <h2 className="mb-8 text-center text-2xl font-bold">Why Choose PowerFit</h2>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -233,7 +321,7 @@ export default function HomePage() {
 
         {/* Newsletter */}
         <section className="bg-primary py-12 text-primary-foreground">
-          <div className="container mx-auto">
+          <div className="container">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="mb-4 text-3xl font-bold">Join Our Community</h2>
               <p className="mb-6">
@@ -252,7 +340,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t bg-muted/40">
-        <div className="container mx-auto py-8 md:py-12">
+        <div className="container py-8 md:py-12">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div>
               <h3 className="mb-4 text-lg font-semibold">Shop</h3>

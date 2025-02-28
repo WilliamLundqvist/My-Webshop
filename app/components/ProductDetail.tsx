@@ -22,7 +22,13 @@ interface ProductDetailProps {
             />
           ) : (
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-secondary text-base">
-              No image available
+              <Image
+                src="https://placehold.co/600x600"
+                alt="No image available"
+                width={600}
+                height={600}
+                className="w-full h-full object-contain opacity-50"
+              />
             </div>
           )}
         </div>
