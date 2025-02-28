@@ -1,39 +1,41 @@
-import { getClient } from "@faustwp/experimental-app-router";
-import { gql } from "@apollo/client";
-import Link from "next/link";
+import React from 'react'
 
-export default async function Home() {
-  let client = await getClient();
+import { getClient } from '@faustwp/experimental-app-router';
+import { gql } from '@apollo/client';
+import Image from 'next/image';
+
+
+const page = async () => {
+  const client = await getClient();
 
   const { data } = await client.query({
-    query: gql`
-      query {
-        products(first: 100) {
-          nodes {
-            id
-            name
-            description
-            slug
-            sku
-            image {
+    query: gql`query GET_HOMEPAGEDATA2 {
+      page(id: "home", idType: URI) {
+        hero {
+          title
+          __typename
+          description
+          heroImage {
+            node {
               sourceUrl
             }
           }
         }
       }
-    `,
+    }
+  `,
   });
 
+  const hero = data.page.hero;
+  
+
   return (
-    <main>
-      <h2>Products</h2>
-      <ul>
-        {data.products.nodes.map((product) => (
-          <li>
-            <Link href={`/product/${product.slug}`}>{product.name}</Link>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
+    <div>
+      <h1>{hero.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: hero.description }} />
+      <Image src={hero.heroImage.node.sourceUrl} alt={hero.title} width={1000} height={1000} />
+    </div>
+  )
 }
+
+export default page

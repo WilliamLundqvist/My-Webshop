@@ -8,4 +8,7 @@ export default withFaust({
       xssProtection: false
     }) }];
   },
+  images: {
+    domains: ['localhost'],
+  },
 });
