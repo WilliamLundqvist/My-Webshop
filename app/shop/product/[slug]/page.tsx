@@ -1,7 +1,6 @@
-import { gql } from "@apollo/client";
 import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
-import ProductDetail from "../../../components/ProductDetail";
+import ProductDetail from "../../../../components/shop/ProductDetail";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -9,30 +8,37 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
 
-  const GET_PRODUCT_BY_SLUG = gql`
-    query GET_PRODUCT_BY_SLUG($slug: [String]) {
-      products(where: { slugIn: $slug }) {
-        nodes {
-          ... on SimpleProduct {
-            price(format: RAW)
-            stockStatus
-          }
-          id
-          name
-          description(format: RAW)
-          slug
-          sku
-          image {
-            sourceUrl
-          }
-        }
-      }
+  // Extract reference search parameters
+  const refSearch = searchParams?.ref_search;
+  const refSort = searchParams?.ref_sort;
+  const refOrder = searchParams?.ref_order;
+  const refPage = searchParams?.ref_page;
+  const refCategory = searchParams?.ref_category;
+
+  // Build the back link URL with preserved search context
+  const buildBackToResultsUrl = () => {
+    const params = new URLSearchParams();
+
+    if (refSearch) params.set("search", refSearch);
+    if (refSort) params.set("sort", refSort);
+    if (refOrder) params.set("order", refOrder);
+    if (refPage) params.set("page", refPage);
+    if (refCategory) params.set("category", refCategory);
+
+    if (params.toString()) {
+      return `/shop?${params.toString()}`;
     }
-  `;
+
+    return "/shop";
+  };
+
+  const backUrl = buildBackToResultsUrl();
+  const hasSearchContext = refSearch || refSort || refPage || refCategory;
 
   const client = await getClient();
 
@@ -50,7 +56,9 @@ export default async function ProductPage({ params }) {
           Product not found.
         </div>
         <Button asChild variant="outline">
-          <Link href="/shop">Back to Products</Link>
+          <Link href={backUrl}>
+            {hasSearchContext ? "Back to Results" : "Back to Products"}
+          </Link>
         </Button>
       </div>
     );
@@ -64,11 +72,28 @@ export default async function ProductPage({ params }) {
             <Link href="/shop">Shop</Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
+          {refCategory && (
+            <>
+              <BreadcrumbItem>
+                <Link href={backUrl}>{refCategory}</Link>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+            </>
+          )}
           <BreadcrumbItem>
             <Link href={`/shop/product/${product.slug}`}>{product.name}</Link>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+
+      <div className="mb-4">
+        <Button asChild variant="outline" className="mb-6">
+          <Link href={backUrl}>
+            {hasSearchContext ? "← Back to Results" : "← Back to Products"}
+          </Link>
+        </Button>
+      </div>
+
       <ProductDetail product={product} />
     </div>
   );

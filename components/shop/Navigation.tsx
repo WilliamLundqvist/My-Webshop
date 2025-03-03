@@ -1,7 +1,5 @@
 "use client";
 
-import { gql } from "@apollo/client";
-import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -9,61 +7,52 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { GET_HEADER_LINKS } from "@/lib/graphql/queries";
+import { useQuery } from "@apollo/client";
+import { useRouter } from "next/navigation";
 
 interface NavigationProps {
-  title: string;
-  description: string;
-  menuItems: {
-    id: string;
-    label: string;
-    uri: string;
-  }[];
+  generalSettings: {
+    title: string;
+    description: string;
+  };
+  primaryMenuItems: {
+    nodes: {
+      id: string;
+      label: string;
+      uri: string;
+      databaseId: number;
+    }[];
+  };
 }
 
 export default function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
-  // const client = await getClient();
+  const { loading, error, data } = useQuery(GET_HEADER_LINKS);
 
-  // Log the WordPress URL to verify which server we're connecting to
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-  // const { data } = await client.query<{
-  //   generalSettings: {
-  //     title: string;
-  //     description: string;
-  //   };
-  //   primaryMenuItems: {
-  //     nodes: {
-  //       id: string;
-  //       label: string;
-  //       uri: string;
-  //       databaseId: number;
-  //     }[];
-  //   };
-  // }>({
-  //   query: gql`
-  //     query GetLayout {
-  //       generalSettings {
-  //         title
-  //         description
+  console.log(data);
 
-  //       }
-  //       primaryMenuItems: menuItems(where: {location: PRIMARY}) {
-  //         nodes {
-  //           id
-  //           label
-  //           uri
-  //           databaseId
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   fetchPolicy: 'network-only',
-  // });
+  const title = data.generalSettings.title;
+  const description = data.generalSettings.description;
+  const menuItems = data.primaryMenuItems.nodes;
 
-  // const title = data.generalSettings.title;
-  // const description = data.generalSettings.description;
-  // const menuItems = data.primaryMenuItems.nodes;
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Close the search input
+      setIsSearchOpen(false);
+      // Preserve existing URL params while updating search param
+      const params = new URLSearchParams(window.location.search);
+      params.set("search", searchQuery.trim());
+      router.push(`/shop?${params.toString()}`);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -106,14 +95,20 @@ export default function Navigation() {
           {/* Search icon on the left side for mobile only */}
           <div className="md:hidden">
             {isSearchOpen ? (
-              <div className="relative flex items-center">
+              <form
+                onSubmit={handleSearch}
+                className="relative flex items-center"
+              >
                 <Input
-                  type="search"
+                  type="text"
                   placeholder="Search..."
-                  className="w-[200px] pr-8"
+                  className="w-[200px] pr-8 [&::-webkit-search-cancel-button]:appearance-none [&::-ms-clear]:hidden"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   className="absolute right-0"
@@ -122,7 +117,7 @@ export default function Navigation() {
                   <X className="h-4 w-4" />
                   <span className="sr-only">Close search</span>
                 </Button>
-              </div>
+              </form>
             ) : (
               <Button
                 variant="ghost"
@@ -139,68 +134,36 @@ export default function Navigation() {
         <Link href="/" className="md:mr-6 flex items-center space-x-2">
           <span className="text-xl font-bold">POWERFIT</span>
         </Link>
-        <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x.2">
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Equipment
-            </Link>
-          </Button>
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Weights
-            </Link>
-          </Button>
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Machines
-            </Link>
-          </Button>
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Accessories
-            </Link>
-          </Button>
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              New Arrivals
-            </Link>
-          </Button>
-          <Button variant="ghost" className=" h-auto" asChild>
-            <Link
-              href="#"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Sale
-            </Link>
-          </Button>
+        <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
+          {menuItems.map((item) => (
+            <Button variant="ghost" className=" h-auto" asChild key={item.id}>
+              <Link
+                href={item.uri}
+                className=" font-bold transition-colors hover:text-primary"
+              >
+                {item.label}
+              </Link>
+            </Button>
+          ))}
         </nav>
         <div className="flex items-center space-x-4">
           {/* Search icon on the right side for md screens and above */}
           <div className="hidden md:block">
             {isSearchOpen ? (
-              <div className="relative flex items-center">
+              <form
+                onSubmit={handleSearch}
+                className="relative flex items-center"
+              >
                 <Input
-                  type="search"
+                  type="text"
                   placeholder="Search..."
-                  className="w-[300px] pr-8"
+                  className="w-[300px] pr-8 [&::-webkit-search-cancel-button]:appearance-none [&::-ms-clear]:hidden"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   className="absolute right-0"
@@ -209,7 +172,7 @@ export default function Navigation() {
                   <X className="h-4 w-4" />
                   <span className="sr-only">Close search</span>
                 </Button>
-              </div>
+              </form>
             ) : (
               <Button
                 variant="ghost"

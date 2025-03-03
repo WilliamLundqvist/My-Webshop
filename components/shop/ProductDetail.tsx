@@ -63,10 +63,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
           <div className="flex flex-wrap gap-md mt-auto">
             <Button>Add to Cart</Button>
-
-            <Button asChild variant="outline">
-              <Link href="/shop">Back to Products</Link>
-            </Button>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
 import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
+import { GET_FOOTER_LINKS } from "@/lib/graphql/queries";
 
 interface FooterProps {
   siteName: string;
@@ -15,20 +15,10 @@ export default async function Footer() {
   const client = await getClient();
 
   const { data } = await client.query({
-    query: gql`
-      query GetLayout {
-        footerMenuItems: menuItems(where: { location: FOOTER }) {
-          nodes {
-            id
-            label
-            uri
-          }
-        }
-      }
-    `,
+    query: GET_FOOTER_LINKS,
   });
 
-  const menuItems = data.nodes || [];
+  const menuItems = data.footerMenuItems.nodes || [];
 
   return (
     <footer className="border-t bg-muted/40">

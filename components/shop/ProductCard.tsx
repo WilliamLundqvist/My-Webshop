@@ -1,22 +1,65 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  // Use search params hook to get current URL parameters
+  const searchParams = useSearchParams();
+
   // Handle image which could be a string or an object with sourceUrl
   const imageUrl =
     typeof product.image === "string"
       ? product.image
       : product.image?.sourceUrl || "https://placehold.co/400x400";
 
+  // Create product URL with preserved search parameters
+  const createProductUrl = () => {
+    // Create base product URL
+    const baseUrl = `/shop/product/${product.slug}`;
+
+    // If no search params exist, return just the base URL
+    if (!searchParams || searchParams.toString() === "") {
+      return baseUrl;
+    }
+
+    // Create a new URLSearchParams to hold the parameters we want to preserve
+    const params = new URLSearchParams();
+
+    // Preserve search query, sorting, and pagination parameters
+    if (searchParams.has("search")) {
+      params.set("ref_search", searchParams.get("search")!);
+    }
+    if (searchParams.has("sort")) {
+      params.set("ref_sort", searchParams.get("sort")!);
+    }
+    if (searchParams.has("order")) {
+      params.set("ref_order", searchParams.get("order")!);
+    }
+    if (searchParams.has("page")) {
+      params.set("ref_page", searchParams.get("page")!);
+    }
+    if (searchParams.has("category")) {
+      params.set("ref_category", searchParams.get("category")!);
+    }
+
+    // If we have parameters to preserve, append them to the URL
+    if (params.toString() !== "") {
+      return `${baseUrl}?${params.toString()}`;
+    }
+
+    return baseUrl;
+  };
+
   return (
-    <Link href={`/shop/product/${product.slug}`}>
+    <Link href={createProductUrl()}>
       <Card className="gap-2 md:gap-4 h-full">
         <div className="aspect-square overflow-hidden">
           <img

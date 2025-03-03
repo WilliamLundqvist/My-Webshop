@@ -1,7 +1,5 @@
 import { getClient } from "@faustwp/experimental-app-router";
-import { gql } from "@apollo/client";
-import ProductGrid from "../components/ProductGrid";
-import dynamic from "next/dynamic";
+import ProductGrid from "../../components/shop/ProductGrid";
 import Link from "next/link";
 import {
   Pagination,
@@ -16,57 +14,12 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { GET_PRODUCTS } from "@/lib/graphql/queries";
+import ShopControls from "../../components/shop/ShopControls";
 
-// Dynamically import the ShopControls component with no SSR and force client-side rendering
-const ShopControls = dynamic(() => import("./components/ShopControls"), {
-  ssr: false,
-  loading: () => (
-    <div className="mb-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
-      <div className="flex items-center gap-md">
-        <div className="h-10 w-32 bg-gray-200 animate-pulse rounded-md"></div>
-      </div>
-      <div className="text-sm text-text-secondary">
-        <span>Loading products...</span>
-      </div>
-    </div>
-  ),
-});
-
-// Define the query with pagination and sorting parameters
-const GET_PRODUCTS = gql`
-  query GetProducts(
-    $first: Int
-    $after: String
-    $orderby: [ProductsOrderbyInput]
-  ) {
-    products(first: $first, after: $after, where: { orderby: $orderby }) {
-      nodes {
-        id
-        name
-        description
-        slug
-        ... on SimpleProduct {
-          price(format: RAW)
-          stockStatus
-        }
-        image {
-          sourceUrl
-        }
-        ... on VariableProduct {
-          stockStatus
-          price(format: FORMATTED)
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-    }
-  }
-`;
+// Define the query with pagination, sorting, and search parameters
 
 // Define a simple cache for cursor values
 // In a real app, consider using a more robust caching solution
@@ -77,12 +30,38 @@ const CURSOR_CACHE = {
 };
 
 export default async function ShopPage({ searchParams }) {
+  // First, check if we have reference params from product detail navigation
+  // and use them if available (maintaining consistent parameter naming)
+  const finalSearchParams = { ...searchParams };
+  if (searchParams.ref_search) {
+    finalSearchParams.search = searchParams.ref_search;
+    delete finalSearchParams.ref_search;
+  }
+  if (searchParams.ref_sort) {
+    finalSearchParams.sort = searchParams.ref_sort;
+    delete finalSearchParams.ref_sort;
+  }
+  if (searchParams.ref_order) {
+    finalSearchParams.order = searchParams.ref_order;
+    delete finalSearchParams.ref_order;
+  }
+  if (searchParams.ref_page) {
+    finalSearchParams.page = searchParams.ref_page;
+    delete finalSearchParams.ref_page;
+  }
+  if (searchParams.ref_category) {
+    finalSearchParams.category = searchParams.ref_category;
+    delete finalSearchParams.ref_category;
+  }
+
   const first = 12; // Number of products per page
-  const sortField = searchParams?.sort || "DATE"; // Default sort by date
-  const sortOrder = searchParams?.order || "DESC"; // Default sort direction
+  const sortField = finalSearchParams?.sort || "DATE"; // Default sort by date
+  const sortOrder = finalSearchParams?.order || "DESC"; // Default sort direction
+  const searchQuery = finalSearchParams?.search || ""; // Get search query from URL
+  const category = finalSearchParams?.category || ""; // Get category from URL
 
   // Get page from URL params or default to 1
-  const currentPage = parseInt(searchParams?.page) || 1;
+  const currentPage = parseInt(finalSearchParams?.page) || 1;
 
   // Determine which cursor to use based on the page number
   let after = "";
@@ -99,6 +78,8 @@ export default async function ShopPage({ searchParams }) {
       first,
       after,
       orderby: [{ field: sortField, order: sortOrder }],
+      search: searchQuery, // Add search parameter to GraphQL query
+      category, // Add category parameter to GraphQL query
     },
     fetchPolicy: "network-only",
   });
@@ -118,12 +99,15 @@ export default async function ShopPage({ searchParams }) {
     CURSOR_CACHE.totalPages = currentPage;
   }
 
-  // Function to create pagination URL with current sort params
+  // Function to create pagination URL with current sort and search params
   const createPageUrl = (pageNum: number) => {
     const params = new URLSearchParams();
     params.set("page", pageNum.toString());
     if (sortField !== "DATE") params.set("sort", sortField);
-    if (sortOrder !== "DESC") params.set("order", sortOrder);
+    params.set("order", sortOrder); // Always include order parameter for consistency
+    if (searchQuery) params.set("search", searchQuery); // Include search parameter if it exists
+    if (category) params.set("category", category); // Include category parameter if it exists
+
     return `/shop?${params.toString()}`;
   };
 
@@ -173,11 +157,29 @@ export default async function ShopPage({ searchParams }) {
           <BreadcrumbItem>
             <Link href="/shop">Shop</Link>
           </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          {category && (
+            <BreadcrumbItem>
+              <Link href={`/shop?category=${category}`}>{category}</Link>
+            </BreadcrumbItem>
+          )}
+          {searchQuery && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <span>Search: {searchQuery}</span>
+              </BreadcrumbItem>
+            </>
+          )}
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className="my-xl text-4xl font-semibold text-text-primary">
-        Products
+      <h1 className="my-4 text-3xl font-semibold text-text-primary">
+        {searchQuery
+          ? `Search Results for "${searchQuery}"`
+          : category
+          ? `${category}`
+          : "Products"}
       </h1>
 
       <div id="shop-controls-container">
@@ -185,6 +187,7 @@ export default async function ShopPage({ searchParams }) {
           currentSort={sortField}
           currentOrder={sortOrder}
           productCount={products.length}
+          searchQuery={searchQuery}
         />
       </div>
 

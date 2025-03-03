@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductCard from "./components/ProductCard";
+import ProductCard from "../components/shop/ProductCard";
 
 export default function HomePage() {
   return (

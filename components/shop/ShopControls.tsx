@@ -9,12 +9,14 @@ interface ShopControlsProps {
   currentSort: string;
   currentOrder: string;
   productCount?: number;
+  searchQuery?: string;
 }
 
 const ShopControls: React.FC<ShopControlsProps> = ({
   currentSort,
   currentOrder,
   productCount = 0,
+  searchQuery = "",
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,12 +50,17 @@ const ShopControls: React.FC<ShopControlsProps> = ({
     const params = new URLSearchParams(searchParams.toString());
 
     // Reset pagination when sorting changes
-    params.delete("after");
-    params.set("page", "1");
+    params.delete("after"); // Remove old cursor-based param if it exists
+    params.set("page", "1"); // Reset to page 1
 
     // Update sort parameters
     params.set("sort", field);
     params.set("order", order);
+
+    // Maintain search query if it exists
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    }
 
     router.push(`/shop?${params.toString()}`);
     setIsOpen(false);
