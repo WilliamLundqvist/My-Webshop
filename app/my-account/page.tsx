@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { getAuthClient } from '@faustwp/experimental-app-router';
 import { redirect } from 'next/navigation';
 import { logout } from './actions';
+import { Button } from '@/components/ui/button';
 
 export default async function Page() {
   const client = await getAuthClient();
@@ -38,12 +39,9 @@ export default async function Page() {
               {data.viewer.email && <p className="text-text-secondary">{data.viewer.email}</p>}
             </div>
             <form action={logout}>
-              <button 
-                type="submit"
-                className="btn btn-secondary"
-              >
+              <Button type="submit" variant="outline">
                 Logout
-              </button>
+              </Button>
             </form>
           </div>
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Product } from '@/types/product';
-import ProductCard from './ProductCard';
+import React from "react";
+import { Product } from "@/types/product";
+import ProductCard from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
@@ -8,9 +8,9 @@ interface ProductGridProps {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-lg w-full">
+    <div className="grid  grid-cols-1 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 w-full my-6">
       {products.map((product) => (
-        <div key={product.id} className="flex flex-col h-full">
+        <div key={product.id}>
           <ProductCard product={product} />
         </div>
       ))}
@@ -18,4 +18,4 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   );
 };
 
-export default ProductGrid; 
+export default ProductGrid;

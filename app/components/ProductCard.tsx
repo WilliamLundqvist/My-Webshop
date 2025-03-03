@@ -1,52 +1,55 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Product } from '@/types/product';
+import React from "react";
+import Link from "next/link";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Product } from "@/types/product";
+import { Button } from "@/components/ui/button";
 
-interface ProductCardProps {
+export interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  // Handle image which could be a string or an object with sourceUrl
+  const imageUrl =
+    typeof product.image === "string"
+      ? product.image
+      : product.image?.sourceUrl || "https://placehold.co/400x400";
+
   return (
-    <div className="border border-border rounded overflow-hidden transition-all hover:translate-y-[-4px] hover:shadow-lg bg-white h-full flex flex-col">
-      <Link href={`/product/${product.slug}`}>
-        <div className="relative w-full pt-[100%] bg-surface overflow-hidden">
-          {product.image?.sourceUrl ? (
-            <Image 
-              src={product.image.sourceUrl}
-              alt={product.name || 'Product image'}
-              width={300}
-              height={300}
-              className="absolute top-0 left-0 w-full h-full object-cover"
-            />
-          ) : (
-            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-secondary text-sm">
-              <Image
-                src="https://placehold.co/300x300"
-                alt="No image available"
-                width={300}
-                height={300}
-                className="w-full h-full object-cover opacity-50"
-              />
+    <Link href={`/shop/product/${product.slug}`}>
+      <Card className="gap-2 md:gap-4 h-full">
+        <div className="aspect-square overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            width={400}
+            height={400}
+            className="h-full w-full object-cover object-top transition-transform duration-300 hover:scale-105"
+          />
+        </div>
+        <CardContent>
+          <h2 className="line-clamp-2 font-medium text-md">{product.name}</h2>
+          {product.rating !== undefined && product.reviews !== undefined && (
+            <div className="mt-2 flex items-center text-sm">
+              <span className="text-yellow-500">★★★★★</span>
+              <span className="ml-1 text-muted-foreground">
+                {product.rating} ({product.reviews})
+              </span>
             </div>
           )}
-        </div>
-        <div className="p-md flex flex-col flex-grow">
-          <h3 className="m-0 mb-sm text-base font-semibold text-text-primary">{product.name}</h3>
-          {product.sku && <p className="m-0 mb-sm text-xs text-secondary">SKU: {product.sku}</p>}
-          {product.price && <p className="m-0 mb-sm text-base font-semibold text-text-primary">{product.price}</p>}
-          {product.description && (
-            <p className="m-0 text-sm text-[#616161] leading-relaxed">
-              {product.description.length > 100
-                ? `${product.description.substring(0, 100)}...`
-                : product.description}
-            </p>
-          )}
-        </div>
-      </Link>
-    </div>
+          <div
+            className=" font-bold"
+            dangerouslySetInnerHTML={{ __html: product.price }}
+          ></div>
+        </CardContent>
+        <CardFooter className="mt-auto">
+          <Button size="default" variant="default" className="w-full">
+            Add to Cart
+          </Button>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 };
 
-export default ProductCard; 
+export default ProductCard;

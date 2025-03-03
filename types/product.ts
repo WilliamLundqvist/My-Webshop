@@ -8,5 +8,7 @@ export interface Product {
     stockStatus?: string;
     image?: {
         sourceUrl: string;
-    };
+    } | string;
+    rating?: number;
+    reviews?: number;
 } 

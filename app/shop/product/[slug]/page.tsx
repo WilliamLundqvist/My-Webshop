@@ -1,7 +1,14 @@
 import { gql } from "@apollo/client";
 import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
-import ProductDetail from "../../components/ProductDetail";
+import ProductDetail from "../../../components/ProductDetail";
+import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default async function ProductPage({ params }) {
   const slug = params.slug;
@@ -26,7 +33,7 @@ export default async function ProductPage({ params }) {
       }
     }
   `;
-  
+
   const client = await getClient();
 
   const { data } = await client.query({
@@ -42,30 +49,26 @@ export default async function ProductPage({ params }) {
         <div className="p-md rounded mb-md text-sm bg-error/10 text-error border border-error/30">
           Product not found.
         </div>
-        <Link 
-          href="/shop" 
-          className="inline-flex items-center justify-center py-sm px-md rounded text-base font-medium transition-all bg-transparent text-primary border border-border hover:bg-surface"
-        >
-          Back to Products
-        </Link>
+        <Button asChild variant="outline">
+          <Link href="/shop">Back to Products</Link>
+        </Button>
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-md">
-      <div className="flex items-center my-md text-sm text-secondary">
-        <div className="flex items-center">
-          <Link href="/shop" className="text-secondary hover:text-text-primary transition-colors">
-            Shop
-          </Link>
-          <span className="mx-xs text-text-tertiary">/</span>
-        </div>
-        <div className="flex items-center">
-          <span className="font-medium text-text-primary">{product.name}</span>
-        </div>
-      </div>
-      
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <Link href="/shop">Shop</Link>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <Link href={`/shop/product/${product.slug}`}>{product.name}</Link>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <ProductDetail product={product} />
     </div>
   );

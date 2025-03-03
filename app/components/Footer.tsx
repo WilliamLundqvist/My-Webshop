@@ -1,7 +1,6 @@
-import { MenuItem, MenuItemChildItemsArgs, MenuItemLinkableConnectionEdge, MenuItemToMenuItemConnectionWhereArgs, MenuMenuItemsArgs, MenuToMenuItemConnection, MenuToMenuItemConnectionEdge, RootQueryToMenuItemConnection } from '@/src/__generated__/graphql';
-import { gql } from '@apollo/client';
-import { getClient } from '@faustwp/experimental-app-router';
-import Link from 'next/link';
+import { gql } from "@apollo/client";
+import { getClient } from "@faustwp/experimental-app-router";
+import Link from "next/link";
 
 interface FooterProps {
   siteName: string;
@@ -14,7 +13,7 @@ interface FooterProps {
 
 export default async function Footer() {
   const client = await getClient();
- 
+
   const { data } = await client.query({
     query: gql`
       query GetLayout {
@@ -32,39 +31,200 @@ export default async function Footer() {
   const menuItems = data.nodes || [];
 
   return (
-    <footer className="py-xl border-t border-border bg-surface mt-xxl">
-      <div className="container mx-auto px-md">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
-          <div className="footer-section">
-            <h3 className="text-lg mb-md text-text-primary">About Us</h3>
-            <p className="text-text-secondary">
-              A modern e-commerce platform built with Next.js and Tailwind CSS.
-            </p>
-          </div>
-          <div className="footer-section">
-            <h3 className="text-lg mb-md text-text-primary">Quick Links</h3>
-            <ul className="list-none">
-              {menuItems.map((item) => (
-                <li key={item.id} className="mb-sm">
-                  <Link href={item.uri} className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+    <footer className="border-t bg-muted/40">
+      <div className="container py-8 md:py-12">
+        <div className="grid gap-8 grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Shop</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Equipment
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Weights
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Machines
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Accessories
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  New Arrivals
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Sale
+                </Link>
+              </li>
             </ul>
           </div>
-          <div className="footer-section">
-            <h3 className="text-lg mb-md text-text-primary">Contact</h3>
-            <p className="text-sm text-text-secondary">
-              Email: info@example.com<br />
-              Phone: +1 (123) 456-7890
-            </p>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Support</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Help Center
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Shipping Information
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Returns & Exchanges
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Company</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Careers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Press
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Connect</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Instagram
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Facebook
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Twitter
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  YouTube
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
-        <div className="mt-xl pt-md border-t border-border text-center text-sm text-text-tertiary">
-          &copy; {new Date().getFullYear()} All rights reserved.
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} PowerFit. All rights reserved.
+          </p>
+          <div className="flex gap-4">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Cookie Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
   );
-} 
+}

@@ -1,20 +1,14 @@
-"use client"
+import Link from "next/link";
 
-import Link from "next/link"
-import { useState } from "react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProductCard from "./components/ProductCard";
 
 export default function HomePage() {
-
   return (
     <div className="flex min-h-screen flex-col">
-
-    
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative">
@@ -27,26 +21,32 @@ export default function HomePage() {
             >
               <div className="absolute inset-0 bg-black/40" />
             </div>
-            <div className="container mx-auto relative flex h-full flex-col items-start justify-center gap-4 text-white">
+            <div className="container relative flex h-full flex-col items-start justify-center gap-4 text-white">
               <h1 className="max-w-xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
                 Elevate Your Workout Experience
               </h1>
-              <p className="max-w-md text-lg">Professional-grade equipment for your home or commercial gym</p>
+              <p className="max-w-md text-lg">
+                Professional-grade equipment for your home or commercial gym
+              </p>
               <div className="flex gap-4">
                 <Button size="lg" className="font-medium">
                   Shop Now
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                >
                   View Collections
                 </Button>
               </div>
             </div>
           </div>
-        </section>  
+        </section>
 
         {/* Category Navigation */}
         <section className="border-b py-8">
-          <div className="container mx-auto">
+          <div className="container ">
             <h2 className="mb-6 text-2xl font-bold">Shop By Category</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {[
@@ -57,7 +57,11 @@ export default function HomePage() {
                 { name: "Racks", image: "https://placehold.co/300x300" },
                 { name: "Accessories", image: "https://placehold.co/300x300" },
               ].map((category) => (
-                <Link key={category.name} href="#" className="group flex flex-col items-center gap-2 text-center">
+                <Link
+                  key={category.name}
+                  href="#"
+                  className="group flex flex-col items-center gap-2 text-center"
+                >
                   <div className="overflow-hidden rounded-full">
                     <img
                       src={category.image || "https://placehold.co/300x300"}
@@ -76,10 +80,13 @@ export default function HomePage() {
 
         {/* Featured Products */}
         <section className="py-12">
-          <div className="container mx-auto">
+          <div className="container">
             <div className="mb-8 flex items-center justify-between">
               <h2 className="text-2xl font-bold">Featured Equipment</h2>
-              <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
+              <Link
+                href="#"
+                className="text-sm font-medium underline-offset-4 hover:underline"
+              >
                 View All
               </Link>
             </div>
@@ -94,58 +101,47 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {[
                     {
-                      name: "Pro Series Adjustable Dumbbell Set",
-                      price: 299.99,
+                      id: "product-1",
+                      name: "Premium Yoga Mat",
+                      slug: "premium-yoga-mat",
+                      sku: "YM001",
+                      price: 49.99,
                       image: "https://placehold.co/400x400",
-                      rating: 4.8,
-                      reviews: 156,
+                      rating: 4.5,
+                      reviews: 210,
                     },
                     {
-                      name: "Olympic Barbell - 20kg",
-                      price: 249.99,
+                      id: "product-2",
+                      name: "Resistance Bands Set",
+                      slug: "resistance-bands-set",
+                      sku: "RB002",
+                      price: 29.99,
                       image: "https://placehold.co/400x400",
-                      rating: 4.9,
-                      reviews: 203,
+                      rating: 4.3,
+                      reviews: 185,
                     },
                     {
+                      id: "product-3",
                       name: "Adjustable Weight Bench",
+                      slug: "adjustable-weight-bench",
+                      sku: "WB003",
                       price: 179.99,
                       image: "https://placehold.co/400x400",
                       rating: 4.7,
                       reviews: 128,
                     },
                     {
+                      id: "product-4",
                       name: "Competition Kettlebell Set",
+                      slug: "competition-kettlebell-set",
+                      sku: "KB004",
                       price: 349.99,
                       image: "https://placehold.co/400x400",
                       rating: 4.8,
                       reviews: 97,
                     },
                   ].map((product, index) => (
-                    <Card key={index} className="overflow-hidden border-0 shadow-sm">
-                      <div className="aspect-square overflow-hidden">
-                        <img
-                          src={product.image || "https://placehold.co/400x400"}
-                          alt={product.name}
-                          width={400}
-                          height={400}
-                          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="line-clamp-2 font-medium">{product.name}</h3>
-                        <div className="mt-2 flex items-center text-sm">
-                          <span className="text-yellow-500">★★★★★</span>
-                          <span className="ml-1 text-muted-foreground">
-                            {product.rating} ({product.reviews})
-                          </span>
-                        </div>
-                        <div className="mt-2 font-semibold">${product.price.toFixed(2)}</div>
-                      </CardContent>
-                      <CardFooter className="p-4 pt-0">
-                        <Button className="w-full">Add to Cart</Button>
-                      </CardFooter>
-                    </Card>
+                    <ProductCard key={index} product={product} />
                   ))}
                 </div>
               </TabsContent>
@@ -153,7 +149,9 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {/* New arrivals products would go here */}
                   <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
-                    <p className="text-muted-foreground">New arrivals coming soon</p>
+                    <p className="text-muted-foreground">
+                      New arrivals coming soon
+                    </p>
                   </div>
                 </div>
               </TabsContent>
@@ -161,7 +159,9 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {/* Sale products would go here */}
                   <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
-                    <p className="text-muted-foreground">Sale items coming soon</p>
+                    <p className="text-muted-foreground">
+                      Sale items coming soon
+                    </p>
                   </div>
                 </div>
               </TabsContent>
@@ -171,13 +171,16 @@ export default function HomePage() {
 
         {/* Featured Collection */}
         <section className="bg-muted py-12">
-          <div className="container mx-auto">
+          <div className="container">
             <div className="grid gap-8 md:grid-cols-2">
               <div className="flex flex-col justify-center">
-                <h2 className="mb-4 text-3xl font-bold">The Home Gym Collection</h2>
+                <h2 className="mb-4 text-3xl font-bold">
+                  The Home Gym Collection
+                </h2>
                 <p className="mb-6 text-lg text-muted-foreground">
-                  Everything you need to build the perfect home gym in one convenient package. Save up to 20% when you
-                  buy the complete set.
+                  Everything you need to build the perfect home gym in one
+                  convenient package. Save up to 20% when you buy the complete
+                  set.
                 </p>
                 <div>
                   <Button size="lg" className="font-medium">
@@ -198,13 +201,16 @@ export default function HomePage() {
 
         {/* Benefits Section */}
         <section className="py-12">
-          <div className="container mx-auto">
-            <h2 className="mb-8 text-center text-2xl font-bold">Why Choose PowerFit</h2>
+          <div className="container">
+            <h2 className="mb-8 text-center text-2xl font-bold">
+              Why Choose PowerFit
+            </h2>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 {
                   title: "Premium Quality",
-                  description: "Commercial-grade equipment built to last with premium materials",
+                  description:
+                    "Commercial-grade equipment built to last with premium materials",
                 },
                 {
                   title: "Free Shipping",
@@ -212,14 +218,18 @@ export default function HomePage() {
                 },
                 {
                   title: "Expert Support",
-                  description: "Get advice from fitness professionals on the right equipment",
+                  description:
+                    "Get advice from fitness professionals on the right equipment",
                 },
                 {
                   title: "Easy Returns",
                   description: "30-day money-back guarantee on all products",
                 },
               ].map((benefit, index) => (
-                <div key={index} className="flex flex-col items-center text-center">
+                <div
+                  key={index}
+                  className="flex flex-col items-center text-center"
+                >
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                     <div className="h-8 w-8 rounded-full bg-primary" />
                   </div>
@@ -233,14 +243,19 @@ export default function HomePage() {
 
         {/* Newsletter */}
         <section className="bg-primary py-12 text-primary-foreground">
-          <div className="container mx-auto">
-            <div className="mx-auto max-w-2xl text-center">
+          <div className="container">
+            <div className="max-w-2xl mx-auto text-center">
               <h2 className="mb-4 text-3xl font-bold">Join Our Community</h2>
               <p className="mb-6">
-                Subscribe to our newsletter for exclusive deals, fitness tips, and new product announcements.
+                Subscribe to our newsletter for exclusive deals, fitness tips,
+                and new product announcements.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
-                <Input type="email" placeholder="Enter your email" className="bg-primary-foreground text-primary" />
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-primary-foreground text-primary"
+                />
                 <Button variant="secondary" className="sm:flex-shrink-0">
                   Subscribe
                 </Button>
@@ -251,137 +266,6 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/40">
-        <div className="container mx-auto py-8 md:py-12">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Shop</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Equipment
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Weights
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Machines
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Accessories
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    New Arrivals
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Sale
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Shipping Information
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Returns & Exchanges
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Contact Us
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Company</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Press
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Connect</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Instagram
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Facebook
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    Twitter
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground">
-                    YouTube
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
-            <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} PowerFit. All rights reserved.</p>
-            <div className="flex gap-4">
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-                Privacy Policy
-              </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-                Terms of Service
-              </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
-  )
+  );
 }
-
