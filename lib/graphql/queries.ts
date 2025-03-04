@@ -19,7 +19,11 @@ export const GET_PRODUCTS = gql`
         description
         slug
         ... on SimpleProduct {
+<<<<<<< HEAD
           price(format: FORMATTED)
+=======
+          price(format: RAW)
+>>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
           stockStatus
         }
         image {

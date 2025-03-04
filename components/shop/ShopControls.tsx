@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+<<<<<<< HEAD
 import SortDropdown from "./SortDropdown";
+=======
+>>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
 
 interface ShopControlsProps {
   currentSort: string;
@@ -107,6 +110,7 @@ const ShopControls: React.FC<ShopControlsProps> = ({
   return (
     <div className="mb-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
       <div className="flex items-center gap-md">
+<<<<<<< HEAD
         {/* <SortDropdown
           currentSort={currentSort}
           currentOrder={currentOrder}
@@ -114,6 +118,8 @@ const ShopControls: React.FC<ShopControlsProps> = ({
           searchQuery={searchQuery}
         /> */}
 
+=======
+>>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
         <div className="relative" ref={dropdownRef}>
           <Button
             variant="outline"

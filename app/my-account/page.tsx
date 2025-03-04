@@ -1,30 +1,19 @@
-import { gql } from '@apollo/client';
-import { getAuthClient } from '@faustwp/experimental-app-router';
-import { redirect } from 'next/navigation';
-import { logout } from './actions';
+import { gql } from "@apollo/client";
+import { getAuthClient } from "@faustwp/experimental-app-router";
+import { redirect } from "next/navigation";
+import { logout } from "./actions";
+import { Button } from "@/components/ui/button";
+import { GET_VIEWER } from "@/lib/graphql/queries";
 
 export default async function Page() {
   const client = await getAuthClient();
 
   if (!client) {
-    redirect('/login');
+    redirect("/login");
   }
 
   const { data } = await client.query({
-    query: gql`
-      query GetViewer {
-        viewer {
-          name
-          email
-          posts {
-            nodes {
-              id
-              title
-            }
-          }
-        }
-      }
-    `,
+    query: GET_VIEWER,
   });
 
   return (
@@ -34,16 +23,17 @@ export default async function Page() {
           <h1 className="text-2xl font-bold mb-md">My Account</h1>
           <div className="flex items-center justify-between mb-lg pb-md border-b border-border">
             <div>
-              <h2 className="text-xl font-semibold mb-xs">Welcome, {data.viewer.name}</h2>
-              {data.viewer.email && <p className="text-text-secondary">{data.viewer.email}</p>}
+              <h2 className="text-xl font-semibold mb-xs">
+                Welcome, {data.viewer.name}
+              </h2>
+              {data.viewer.email && (
+                <p className="text-text-secondary">{data.viewer.email}</p>
+              )}
             </div>
             <form action={logout}>
-              <button 
-                type="submit"
-                className="btn btn-secondary"
-              >
+              <Button type="submit" variant="outline">
                 Logout
-              </button>
+              </Button>
             </form>
           </div>
 
@@ -58,7 +48,9 @@ export default async function Page() {
                 ))}
               </ul>
             ) : (
-              <p className="text-text-secondary">You haven't created any posts yet.</p>
+              <p className="text-text-secondary">
+                You haven't created any posts yet.
+              </p>
             )}
           </div>
         </div>
