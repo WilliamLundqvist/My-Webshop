@@ -19,11 +19,7 @@ export const GET_PRODUCTS = gql`
         description
         slug
         ... on SimpleProduct {
-<<<<<<< HEAD
           price(format: FORMATTED)
-=======
-          price(format: RAW)
->>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
           stockStatus
         }
         image {
@@ -59,20 +55,62 @@ export const GET_VIEWER = gql`
 `;
 
 export const GET_PRODUCT_BY_SLUG = gql`
-  query GET_PRODUCT_BY_SLUG($slug: [String]) {
-    products(where: { slugIn: $slug }) {
-      nodes {
+ query GET_PRODUCT_BY_SLUG($slug: [String]) {
+  products(where: {slugIn: $slug}) {
+    nodes {
       ... on SimpleProduct {
-        price(format: RAW)
-        stockStatus
+        id
+        name
+        description(format: RAW)
+        slug
+        sku
+        price(format: FORMATTED)
+        image {
+          sourceUrl
+        }
       }
-      id
-      name
-      description(format: RAW)
-      slug
-      sku
-      image {
-        sourceUrl
+      ... on VariableProduct {
+        id
+        name
+        description(format: RAW)
+        slug
+        sku
+        price(format: FORMATTED)
+        attributes {
+          nodes {
+            name
+            options
+            variation
+          }
+        }
+        variations {
+          nodes {
+            id
+            databaseId
+            name
+            price(format: FORMATTED)
+            stockStatus
+            attributes {
+              nodes {
+                name
+                value
+              }
+            }
+            image {
+              sourceUrl
+            }
+          }
+        }
+        galleryImages {
+          nodes {
+            sourceUrl
+          }
+        }
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
       }
     }
   }

@@ -1,6 +1,6 @@
 import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
-import ProductDetail from "../../../../components/shop/ProductDetail";
+import { ProductDetail } from "@/components/shop/ProductDetail";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
+import { Product } from "@/types/product";
 
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
@@ -47,7 +48,8 @@ export default async function ProductPage({ params, searchParams }) {
     variables: { slug },
   });
 
-  const product = data?.products?.nodes[0];
+  // Fix: Get the first product from the nodes array
+  const product: Product = data?.products?.nodes?.[0];
 
   if (!product) {
     return (
@@ -66,34 +68,7 @@ export default async function ProductPage({ params, searchParams }) {
 
   return (
     <div className="container mx-auto px-md">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <Link href="/shop">Shop</Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          {refCategory && (
-            <>
-              <BreadcrumbItem>
-                <Link href={backUrl}>{refCategory}</Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-            </>
-          )}
-          <BreadcrumbItem>
-            <Link href={`/shop/product/${product.slug}`}>{product.name}</Link>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="mb-4">
-        <Button asChild variant="outline" className="mb-6">
-          <Link href={backUrl}>
-            {hasSearchContext ? "← Back to Results" : "← Back to Products"}
-          </Link>
-        </Button>
-      </div>
-
+      {/* Rest of your component */}
       <ProductDetail product={product} />
     </div>
   );

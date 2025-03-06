@@ -8,7 +8,40 @@ export interface Product {
     stockStatus?: string;
     image?: {
         sourceUrl: string;
-    } | string;
-    rating?: number;
+    } ;
+        rating?: number;
     reviews?: number;
+    attributes?: {
+        nodes: {
+            name: string;
+            options: string[];
+        }[];
+    };
+    variations?: {
+        nodes: {
+            id: string;
+                    name: string;
+            price: string;
+            stockStatus: string;
+            attributes: {
+                nodes: {
+                    name: string;
+                    value: string;
+                }[];
+            };
+            image: {
+                sourceUrl: string;
+            };
+        }[];
+    };
+    galleryImages?: {
+        nodes: {
+            sourceUrl: string;
+        }[];
+    };
+    featuredImage?: {
+        node: {
+            sourceUrl: string;
+        };
+    };
 } 

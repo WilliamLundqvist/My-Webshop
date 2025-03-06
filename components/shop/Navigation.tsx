@@ -5,11 +5,10 @@ import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { GET_HEADER_LINKS } from "@/lib/graphql/queries";
-import { useQuery } from "@apollo/client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface NavigationProps {
   generalSettings: {
@@ -26,21 +25,65 @@ interface NavigationProps {
   };
 }
 
-export default function Navigation() {
+export default function Navigation({
+  generalSettings,
+  primaryMenuItems,
+}: NavigationProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeCategory = searchParams.get("category");
+  const isShopPage = pathname === "/shop";
 
-  const { loading, error, data } = useQuery(GET_HEADER_LINKS);
+  // Extract menu items directly from props
+  const menuItems = primaryMenuItems?.nodes || [];
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  // Function to check if a menu item is a category link
+  const isCategoryLink = (uri: string) => {
+    return uri.includes("/shop?category=") || uri.includes("/shop?category%3D");
+  };
 
-  console.log(data);
+  // Function to extract category ID from URI
+  const getCategoryIdFromUri = (uri: string) => {
+    // Handle both encoded and non-encoded URIs
+    const match =
+      uri.match(/category=([^&]+)/) || uri.match(/category%3D([^&]+)/);
+    return match ? match[1] : null;
+  };
 
-  const title = data.generalSettings.title;
-  const description = data.generalSettings.description;
-  const menuItems = data.primaryMenuItems.nodes;
+  // Filter menu items to get only category links
+  const categoryMenuItems = menuItems.filter((item) =>
+    isCategoryLink(item.uri)
+  );
+
+  // Function to check if a category is active
+  const isCategoryActive = (uri: string) => {
+    if (!isShopPage || !activeCategory) return false;
+    const categoryId = getCategoryIdFromUri(uri);
+    return categoryId === activeCategory;
+  };
+
+  // Function to create a category URL with preserved search parameters
+  const createCategoryUrl = (uri: string) => {
+    const categoryId = getCategoryIdFromUri(uri);
+    if (!categoryId) return uri; // If we can't extract category ID, return original URI
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    // If clicking the same category, remove it (toggle behavior)
+    if (activeCategory === categoryId) {
+      params.delete("category");
+    } else {
+      params.set("category", categoryId);
+    }
+
+    // Reset to page 1 when changing categories
+    params.set("page", "1");
+
+    return `/shop?${params.toString()}`;
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,34 +104,65 @@ export default function Navigation() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <nav className="flex flex-col gap-4">
-                <Link href="/" className="text-xl font-bold">
-                  POWERFIT
+            <SheetContent side="left" className="w-80">
+              <div className="flex flex-col space-y-4 py-6">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-2"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  <span className="font-bold">
+                    {generalSettings?.title || "Store"}
+                  </span>
                 </Link>
-                <Link href="#" className="text-lg">
-                  Equipment
-                </Link>
-                <Link href="#" className="text-lg">
-                  Weights
-                </Link>
-                <Link href="#" className="text-lg">
-                  Machines
-                </Link>
-                <Link href="#" className="text-lg">
-                  Accessories
-                </Link>
-                <Link href="#" className="text-lg">
-                  New Arrivals
-                </Link>
-                <Link href="#" className="text-lg">
-                  Sale
-                </Link>
-              </nav>
+                <nav className="flex flex-col space-y-2">
+                  {menuItems
+                    .filter((item) => !isCategoryLink(item.uri))
+                    .map((item) => (
+                      <Button
+                        key={item.id}
+                        variant="ghost"
+                        className="justify-start"
+                        asChild
+                      >
+                        <Link href={item.uri}>{item.label}</Link>
+                      </Button>
+                    ))}
+                </nav>
+
+                {/* Only show category buttons on shop page */}
+                {isShopPage && (
+                  <>
+                    <div className="h-px bg-border" />
+                    <div className="flex flex-col space-y-2">
+                      <h4 className="font-medium">Categories</h4>
+                      {menuItems
+                        .filter((item) => isCategoryLink(item.uri))
+                        .map((item) => {
+                          const categoryId = getCategoryIdFromUri(item.uri);
+                          const isActive = categoryId === activeCategory;
+
+                          return (
+                            <Button
+                              key={item.id}
+                              variant={isActive ? "secondary" : "ghost"}
+                              className="justify-start"
+                              asChild
+                            >
+                              <Link href={createCategoryUrl(categoryId)}>
+                                {item.label}
+                              </Link>
+                            </Button>
+                          );
+                        })}
+                    </div>
+                  </>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
 
@@ -132,20 +206,53 @@ export default function Navigation() {
         </div>
 
         <Link href="/" className="md:mr-6 flex items-center space-x-2">
-          <span className="text-xl font-bold">POWERFIT</span>
+          <span className="text-xl font-bold">
+            {generalSettings?.title || "Store"}
+          </span>
         </Link>
+
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
-          {menuItems.map((item) => (
-            <Button variant="ghost" className=" h-auto" asChild key={item.id}>
-              <Link
-                href={item.uri}
-                className=" font-bold transition-colors hover:text-primary"
-              >
-                {item.label}
-              </Link>
-            </Button>
-          ))}
+          {/* Main menu items (non-category links) */}
+          {menuItems
+            .filter((item) => !isCategoryLink(item.uri))
+            .map((item) => (
+              <Button key={item.id} variant="ghost" className="h-auto" asChild>
+                <Link
+                  href={item.uri}
+                  className={cn(
+                    pathname === item.uri
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              </Button>
+            ))}
+
+          {/* Only show category buttons on shop page */}
+          {isShopPage &&
+            menuItems
+              .filter((item) => isCategoryLink(item.uri))
+              .map((item) => {
+                const categoryId = getCategoryIdFromUri(item.uri);
+                const isActive = categoryId === activeCategory;
+
+                return (
+                  <Button
+                    key={item.id}
+                    variant={isActive ? "secondary" : "ghost"}
+                    className="h-auto"
+                    asChild
+                  >
+                    <Link href={createCategoryUrl(categoryId)}>
+                      {item.label}
+                    </Link>
+                  </Button>
+                );
+              })}
         </nav>
+
         <div className="flex items-center space-x-4">
           {/* Search icon on the right side for md screens and above */}
           <div className="hidden md:block">
@@ -184,10 +291,12 @@ export default function Navigation() {
               </Button>
             )}
           </div>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Account</span>
-          </Button>
+          <Link href="/my-account">
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+              <span className="sr-only">Account</span>
+            </Button>
+          </Link>
           <Button variant="ghost" size="icon" className="relative">
             <ShoppingCart className="h-5 w-5" />
             <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">

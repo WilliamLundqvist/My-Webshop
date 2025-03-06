@@ -1,17 +1,37 @@
 import "@/faust.config.js";
 import { FaustProvider } from "@faustwp/experimental-app-router/ssr";
+import { getClient } from "@faustwp/experimental-app-router";
+import { GET_HEADER_LINKS, GET_FOOTER_LINKS } from "@/lib/graphql/queries";
 import "./globals.css";
 import Navigation from "../components/shop/Navigation";
 import Footer from "../components/shop/Footer";
 
 export default async function RootLayout({ children }) {
+  // Fetch data for navigation and footer at the layout level
+  const client = await getClient();
+
+  const [headerData, footerData] = await Promise.all([
+    client.query({
+      query: GET_HEADER_LINKS,
+    }),
+    client.query({
+      query: GET_FOOTER_LINKS,
+    }),
+  ]);
+
   return (
     <html lang="en">
       <body>
         <FaustProvider>
-          <Navigation />
+          <Navigation
+            generalSettings={headerData.data.generalSettings}
+            primaryMenuItems={headerData.data.primaryMenuItems}
+          />
           <main>{children}</main>
-          <Footer />
+          <Footer
+            menuItems={footerData.data.footerMenuItems.nodes || []}
+            siteName={headerData.data.generalSettings.title}
+          />
         </FaustProvider>
       </body>
     </html>

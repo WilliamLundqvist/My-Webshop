@@ -1,5 +1,4 @@
 import { getClient } from "@faustwp/experimental-app-router";
-import ProductGrid from "../../components/shop/ProductGrid";
 import Link from "next/link";
 import {
   Pagination,
@@ -17,9 +16,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { GET_PRODUCTS } from "@/lib/graphql/queries";
-import ShopControls from "../../components/shop/ShopControls";
-
-// Define the query with pagination, sorting, and search parameters
+import ProductGrid from "@/components/shop/ProductGrid";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
 
 // Define a simple cache for cursor values
 // In a real app, consider using a more robust caching solution
@@ -61,7 +61,7 @@ export default async function ShopPage({ searchParams }) {
   const category = finalSearchParams?.category || ""; // Get category from URL
 
   // Get page from URL params or default to 1
-  const currentPage = parseInt(finalSearchParams?.page) || 1;
+  const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
 
   // Determine which cursor to use based on the page number
   let after = "";
@@ -70,7 +70,7 @@ export default async function ShopPage({ searchParams }) {
     after = CURSOR_CACHE.cursors[currentPage - 1] || "";
   }
 
-  let client = await getClient();
+  const client = await getClient();
 
   const { data } = await client.query({
     query: GET_PRODUCTS,
@@ -122,8 +122,8 @@ export default async function ShopPage({ searchParams }) {
     items.push(1);
 
     // Calculate range to show around current page
-    let rangeStart = Math.max(2, currentPage - 1);
-    let rangeEnd = Math.min(totalPages - 1, currentPage + 1);
+    const rangeStart = Math.max(2, currentPage - 1);
+    const rangeEnd = Math.min(totalPages - 1, currentPage + 1);
 
     // Add ellipsis after first page if needed
     if (rangeStart > 2) {
@@ -151,106 +151,115 @@ export default async function ShopPage({ searchParams }) {
   const paginationItems = generatePaginationItems();
 
   return (
-    <div className="container mx-auto px-2 md:px-4">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <Link href="/shop">Shop</Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          {category && (
-            <BreadcrumbItem>
-              <Link href={`/shop?category=${category}`}>{category}</Link>
-            </BreadcrumbItem>
-          )}
-          {searchQuery && (
-            <>
-              <BreadcrumbSeparator />
+    <SidebarProvider defaultOpen={true}>
+      <FilterSidebar
+        currentSort={sortField}
+        currentOrder={sortOrder}
+        currentCategory={category}
+        searchQuery={searchQuery}
+      />
+      <SidebarInset>
+        <div className="mx-auto px-2 md:px-4">
+          <Breadcrumb className="py-4">
+            <BreadcrumbList>
               <BreadcrumbItem>
-                <span>Search: {searchQuery}</span>
+                <Link href="/shop">Shop</Link>
               </BreadcrumbItem>
-            </>
+              <BreadcrumbSeparator />
+              {category && (
+                <BreadcrumbItem>
+                  <Link href={`/shop?category=${category}`}>{category}</Link>
+                </BreadcrumbItem>
+              )}
+              {searchQuery && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <span>Search: {searchQuery}</span>
+                  </BreadcrumbItem>
+                </>
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-semibold text-text-primary">
+              {searchQuery
+                ? `Search Results for "${searchQuery}"`
+                : category
+                ? `${category}`
+                : "Products"}
+            </h1>
+            <div className="text-sm text-muted-foreground">
+              {products.length} products
+            </div>
+          </div>
+
+          {products.length > 0 ? (
+            <ProductGrid products={products} />
+          ) : (
+            <div className="py-xl text-center">
+              <p className="text-lg text-text-secondary">No products found.</p>
+            </div>
           )}
-        </BreadcrumbList>
-      </Breadcrumb>
 
-      <h1 className="my-4 text-3xl font-semibold text-text-primary">
-        {searchQuery
-          ? `Search Results for "${searchQuery}"`
-          : category
-          ? `${category}`
-          : "Products"}
-      </h1>
-
-      <div id="shop-controls-container">
-        <ShopControls
-          currentSort={sortField}
-          currentOrder={sortOrder}
-          productCount={products.length}
-          searchQuery={searchQuery}
-        />
-      </div>
-
-      {products.length > 0 ? (
-        <ProductGrid products={products} />
-      ) : (
-        <div className="py-xl text-center">
-          <p className="text-lg text-text-secondary">No products found.</p>
-        </div>
-      )}
-
-      <Pagination className="my-8">
-        <PaginationContent>
-          {/* Previous page button */}
-          <PaginationItem>
-            <PaginationPrevious
-              href={
-                currentPage > 1 ? createPageUrl(currentPage - 1) : undefined
-              }
-              className={
-                currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-              }
-            />
-          </PaginationItem>
-
-          {/* Page numbers */}
-          {paginationItems.map((item, index) => {
-            if (item === "ellipsis-start" || item === "ellipsis-end") {
-              return (
-                <PaginationItem key={`ellipsis-${index}`}>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              );
-            }
-
-            const pageNum = item as number;
-            return (
-              <PaginationItem key={pageNum}>
-                <PaginationLink
-                  href={createPageUrl(pageNum)}
-                  isActive={currentPage === pageNum}
-                >
-                  {pageNum}
-                </PaginationLink>
+          <Pagination className="my-8">
+            <PaginationContent>
+              {/* Previous page button */}
+              <PaginationItem>
+                <PaginationPrevious
+                  href={
+                    currentPage > 1 ? createPageUrl(currentPage - 1) : undefined
+                  }
+                  className={
+                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
               </PaginationItem>
-            );
-          })}
 
-          {/* Next page button */}
-          <PaginationItem>
-            <PaginationNext
-              href={
-                pageInfo.hasNextPage
-                  ? createPageUrl(currentPage + 1)
-                  : undefined
-              }
-              className={
-                !pageInfo.hasNextPage ? "pointer-events-none opacity-50" : ""
-              }
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-    </div>
+              {/* Page numbers */}
+              {paginationItems.map((item, index) => {
+                if (item === "ellipsis-start" || item === "ellipsis-end") {
+                  return (
+                    <PaginationItem key={`ellipsis-${index}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+
+                const pageNum = item as number;
+                return (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href={createPageUrl(pageNum)}
+                      isActive={currentPage === pageNum}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              {/* Next page button */}
+              <PaginationItem>
+                <PaginationNext
+                  href={
+                    pageInfo.hasNextPage
+                      ? createPageUrl(currentPage + 1)
+                      : undefined
+                  }
+                  className={
+                    !pageInfo.hasNextPage
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </SidebarInset>
+      <StickyFilterButton />
+    </SidebarProvider>
   );
 }

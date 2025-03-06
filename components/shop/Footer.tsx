@@ -1,6 +1,4 @@
-import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
-import { GET_FOOTER_LINKS } from "@/lib/graphql/queries";
 
 interface FooterProps {
   siteName: string;
@@ -11,15 +9,7 @@ interface FooterProps {
   }[];
 }
 
-export default async function Footer() {
-  const client = await getClient();
-
-  const { data } = await client.query({
-    query: GET_FOOTER_LINKS,
-  });
-
-  const menuItems = data.footerMenuItems.nodes || [];
-
+export default function Footer({ siteName, menuItems }: FooterProps) {
   return (
     <footer className="border-t bg-muted/40">
       <div className="container py-8 md:py-12">
@@ -75,6 +65,21 @@ export default async function Footer() {
                   Sale
                 </Link>
               </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">Menu</h3>
+            <ul className="space-y-2">
+              {menuItems.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={item.uri}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
@@ -191,7 +196,8 @@ export default async function Footer() {
         </div>
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} PowerFit. All rights reserved.
+            © {new Date().getFullYear()} {siteName || "PowerFit"}. All rights
+            reserved.
           </p>
           <div className="flex gap-4">
             <Link
