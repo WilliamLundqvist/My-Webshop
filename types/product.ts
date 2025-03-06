@@ -45,3 +45,25 @@ export interface Product {
         };
     };
 } 
+
+
+export interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    children?: {
+        nodes: {
+            id: string;
+            name: string;
+            slug: string;
+            children?: {
+                nodes: {
+                    id: string;
+                    name: string;
+                    slug: string;
+                }[];
+            };
+        }[];
+    };
+}
+

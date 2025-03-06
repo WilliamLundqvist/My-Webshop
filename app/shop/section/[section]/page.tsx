@@ -29,11 +29,12 @@ const CURSOR_CACHE = {
   totalPages: 0,
 };
 
-export default async function ShopPage({ searchParams }) {
+export default async function ShopPage({ searchParams, params }) {
   // First, check if we have reference params from product detail navigation
   // and use them if available (maintaining consistent parameter naming)
 
-  const section = pathname.split("/")[3];
+  const section = params.section;
+
   const finalSearchParams = { ...searchParams };
   if (searchParams.ref_search) {
     finalSearchParams.search = searchParams.ref_search;
@@ -80,7 +81,8 @@ export default async function ShopPage({ searchParams }) {
       first,
       after,
       orderby: [{ field: sortField, order: sortOrder }],
-      category, // Add search parameter to GraphQL query
+      search: searchQuery, // Add search parameter to GraphQL query
+      category: category ? category : section,
     },
   });
 
@@ -108,7 +110,7 @@ export default async function ShopPage({ searchParams }) {
     if (searchQuery) params.set("search", searchQuery); // Include search parameter if it exists
     if (category) params.set("category", category); // Include category parameter if it exists
 
-    return ` /shop?${params.toString()}`;
+    return `/shop/section/${section}?${params.toString()}`;
   };
 
   // Generate page numbers to display (current, prev, next, first, last)

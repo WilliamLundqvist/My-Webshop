@@ -1,6 +1,7 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
   Accordion,
@@ -22,14 +23,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from "@/lib/graphql/queries";
+import { useQuery } from "@apollo/client";
 
 // Sample categories and price ranges - replace with your actual data
-const categories = [
-  { id: "tops", name: "Tops" },
-  { id: "bottoms", name: "Bottoms" },
-  { id: "accessories", name: "Accessories" },
-  { id: "shoes", name: "Shoes" },
-];
 
 const priceRanges = [
   { id: "0-25", name: "Under $25" },
@@ -54,10 +51,115 @@ export function FilterSidebar({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const section = pathname.split("/")[3];
+
+  // Track the current section to detect changes
+  const [currentSection, setCurrentSection] = useState(section);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  // State to control if we've already loaded the data
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+
+  const { data, loading, error, refetch } = useQuery(
+    GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
+    {
+      variables: { section: section },
+      onError: (error) => {
+        console.error("Error fetching categories:", error);
+      },
+      // Start with network-only to ensure fresh data on first load
+      fetchPolicy: hasLoadedInitialData ? "cache-only" : "network-only",
+      // For subsequent renders, always use cache
+      nextFetchPolicy: "cache-only",
+      // Skip the query altogether if we've loaded data for this section
+      skip: hasLoadedInitialData && section === currentSection,
+    }
+  );
+
+  // Handle section changes and initial data loading
+  useEffect(() => {
+    if (!hasLoadedInitialData || section !== currentSection) {
+      refetch({ section }).then(() => {
+        setHasLoadedInitialData(true);
+        setCurrentSection(section);
+      });
+    }
+  }, [section, currentSection, hasLoadedInitialData, refetch]);
+
+  // Process the data to filter out categories with pipe characters
+  const processCategories = () => {
+    if (!data || !data.productCategory || !data.productCategory.children) {
+      return [];
+    }
+
+    // First process all categories
+    const processedCategories = data.productCategory.children.nodes.map(
+      (category) => {
+        // Clean the parent category name if it contains a pipe
+        const cleanParentName = category.name.includes("|")
+          ? category.name.split("|")[0].trim()
+          : category.name;
+
+        // Create a new object for each category
+        const processedCategory = {
+          id: category.id,
+          name: cleanParentName,
+          slug: category.slug,
+          children: { nodes: [] },
+        };
+
+        // Process grandchildren if they exist
+        if (category.children && category.children.nodes.length > 0) {
+          // Keep track of names we've already seen to avoid duplicates
+          const seenNames = new Set();
+
+          // Filter grandchildren
+          processedCategory.children.nodes = category.children.nodes
+            .map((grandchild) => {
+              // If the name contains a pipe, take only the part before the pipe
+              const cleanName = grandchild.name.includes("|")
+                ? grandchild.name.split("|")[0].trim()
+                : grandchild.name;
+
+              // Create a new object for the processed grandchild
+              return {
+                id: grandchild.id,
+                name: cleanName,
+                slug: grandchild.slug,
+              };
+            })
+            .filter((grandchild) => {
+              // Check if we've seen this name before
+              if (seenNames.has(grandchild.name)) {
+                return false; // Skip duplicates
+              }
+
+              // Add this name to our set of seen names
+              seenNames.add(grandchild.name);
+              return true;
+            });
+        }
+
+        return setCategories(processedCategory);
+      }
+    );
+
+    // Now filter out categories that have no children after filtering
+    return processedCategories.filter(
+      (category) => category.children.nodes.length > 0
+    );
+  };
+
+  const filteredCategories = processCategories();
+
+  console.log(filteredCategories);
 
   // Create a function to update URL with new parameters
   const updateFilters = (params: Record<string, string>) => {
     const newParams = new URLSearchParams(searchParams.toString());
+    const section = pathname.split("/")[3];
+    console.log(section);
 
     // Update or add new parameters
     Object.entries(params).forEach(([key, value]) => {
@@ -76,7 +178,11 @@ export function FilterSidebar({
     // Reset to page 1 when filters change
     newParams.set("page", "1");
 
-    router.push(`/shop?${newParams.toString()}`);
+    router.push(
+      section
+        ? `/shop/section/${section}?${newParams.toString()}`
+        : `/shop?${newParams.toString()}`
+    );
   };
 
   // Handle sort change
@@ -146,23 +252,53 @@ export function FilterSidebar({
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 px-6">
-                  {categories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <Checkbox
-                        id={`category-${category.id}`}
-                        checked={currentCategory === category.id}
-                        onCheckedChange={() =>
-                          handleCategoryChange(category.id)
-                        }
-                      />
-                      <Label htmlFor={`category-${category.id}`}>
-                        {category.name}
-                      </Label>
-                    </div>
-                  ))}
+                  {loading ? (
+                    <div>Loading categories...</div>
+                  ) : error ? (
+                    <div>Error loading categories</div>
+                  ) : filteredCategories.length === 0 ? (
+                    <div>No categories found</div>
+                  ) : (
+                    filteredCategories.map((category) => (
+                      <div key={category.id} className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`category-${category.slug}`}
+                            checked={currentCategory === category.slug}
+                            onCheckedChange={() =>
+                              handleCategoryChange(category.slug)
+                            }
+                          />
+                          <Label htmlFor={`category-${category.slug}`}>
+                            {category.name}
+                          </Label>
+                        </div>
+
+                        {/* Render grandchildren */}
+                        {category.children.nodes.length > 0 && (
+                          <div className="ml-6 space-y-2">
+                            {category.children.nodes.map((grandchild) => (
+                              <div
+                                key={grandchild.id}
+                                className="flex items-center space-x-2"
+                              >
+                                <Checkbox
+                                  id={`category-${grandchild.slug}`}
+                                  checked={currentCategory === grandchild.slug}
+                                  onCheckedChange={() =>
+                                    handleCategoryChange(grandchild.slug)
+                                  }
+                                />
+                                <Label htmlFor={`category-${grandchild.slug}`}>
+                                  {grandchild.name}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>

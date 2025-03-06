@@ -7,11 +7,16 @@ export const GET_PRODUCTS = gql`
     $orderby: [ProductsOrderbyInput]
     $search: String
     $category: String
+      
   ) {
     products(
       first: $first
       after: $after
-      where: { orderby: $orderby, search: $search, category: $category }
+      where: {
+        orderby: $orderby
+        search: $search
+        category: $category
+      }
     ) {
       nodes {
         id
@@ -143,5 +148,27 @@ export const GET_HEADER_LINKS = gql`
             databaseId
           }
         }
+  }
+`;
+
+export const GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION = gql`
+  query GetCategoriesAndUnderCategoriesBySection($section: ID!) {
+    productCategory(id: $section, idType: SLUG) {
+      name
+      slug
+      children {
+        nodes {
+          id
+          name
+          slug
+          children {
+            nodes {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
   }
 `;

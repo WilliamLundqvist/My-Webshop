@@ -36,53 +36,14 @@ export default function Navigation({
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get("category");
   const isShopPage = pathname === "/shop";
+  const section = pathname.split("/")[3];
 
   // Extract menu items directly from props
   const menuItems = primaryMenuItems?.nodes || [];
 
   // Function to check if a menu item is a category link
   const isCategoryLink = (uri: string) => {
-    return uri.includes("/shop?category=") || uri.includes("/shop?category%3D");
-  };
-
-  // Function to extract category ID from URI
-  const getCategoryIdFromUri = (uri: string) => {
-    // Handle both encoded and non-encoded URIs
-    const match =
-      uri.match(/category=([^&]+)/) || uri.match(/category%3D([^&]+)/);
-    return match ? match[1] : null;
-  };
-
-  // Filter menu items to get only category links
-  const categoryMenuItems = menuItems.filter((item) =>
-    isCategoryLink(item.uri)
-  );
-
-  // Function to check if a category is active
-  const isCategoryActive = (uri: string) => {
-    if (!isShopPage || !activeCategory) return false;
-    const categoryId = getCategoryIdFromUri(uri);
-    return categoryId === activeCategory;
-  };
-
-  // Function to create a category URL with preserved search parameters
-  const createCategoryUrl = (uri: string) => {
-    const categoryId = getCategoryIdFromUri(uri);
-    if (!categoryId) return uri; // If we can't extract category ID, return original URI
-
-    const params = new URLSearchParams(searchParams.toString());
-
-    // If clicking the same category, remove it (toggle behavior)
-    if (activeCategory === categoryId) {
-      params.delete("category");
-    } else {
-      params.set("category", categoryId);
-    }
-
-    // Reset to page 1 when changing categories
-    params.set("page", "1");
-
-    return `/shop?${params.toString()}`;
+    return uri.includes("/shop/section/") || uri.includes("/shop/section/%3D");
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -93,7 +54,11 @@ export default function Navigation({
       // Preserve existing URL params while updating search param
       const params = new URLSearchParams(window.location.search);
       params.set("search", searchQuery.trim());
-      router.push(`/shop?${params.toString()}`);
+      router.push(
+        section
+          ? `/shop/section/${section}?${params.toString()}`
+          : `/shop?${params.toString()}`
+      );
     }
   };
 
@@ -135,33 +100,6 @@ export default function Navigation({
                 </nav>
 
                 {/* Only show category buttons on shop page */}
-                {isShopPage && (
-                  <>
-                    <div className="h-px bg-border" />
-                    <div className="flex flex-col space-y-2">
-                      <h4 className="font-medium">Categories</h4>
-                      {menuItems
-                        .filter((item) => isCategoryLink(item.uri))
-                        .map((item) => {
-                          const categoryId = getCategoryIdFromUri(item.uri);
-                          const isActive = categoryId === activeCategory;
-
-                          return (
-                            <Button
-                              key={item.id}
-                              variant={isActive ? "secondary" : "ghost"}
-                              className="justify-start"
-                              asChild
-                            >
-                              <Link href={createCategoryUrl(categoryId)}>
-                                {item.label}
-                              </Link>
-                            </Button>
-                          );
-                        })}
-                    </div>
-                  </>
-                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -213,44 +151,22 @@ export default function Navigation({
 
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
           {/* Main menu items (non-category links) */}
-          {menuItems
-            .filter((item) => !isCategoryLink(item.uri))
-            .map((item) => (
-              <Button key={item.id} variant="ghost" className="h-auto" asChild>
-                <Link
-                  href={item.uri}
-                  className={cn(
-                    pathname === item.uri
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </Button>
-            ))}
+          {menuItems.map((item) => (
+            <Button key={item.id} variant="ghost" className="h-auto" asChild>
+              <Link
+                href={item.uri}
+                className={cn(
+                  pathname === item.uri
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            </Button>
+          ))}
 
           {/* Only show category buttons on shop page */}
-          {isShopPage &&
-            menuItems
-              .filter((item) => isCategoryLink(item.uri))
-              .map((item) => {
-                const categoryId = getCategoryIdFromUri(item.uri);
-                const isActive = categoryId === activeCategory;
-
-                return (
-                  <Button
-                    key={item.id}
-                    variant={isActive ? "secondary" : "ghost"}
-                    className="h-auto"
-                    asChild
-                  >
-                    <Link href={createCategoryUrl(categoryId)}>
-                      {item.label}
-                    </Link>
-                  </Button>
-                );
-              })}
         </nav>
 
         <div className="flex items-center space-x-4">

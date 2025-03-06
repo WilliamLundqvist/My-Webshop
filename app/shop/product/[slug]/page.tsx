@@ -2,15 +2,9 @@ import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
 import { ProductDetail } from "@/components/shop/ProductDetail";
 import { Button } from "@/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+
 import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
 import { Product } from "@/types/product";
-
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
 
