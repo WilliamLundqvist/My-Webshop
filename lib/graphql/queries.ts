@@ -165,6 +165,7 @@ export const GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION = gql`
             nodes {
               id
               name
+              slug
             }
           }
         }

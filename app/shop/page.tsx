@@ -32,8 +32,8 @@ const CURSOR_CACHE = {
 export default async function ShopPage({ searchParams }) {
   // First, check if we have reference params from product detail navigation
   // and use them if available (maintaining consistent parameter naming)
+  console.log(searchParams);
 
-  const section = pathname.split("/")[3];
   const finalSearchParams = { ...searchParams };
   if (searchParams.ref_search) {
     finalSearchParams.search = searchParams.ref_search;
@@ -62,15 +62,24 @@ export default async function ShopPage({ searchParams }) {
   const searchQuery = finalSearchParams?.search || ""; // Get search query from URL
   const category = finalSearchParams?.category || ""; // Get category from URL
 
+  const getSearchAfterCursor = async (page: number, pageSize: number) => {
+    if (page <= 1) return "";
+
+    const skipCount = (page - 1) * pageSize;
+
+    try {
+      return btoa(`arrayconnection:${skipCount - 1}`); // Simple offset encoding for cursor
+    } catch (error) {
+      console.error("Error calculating pagination cursor:", error);
+      return "";
+    }
+  };
+
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
 
-  // Determine which cursor to use based on the page number
-  let after = "";
-  if (currentPage > 1) {
-    // If we have a cursor for the previous page, use it
-    after = CURSOR_CACHE.cursors[currentPage - 1] || "";
-  }
+  // Get cursor for current page
+  const after = await getSearchAfterCursor(currentPage, first);
 
   const client = await getClient();
 
@@ -80,24 +89,16 @@ export default async function ShopPage({ searchParams }) {
       first,
       after,
       orderby: [{ field: sortField, order: sortOrder }],
-      category, // Add search parameter to GraphQL query
+      category,
     },
+    fetchPolicy: "network-only",
   });
 
   const products = data.products.nodes;
   const pageInfo = data.products.pageInfo;
 
-  // Store the current endCursor for pagination
-  if (pageInfo.hasNextPage) {
-    CURSOR_CACHE.cursors[currentPage] = pageInfo.endCursor;
-    CURSOR_CACHE.totalPages = Math.max(
-      CURSOR_CACHE.totalPages,
-      currentPage + 1
-    );
-  } else {
-    // If we're on the last page, update the total page count
-    CURSOR_CACHE.totalPages = currentPage;
-  }
+  // Calculate total pages based on pageInfo
+  const totalPages = pageInfo.hasNextPage ? currentPage + 1 : currentPage;
 
   // Function to create pagination URL with current sort and search params
   const createPageUrl = (pageNum: number) => {
@@ -156,7 +157,7 @@ export default async function ShopPage({ searchParams }) {
         currentSort={sortField}
         currentOrder={sortOrder}
         currentCategory={category}
-        searchQuery={searchQuery}
+        // searchQuery={searchQuery}
       />
       <SidebarInset>
         <div className="mx-auto px-2 md:px-4">

@@ -1,7 +1,8 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useApolloClient } from "@apollo/client";
 
 import {
   Accordion,
@@ -24,7 +25,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from "@/lib/graphql/queries";
-import { useQuery } from "@apollo/client";
 
 // Sample categories and price ranges - replace with your actual data
 
@@ -54,52 +54,81 @@ export function FilterSidebar({
   const pathname = usePathname();
   const section = pathname.split("/")[3];
 
-  // Track the current section to detect changes
-  const [currentSection, setCurrentSection] = useState(section);
-  const [categories, setCategories] = useState<any[]>([]);
+  // State to store category data
+  const [categoryData, setCategoryData] = useState(null);
+  const [categoryLoading, setCategoryLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState(null);
+  const previousSection = useRef(null);
 
-  // State to control if we've already loaded the data
-  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+  // Get Apollo client instance directly
+  const client = useApolloClient();
 
-  const { data, loading, error, refetch } = useQuery(
-    GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
-    {
-      variables: { section: section },
-      onError: (error) => {
-        console.error("Error fetching categories:", error);
-      },
-      // Start with network-only to ensure fresh data on first load
-      fetchPolicy: hasLoadedInitialData ? "cache-only" : "network-only",
-      // For subsequent renders, always use cache
-      nextFetchPolicy: "cache-only",
-      // Skip the query altogether if we've loaded data for this section
-      skip: hasLoadedInitialData && section === currentSection,
-    }
-  );
+  // Define utility function for name cleaning
+  const cleanCategoryName = (name: string) => {
+    return name.includes("|") ? name.split("|")[0].trim() : name;
+  };
 
-  // Handle section changes and initial data loading
+  // Add debugging for section changes
   useEffect(() => {
-    if (!hasLoadedInitialData || section !== currentSection) {
-      refetch({ section }).then(() => {
-        setHasLoadedInitialData(true);
-        setCurrentSection(section);
-      });
-    }
-  }, [section, currentSection, hasLoadedInitialData, refetch]);
+    console.log("Section value changed to:", section);
+    console.log("Previous section was:", previousSection.current);
+  }, [section]);
 
-  // Process the data to filter out categories with pipe characters
-  const processCategories = () => {
-    if (!data || !data.productCategory || !data.productCategory.children) {
+  // Fetch categories only when section changes
+  useEffect(() => {
+    // Skip if no section
+    if (!section) return;
+
+    // Use strict equality check to prevent pagination triggering refetch
+    if (previousSection.current === section) {
+      console.log("Skipping fetch - same section:", section);
+      return;
+    }
+
+    console.log(`Fetching categories for section: ${section}`);
+
+    previousSection.current = section;
+
+    // Start loading
+    setCategoryLoading(true);
+    setCategoryError(null);
+
+    // Manual query execution
+    client
+      .query({
+        query: GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
+        variables: { section },
+        fetchPolicy: "network-only", // Force network for new section
+      })
+      .then((result) => {
+        setCategoryData(result.data);
+        setCategoryLoading(false);
+        // We already updated the ref before the fetch
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+        setCategoryError(err);
+        setCategoryLoading(false);
+      });
+  }, [section, client]);
+
+  // Process categories with useMemo
+  const filteredCategories = useMemo(() => {
+    if (
+      !categoryData ||
+      !categoryData.productCategory ||
+      !categoryData.productCategory.children
+    ) {
       return [];
     }
-
-    // First process all categories
-    const processedCategories = data.productCategory.children.nodes.map(
+    const cleanCategoryName = (name: string) => {
+      return name.includes("|") ? name.split("|")[0].trim() : name;
+    };
+    // Same category processing logic as before
+    const processedCategories = categoryData.productCategory.children.nodes.map(
       (category) => {
-        // Clean the parent category name if it contains a pipe
-        const cleanParentName = category.name.includes("|")
-          ? category.name.split("|")[0].trim()
-          : category.name;
+        // Use utility function instead of duplicating logic
+        const cleanParentName = cleanCategoryName(category.name);
 
         // Create a new object for each category
         const processedCategory = {
@@ -117,10 +146,8 @@ export function FilterSidebar({
           // Filter grandchildren
           processedCategory.children.nodes = category.children.nodes
             .map((grandchild) => {
-              // If the name contains a pipe, take only the part before the pipe
-              const cleanName = grandchild.name.includes("|")
-                ? grandchild.name.split("|")[0].trim()
-                : grandchild.name;
+              // Use the same utility function here
+              const cleanName = cleanCategoryName(grandchild.name);
 
               // Create a new object for the processed grandchild
               return {
@@ -141,7 +168,7 @@ export function FilterSidebar({
             });
         }
 
-        return setCategories(processedCategory);
+        return processedCategory;
       }
     );
 
@@ -149,11 +176,9 @@ export function FilterSidebar({
     return processedCategories.filter(
       (category) => category.children.nodes.length > 0
     );
-  };
+  }, [categoryData]); // Only recompute when categoryData changes
 
-  const filteredCategories = processCategories();
-
-  console.log(filteredCategories);
+  // Add utility function for name cleaning
 
   // Create a function to update URL with new parameters
   const updateFilters = (params: Record<string, string>) => {
@@ -191,7 +216,7 @@ export function FilterSidebar({
     updateFilters({ sort, order });
   };
 
-  // Handle category change
+  // Handle category change with improved logging
   const handleCategoryChange = (category: string) => {
     updateFilters({ category: category === currentCategory ? "" : category });
   };
@@ -252,9 +277,9 @@ export function FilterSidebar({
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 px-6">
-                  {loading ? (
+                  {categoryLoading ? (
                     <div>Loading categories...</div>
-                  ) : error ? (
+                  ) : categoryError ? (
                     <div>Error loading categories</div>
                   ) : filteredCategories.length === 0 ? (
                     <div>No categories found</div>

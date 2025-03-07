@@ -5,7 +5,7 @@ import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -38,29 +38,77 @@ export default function Navigation({
   const isShopPage = pathname === "/shop";
   const section = pathname.split("/")[3];
 
-  // Extract menu items directly from props
-  const menuItems = primaryMenuItems?.nodes || [];
+  // Extract menu items directly from props - memoize to prevent unnecessary processing
+  const menuItems = useMemo(
+    () => primaryMenuItems?.nodes || [],
+    [primaryMenuItems]
+  );
 
   // Function to check if a menu item is a category link
-  const isCategoryLink = (uri: string) => {
+  const isCategoryLink = useCallback((uri: string) => {
     return uri.includes("/shop/section/") || uri.includes("/shop/section/%3D");
-  };
+  }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      // Close the search input
-      setIsSearchOpen(false);
-      // Preserve existing URL params while updating search param
-      const params = new URLSearchParams(window.location.search);
-      params.set("search", searchQuery.trim());
-      router.push(
-        section
-          ? `/shop/section/${section}?${params.toString()}`
-          : `/shop?${params.toString()}`
-      );
-    }
-  };
+  // Non-category menu items - memoize to prevent recalculation on every render
+  const nonCategoryMenuItems = useMemo(
+    () => menuItems.filter((item) => !isCategoryLink(item.uri)),
+    [menuItems, isCategoryLink]
+  );
+
+  // Handle search form submission with useCallback
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        // Close the search input
+        setIsSearchOpen(false);
+        // Preserve existing URL params while updating search param
+        const params = new URLSearchParams(window.location.search);
+        params.set("search", searchQuery.trim());
+        router.push(
+          section
+            ? `/shop/section/${section}?${params.toString()}`
+            : `/shop?${params.toString()}`
+        );
+      }
+    },
+    [searchQuery, router, section]
+  );
+
+  // Toggle search open/closed
+  const toggleSearch = useCallback(() => {
+    setIsSearchOpen((prev) => !prev);
+  }, []);
+
+  // Create a reusable search form component to avoid duplication
+  const SearchForm = useCallback(
+    () => (
+      <form onSubmit={handleSearch} className="relative flex items-center">
+        <Input
+          type="text"
+          placeholder="Search..."
+          className={cn(
+            "pr-8 [&::-webkit-search-cancel-button]:appearance-none [&::-ms-clear]:hidden",
+            isSearchOpen ? "w-[200px] md:w-[300px]" : "w-0"
+          )}
+          autoFocus
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute right-0"
+          onClick={toggleSearch}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close search</span>
+        </Button>
+      </form>
+    ),
+    [handleSearch, isSearchOpen, searchQuery, toggleSearch]
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
@@ -85,18 +133,16 @@ export default function Navigation({
                   </span>
                 </Link>
                 <nav className="flex flex-col space-y-2">
-                  {menuItems
-                    .filter((item) => !isCategoryLink(item.uri))
-                    .map((item) => (
-                      <Button
-                        key={item.id}
-                        variant="ghost"
-                        className="justify-start"
-                        asChild
-                      >
-                        <Link href={item.uri}>{item.label}</Link>
-                      </Button>
-                    ))}
+                  {nonCategoryMenuItems.map((item) => (
+                    <Button
+                      key={item.id}
+                      variant="ghost"
+                      className="justify-start"
+                      asChild
+                    >
+                      <Link href={item.uri}>{item.label}</Link>
+                    </Button>
+                  ))}
                 </nav>
 
                 {/* Only show category buttons on shop page */}
@@ -107,35 +153,9 @@ export default function Navigation({
           {/* Search icon on the left side for mobile only */}
           <div className="md:hidden">
             {isSearchOpen ? (
-              <form
-                onSubmit={handleSearch}
-                className="relative flex items-center"
-              >
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-[200px] pr-8 [&::-webkit-search-cancel-button]:appearance-none [&::-ms-clear]:hidden"
-                  autoFocus
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0"
-                  onClick={() => setIsSearchOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Close search</span>
-                </Button>
-              </form>
+              <SearchForm />
             ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(true)}
-              >
+              <Button variant="ghost" size="icon" onClick={toggleSearch}>
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
               </Button>
@@ -150,7 +170,7 @@ export default function Navigation({
         </Link>
 
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
-          {/* Main menu items (non-category links) */}
+          {/* Main menu items */}
           {menuItems.map((item) => (
             <Button key={item.id} variant="ghost" className="h-auto" asChild>
               <Link
@@ -165,43 +185,15 @@ export default function Navigation({
               </Link>
             </Button>
           ))}
-
-          {/* Only show category buttons on shop page */}
         </nav>
 
         <div className="flex items-center space-x-4">
           {/* Search icon on the right side for md screens and above */}
           <div className="hidden md:block">
             {isSearchOpen ? (
-              <form
-                onSubmit={handleSearch}
-                className="relative flex items-center"
-              >
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-[300px] pr-8 [&::-webkit-search-cancel-button]:appearance-none [&::-ms-clear]:hidden"
-                  autoFocus
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0"
-                  onClick={() => setIsSearchOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Close search</span>
-                </Button>
-              </form>
+              <SearchForm />
             ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(true)}
-              >
+              <Button variant="ghost" size="icon" onClick={toggleSearch}>
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
               </Button>
