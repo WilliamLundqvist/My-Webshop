@@ -173,3 +173,18 @@ export const GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION = gql`
     }
   }
 `;
+
+export const GET_PRODUCT_COUNT = gql`
+  query GetProductCount($search: String, $category: String) {
+    products(
+      where: {
+        search: $search
+        category: $category
+      }
+    ) {
+      pageInfo {
+        total
+      }
+    }
+  }
+`;

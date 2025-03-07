@@ -1,34 +1,15 @@
 import { getClient } from "@faustwp/experimental-app-router";
 import Link from "next/link";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { GET_PRODUCTS } from "@/lib/graphql/queries";
+import { GET_PRODUCTS, GET_PRODUCT_COUNT } from "@/lib/graphql/queries";
 import ProductGrid from "@/components/shop/ProductGrid";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
-import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
-import ShopPagination from "@/components/shop/ShopPagination";
 
-// Define a simple cache for cursor values
-// In a real app, consider using a more robust caching solution
-// This helps to map between page numbers and GraphQL cursor pagination
-const CURSOR_CACHE = {
-  cursors: {} as Record<number, string>,
-  totalPages: 0,
-};
+import ShopPagination from "@/components/shop/ShopPagination";
 
 export default async function ShopPage({ searchParams, params }) {
   // First, check if we have reference params from product detail navigation
@@ -64,42 +45,137 @@ export default async function ShopPage({ searchParams, params }) {
   const searchQuery = finalSearchParams?.search || ""; // Get search query from URL
   const category = finalSearchParams?.category || ""; // Get category from URL
 
-  const getSearchAfterCursor = async (page: number, pageSize: number) => {
+  // Get page from URL params or default to 1
+  const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
+
+  // Debug the current page
+  console.log(`Current page (section ${section}): ${currentPage}`);
+
+  // Calculate cursor based on page number - fixed implementation
+  const calculateCursor = (page: number, pageSize: number) => {
     if (page <= 1) return "";
 
+    // Fallback to offset-based cursor generation
     const skipCount = (page - 1) * pageSize;
-
     try {
-      return btoa(`arrayconnection:${skipCount - 1}`); // Simple offset encoding for cursor
+      // Format the cursor according to your GraphQL API's expectations
+      const cursor = btoa(`arrayconnection:${skipCount - 1}`);
+      console.log(`Generated cursor for page ${page}: ${cursor}`);
+      return cursor;
     } catch (error) {
       console.error("Error calculating pagination cursor:", error);
       return "";
     }
   };
 
-  // Get page from URL params or default to 1
-  const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
+  // Store cursors in a global object (only for server-side debugging)
+  if (typeof global.sectionPageCursors === "undefined") {
+    global.sectionPageCursors = {};
+  }
 
-  // Determine which cursor to use based on the page number
-  const after = await getSearchAfterCursor(currentPage, first);
-
+  let after = "";
   const client = await getClient();
 
+  // For first page, no cursor needed
+  if (currentPage === 1) {
+    after = "";
+  }
+  // For subsequent pages, we need to fetch all previous pages' cursors
+  else {
+    // First, try to get the cursor for the previous page
+    try {
+      // Fetch the previous page to get its endCursor
+      const prevPage = currentPage - 1;
+      const prevPageResult = await client.query({
+        query: GET_PRODUCTS,
+        variables: {
+          first,
+          after: calculateCursor(prevPage, first),
+          orderby: [{ field: sortField, order: sortOrder }],
+          search: searchQuery,
+          category: category ? category : section,
+        },
+        fetchPolicy: "network-only",
+      });
+
+      // Use the endCursor from the previous page
+      after = prevPageResult.data.products.pageInfo.endCursor;
+      console.log(
+        `Using endCursor from previous page (section ${section}): ${after}`
+      );
+
+      // Store for debugging
+      global.sectionPageCursors[`${section}-${currentPage}`] = after;
+    } catch (error) {
+      console.error("Error fetching previous page cursor:", error);
+      after = calculateCursor(currentPage, first);
+    }
+  }
+
+  console.log(
+    `Using cursor for page ${currentPage} (section ${section}): ${after}`
+  );
+
+  // Fetch products with pagination
   const { data } = await client.query({
     query: GET_PRODUCTS,
     variables: {
       first,
       after,
       orderby: [{ field: sortField, order: sortOrder }],
-      search: searchQuery, // Add search parameter to GraphQL query
+      search: searchQuery,
       category: category ? category : section,
     },
+    fetchPolicy: "network-only", // Don't use cache for server components
   });
 
   const products = data.products.nodes;
   const pageInfo = data.products.pageInfo;
 
-  const totalPages = pageInfo.hasNextPage ? currentPage + 1 : currentPage;
+  // Store the endCursor for debugging
+  if (pageInfo.endCursor) {
+    global.sectionPageCursors[`${section}-${currentPage}`] = pageInfo.endCursor;
+    console.log(
+      `Stored endCursor for page ${currentPage} (section ${section}): ${pageInfo.endCursor}`
+    );
+  }
+
+  // Debug pagination info
+  console.log(`Page ${currentPage} (section ${section}) info:`, {
+    hasNextPage: pageInfo.hasNextPage,
+    hasPreviousPage: pageInfo.hasPreviousPage,
+    startCursor: pageInfo.startCursor,
+    endCursor: pageInfo.endCursor,
+    productsCount: products.length,
+  });
+
+  // Calculate total pages more accurately if possible
+  let totalPages;
+
+  if (pageInfo.hasNextPage) {
+    // If there are more pages, we need to determine how many
+    try {
+      // Try to get a count of total products to calculate total pages
+      // This is optional and depends on your GraphQL schema supporting it
+      const countResponse = await client.query({
+        query: GET_PRODUCT_COUNT,
+        variables: {
+          search: searchQuery,
+          category: category ? category : section,
+        },
+        fetchPolicy: "network-only",
+      });
+
+      const totalProducts = countResponse.data.products.pageInfo.total || 0;
+      totalPages = Math.ceil(totalProducts / first);
+    } catch (error) {
+      // Fallback if count query fails or isn't available
+      totalPages = currentPage + 1; // At least one more page
+    }
+  } else {
+    // If there are no more pages, we know the total
+    totalPages = currentPage;
+  }
 
   return (
     <div className="mx-auto px-2 md:px-4">

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Pagination,
@@ -87,6 +87,17 @@ export default function ShopPagination({
   // Don't render pagination if there's only one page
   if (totalPages <= 1) return null;
 
+  // Ensure currentPage doesn't exceed totalPages
+  const validCurrentPage = Math.min(currentPage, totalPages);
+
+  // If the current page in the URL is invalid, redirect to a valid page
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      const url = createPageUrl(totalPages);
+      router.push(url);
+    }
+  }, [currentPage, totalPages]);
+
   const paginationItems = generatePaginationItems();
 
   return (
@@ -95,7 +106,7 @@ export default function ShopPagination({
         {/* Previous page button */}
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => handlePageChange(validCurrentPage - 1)}
             className={
               !hasPreviousPage
                 ? "pointer-events-none opacity-50"
@@ -120,7 +131,7 @@ export default function ShopPagination({
             <PaginationItem key={pageNum}>
               <PaginationLink
                 onClick={() => handlePageChange(pageNum)}
-                isActive={currentPage === pageNum}
+                isActive={validCurrentPage === pageNum}
                 className="cursor-pointer"
               >
                 {pageNum}
@@ -132,11 +143,13 @@ export default function ShopPagination({
         {/* Next page button */}
         <PaginationItem>
           <PaginationNext
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={() => handlePageChange(validCurrentPage + 1)}
             className={
-              !hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"
+              !hasNextPage || validCurrentPage >= totalPages
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
             }
-            aria-disabled={!hasNextPage}
+            aria-disabled={!hasNextPage || validCurrentPage >= totalPages}
           />
         </PaginationItem>
       </PaginationContent>

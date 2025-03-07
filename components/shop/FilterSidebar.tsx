@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Accordion,
@@ -41,16 +41,23 @@ const sortOptions = [
   { value: "TITLE", order: "DESC", label: "Name: Z to A" },
 ];
 
-export function FilterSidebar({
-  currentSort = "DATE",
-  currentOrder = "DESC",
-  currentCategory = "",
-  searchQuery = "",
-}) {
+export function FilterSidebar({}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const section = pathname.split("/")[3];
+
+  const currentSort = searchParams.get("sort") || "DATE";
+  const currentOrder = searchParams.get("order") || "DESC";
+  const currentCategory = searchParams.get("category") || "";
+  const searchQuery = searchParams.get("search") || "";
+
+  // Local state to track selected values
+  const [selectedSort, setSelectedSort] = useState(
+    `${currentSort}-${currentOrder}`
+  );
+  const [selectedCategory, setSelectedCategory] = useState(currentCategory);
+  const [selectedPriceRange, setSelectedPriceRange] = useState("");
 
   // Use our custom hook to get category data
   const { categories, loading, error } = useCategoryData(section);
@@ -92,6 +99,7 @@ export function FilterSidebar({
 
   // Handle sort change
   const handleSortChange = (value) => {
+    setSelectedSort(value);
     const option = sortOptions.find(
       (opt) => `${opt.value}-${opt.order}` === value
     );
@@ -102,17 +110,36 @@ export function FilterSidebar({
 
   // Handle category change
   const handleCategoryChange = (category) => {
-    updateFilters({ category: category === currentCategory ? "" : category });
+    const newCategory = category === selectedCategory ? "" : category;
+    setSelectedCategory(newCategory);
+    updateFilters({ category: newCategory });
+  };
+
+  // Handle price range change
+  const handlePriceRangeChange = (priceRange) => {
+    const newPriceRange = priceRange === selectedPriceRange ? "" : priceRange;
+    setSelectedPriceRange(newPriceRange);
+    // Add price range to URL parameters (implement as needed)
   };
 
   // Clear all filters
   const clearFilters = () => {
+    setSelectedSort(`DATE-DESC`);
+    setSelectedCategory("");
+    setSelectedPriceRange("");
+
     const params = new URLSearchParams();
     if (searchQuery) {
       params.set("search", searchQuery);
     }
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  // Update local state when props change
+  useEffect(() => {
+    setSelectedSort(`${currentSort}-${currentOrder}`);
+    setSelectedCategory(currentCategory);
+  }, [currentSort, currentOrder, currentCategory]);
 
   return (
     <Sidebar className="border-r">
@@ -127,24 +154,31 @@ export function FilterSidebar({
           <SidebarGroupLabel>Sort By</SidebarGroupLabel>
           <SidebarGroupContent>
             <RadioGroup
-              value={`${currentSort}-${currentOrder}`}
+              value={selectedSort}
               onValueChange={handleSortChange}
               className="space-y-1"
             >
-              {sortOptions.map((option) => (
-                <div
-                  key={`${option.value}-${option.order}`}
-                  className="flex items-center space-x-2"
-                >
-                  <RadioGroupItem
-                    value={`${option.value}-${option.order}`}
-                    id={`sort-${option.value}-${option.order}`}
-                  />
-                  <Label htmlFor={`sort-${option.value}-${option.order}`}>
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
+              {sortOptions.map((option) => {
+                const optionValue = `${option.value}-${option.order}`;
+                return (
+                  <div
+                    key={optionValue}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
+                    <RadioGroupItem
+                      value={optionValue}
+                      id={`sort-${optionValue}`}
+                      checked={selectedSort === optionValue}
+                    />
+                    <Label
+                      htmlFor={`sort-${optionValue}`}
+                      className="cursor-pointer w-full"
+                    >
+                      {option.label}
+                    </Label>
+                  </div>
+                );
+              })}
             </RadioGroup>
           </SidebarGroupContent>
           <Accordion
@@ -168,16 +202,24 @@ export function FilterSidebar({
                     categories.map((category) => (
                       <div key={category.id} className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`category-${category.slug}`}
-                            checked={currentCategory === category.slug}
-                            onCheckedChange={() =>
-                              handleCategoryChange(category.slug)
-                            }
-                          />
-                          <Label htmlFor={`category-${category.slug}`}>
-                            {category.name}
-                          </Label>
+                          <div
+                            className="flex items-center space-x-2 cursor-pointer w-full"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleCategoryChange(category.slug);
+                            }}
+                          >
+                            <Checkbox
+                              id={`category-${category.slug}`}
+                              checked={selectedCategory === category.slug}
+                            />
+                            <Label
+                              htmlFor={`category-${category.slug}`}
+                              className="cursor-pointer w-full"
+                            >
+                              {category.name}
+                            </Label>
+                          </div>
                         </div>
 
                         {/* Render grandchildren */}
@@ -186,16 +228,20 @@ export function FilterSidebar({
                             {category.children.nodes.map((grandchild) => (
                               <div
                                 key={grandchild.id}
-                                className="flex items-center space-x-2"
+                                className="flex items-center space-x-2 cursor-pointer"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleCategoryChange(grandchild.slug);
+                                }}
                               >
                                 <Checkbox
                                   id={`category-${grandchild.slug}`}
-                                  checked={currentCategory === grandchild.slug}
-                                  onCheckedChange={() =>
-                                    handleCategoryChange(grandchild.slug)
-                                  }
+                                  checked={selectedCategory === grandchild.slug}
                                 />
-                                <Label htmlFor={`category-${grandchild.slug}`}>
+                                <Label
+                                  htmlFor={`category-${grandchild.slug}`}
+                                  className="cursor-pointer w-full"
+                                >
                                   {grandchild.name}
                                 </Label>
                               </div>
@@ -215,9 +261,24 @@ export function FilterSidebar({
               <AccordionContent>
                 <div className="space-y-2 px-6">
                   {priceRanges.map((range) => (
-                    <div key={range.id} className="flex items-center space-x-2">
-                      <Checkbox id={`price-${range.id}`} />
-                      <Label htmlFor={`price-${range.id}`}>{range.name}</Label>
+                    <div
+                      key={range.id}
+                      className="flex items-center space-x-2 cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePriceRangeChange(range.id);
+                      }}
+                    >
+                      <Checkbox
+                        id={`price-${range.id}`}
+                        checked={selectedPriceRange === range.id}
+                      />
+                      <Label
+                        htmlFor={`price-${range.id}`}
+                        className="cursor-pointer w-full"
+                      >
+                        {range.name}
+                      </Label>
                     </div>
                   ))}
                 </div>
