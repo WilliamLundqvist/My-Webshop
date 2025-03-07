@@ -1,8 +1,7 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter } from "lucide-react";
-import { useEffect, useState, useMemo, useRef } from "react";
-import { useApolloClient } from "@apollo/client";
+import { useState } from "react";
 
 import {
   Accordion,
@@ -24,10 +23,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from "@/lib/graphql/queries";
+import { useCategoryData } from "@/hooks/useCategoryData";
 
-// Sample categories and price ranges - replace with your actual data
-
+// Sample price ranges - replace with your actual data
 const priceRanges = [
   { id: "0-25", name: "Under $25" },
   { id: "25-50", name: "$25 - $50" },
@@ -54,192 +52,74 @@ export function FilterSidebar({
   const pathname = usePathname();
   const section = pathname.split("/")[3];
 
-  // State to store category data
-  const [categoryData, setCategoryData] = useState(null);
-  const [categoryLoading, setCategoryLoading] = useState(false);
-  const [categoryError, setCategoryError] = useState(null);
-  const previousSection = useRef(null);
+  // Use our custom hook to get category data
+  const { categories, loading, error } = useCategoryData(section);
 
-  // Get Apollo client instance directly
-  const client = useApolloClient();
+  // Update filters function
+  const updateFilters = ({
+    sort = currentSort,
+    order = currentOrder,
+    category = currentCategory,
+  }) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  // Define utility function for name cleaning
-  const cleanCategoryName = (name: string) => {
-    return name.includes("|") ? name.split("|")[0].trim() : name;
-  };
+    // Reset pagination when filters change
+    params.delete("page");
 
-  // Add debugging for section changes
-  useEffect(() => {
-    console.log("Section value changed to:", section);
-    console.log("Previous section was:", previousSection.current);
-  }, [section]);
-
-  // Fetch categories only when section changes
-  useEffect(() => {
-    // Skip if no section
-    if (!section) return;
-
-    // Use strict equality check to prevent pagination triggering refetch
-    if (previousSection.current === section) {
-      console.log("Skipping fetch - same section:", section);
-      return;
+    // Update parameters if provided
+    if (sort !== undefined) {
+      params.set("sort", sort);
     }
-
-    console.log(`Fetching categories for section: ${section}`);
-
-    previousSection.current = section;
-
-    // Start loading
-    setCategoryLoading(true);
-    setCategoryError(null);
-
-    // Manual query execution
-    client
-      .query({
-        query: GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
-        variables: { section },
-        fetchPolicy: "network-only", // Force network for new section
-      })
-      .then((result) => {
-        setCategoryData(result.data);
-        setCategoryLoading(false);
-        // We already updated the ref before the fetch
-      })
-      .catch((err) => {
-        console.error("Error fetching categories:", err);
-        setCategoryError(err);
-        setCategoryLoading(false);
-      });
-  }, [section, client]);
-
-  // Process categories with useMemo
-  const filteredCategories = useMemo(() => {
-    if (
-      !categoryData ||
-      !categoryData.productCategory ||
-      !categoryData.productCategory.children
-    ) {
-      return [];
+    if (order !== undefined) {
+      params.set("order", order);
     }
-    const cleanCategoryName = (name: string) => {
-      return name.includes("|") ? name.split("|")[0].trim() : name;
-    };
-    // Same category processing logic as before
-    const processedCategories = categoryData.productCategory.children.nodes.map(
-      (category) => {
-        // Use utility function instead of duplicating logic
-        const cleanParentName = cleanCategoryName(category.name);
-
-        // Create a new object for each category
-        const processedCategory = {
-          id: category.id,
-          name: cleanParentName,
-          slug: category.slug,
-          children: { nodes: [] },
-        };
-
-        // Process grandchildren if they exist
-        if (category.children && category.children.nodes.length > 0) {
-          // Keep track of names we've already seen to avoid duplicates
-          const seenNames = new Set();
-
-          // Filter grandchildren
-          processedCategory.children.nodes = category.children.nodes
-            .map((grandchild) => {
-              // Use the same utility function here
-              const cleanName = cleanCategoryName(grandchild.name);
-
-              // Create a new object for the processed grandchild
-              return {
-                id: grandchild.id,
-                name: cleanName,
-                slug: grandchild.slug,
-              };
-            })
-            .filter((grandchild) => {
-              // Check if we've seen this name before
-              if (seenNames.has(grandchild.name)) {
-                return false; // Skip duplicates
-              }
-
-              // Add this name to our set of seen names
-              seenNames.add(grandchild.name);
-              return true;
-            });
-        }
-
-        return processedCategory;
-      }
-    );
-
-    // Now filter out categories that have no children after filtering
-    return processedCategories.filter(
-      (category) => category.children.nodes.length > 0
-    );
-  }, [categoryData]); // Only recompute when categoryData changes
-
-  // Add utility function for name cleaning
-
-  // Create a function to update URL with new parameters
-  const updateFilters = (params: Record<string, string>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    const section = pathname.split("/")[3];
-    console.log(section);
-
-    // Update or add new parameters
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        newParams.set(key, value);
+    if (category !== undefined) {
+      if (category) {
+        params.set("category", category);
       } else {
-        newParams.delete(key);
+        params.delete("category");
       }
-    });
-
-    // Ensure we keep the search query if it exists
-    if (searchQuery && !newParams.has("search")) {
-      newParams.set("search", searchQuery);
     }
 
-    // Reset to page 1 when filters change
-    newParams.set("page", "1");
+    // Maintain search query if it exists
+    if (searchQuery) {
+      params.set("search", searchQuery);
+    }
 
-    router.push(
-      section
-        ? `/shop/section/${section}?${newParams.toString()}`
-        : `/shop?${newParams.toString()}`
-    );
+    // Navigate to the new URL
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   // Handle sort change
-  const handleSortChange = (value: string) => {
-    const [sort, order] = value.split("-");
-    updateFilters({ sort, order });
+  const handleSortChange = (value) => {
+    const option = sortOptions.find(
+      (opt) => `${opt.value}-${opt.order}` === value
+    );
+    if (option) {
+      updateFilters({ sort: option.value, order: option.order });
+    }
   };
 
-  // Handle category change with improved logging
-  const handleCategoryChange = (category: string) => {
+  // Handle category change
+  const handleCategoryChange = (category) => {
     updateFilters({ category: category === currentCategory ? "" : category });
   };
 
   // Clear all filters
   const clearFilters = () => {
-    const newParams = new URLSearchParams();
+    const params = new URLSearchParams();
     if (searchQuery) {
-      newParams.set("search", searchQuery);
+      params.set("search", searchQuery);
     }
-    newParams.set("page", "1");
-    router.push(`/shop?${newParams.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
-
-  // Combine current sort and order for radio group
-  const currentSortValue = `${currentSort}-${currentOrder}`;
 
   return (
     <Sidebar className="border-r">
-      <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-2 py-3">
-          <Filter className="h-5 w-5" />
-          <h2 className="text-lg font-semibold">Filters</h2>
+      <SidebarHeader className="border-b p-4">
+        <div className="flex items-center">
+          <Filter className="mr-2 h-4 w-4" />
+          <span className="text-sm font-medium">Filters</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -247,9 +127,9 @@ export function FilterSidebar({
           <SidebarGroupLabel>Sort By</SidebarGroupLabel>
           <SidebarGroupContent>
             <RadioGroup
-              value={currentSortValue}
+              value={`${currentSort}-${currentOrder}`}
               onValueChange={handleSortChange}
-              className="space-y-2 px-2"
+              className="space-y-1"
             >
               {sortOptions.map((option) => (
                 <div
@@ -258,33 +138,34 @@ export function FilterSidebar({
                 >
                   <RadioGroupItem
                     value={`${option.value}-${option.order}`}
-                    id={`${option.value}-${option.order}`}
+                    id={`sort-${option.value}-${option.order}`}
                   />
-                  <Label htmlFor={`${option.value}-${option.order}`}>
+                  <Label htmlFor={`sort-${option.value}-${option.order}`}>
                     {option.label}
                   </Label>
                 </div>
               ))}
             </RadioGroup>
           </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <Accordion type="multiple" defaultValue={["categories", "price"]}>
+          <Accordion
+            type="multiple"
+            className="w-full"
+            defaultValue={["categories", "price"]}
+          >
             <AccordionItem value="categories">
               <AccordionTrigger className="px-4 py-2">
                 Categories
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 px-6">
-                  {categoryLoading ? (
+                  {loading ? (
                     <div>Loading categories...</div>
-                  ) : categoryError ? (
+                  ) : error ? (
                     <div>Error loading categories</div>
-                  ) : filteredCategories.length === 0 ? (
+                  ) : categories.length === 0 ? (
                     <div>No categories found</div>
                   ) : (
-                    filteredCategories.map((category) => (
+                    categories.map((category) => (
                       <div key={category.id} className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <Checkbox
@@ -327,7 +208,7 @@ export function FilterSidebar({
                 </div>
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="price">
+            <AccordionItem defaultValue="price" value="price">
               <AccordionTrigger className="px-4 py-2">
                 Price Range
               </AccordionTrigger>

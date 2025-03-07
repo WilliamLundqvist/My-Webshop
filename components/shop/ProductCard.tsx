@@ -60,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Link href={createProductUrl()}>
-      <Card className="gap-2 md:gap-4 h-full">
+      <Card className="gap-2 md:gap-4 h-full rounded-none">
         <div className="aspect-square overflow-hidden">
           <img
             src={imageUrl}
@@ -86,9 +86,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           ></div>
         </CardContent>
         <CardFooter className="mt-auto">
-          <Button size="default" variant="default" className="w-full">
+          {/* <Button size="default" variant="default" className="w-full">
             Add to Cart
-          </Button>
+          </Button> */}
         </CardFooter>
       </Card>
     </Link>
