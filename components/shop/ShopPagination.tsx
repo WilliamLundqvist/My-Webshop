@@ -2,8 +2,15 @@
 
 import React from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface ShopPaginationProps {
   currentPage: number;
@@ -38,23 +45,13 @@ export default function ShopPagination({
     router.push(url);
   };
 
+  // Generate pagination items based on current page and total pages
   const generatePaginationItems = () => {
     const items = [];
     const maxVisiblePages = 5;
 
     // Always show first page
-    items.push(
-      <Button
-        key="page-1"
-        variant={currentPage === 1 ? "default" : "outline"}
-        size="icon"
-        onClick={() => handlePageChange(1)}
-        className="h-9 w-9"
-        disabled={currentPage === 1}
-      >
-        1
-      </Button>
-    );
+    items.push(1);
 
     // Calculate range of visible pages
     let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2));
@@ -66,63 +63,22 @@ export default function ShopPagination({
 
     // Add ellipsis if needed
     if (startPage > 2) {
-      items.push(
-        <Button
-          key="ellipsis-1"
-          variant="outline"
-          size="icon"
-          disabled
-          className="h-9 w-9"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      );
+      items.push("ellipsis-start");
     }
 
     // Add middle pages
     for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <Button
-          key={`page-${i}`}
-          variant={currentPage === i ? "default" : "outline"}
-          size="icon"
-          onClick={() => handlePageChange(i)}
-          className="h-9 w-9"
-        >
-          {i}
-        </Button>
-      );
+      items.push(i);
     }
 
     // Add ellipsis if needed
     if (endPage < totalPages - 1) {
-      items.push(
-        <Button
-          key="ellipsis-2"
-          variant="outline"
-          size="icon"
-          disabled
-          className="h-9 w-9"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      );
+      items.push("ellipsis-end");
     }
 
     // Always show last page if there's more than one page
     if (totalPages > 1) {
-      items.push(
-        <Button
-          key={`page-${totalPages}`}
-          variant={currentPage === totalPages ? "default" : "outline"}
-          size="icon"
-          onClick={() => handlePageChange(totalPages)}
-          className="h-9 w-9"
-          disabled={currentPage === totalPages}
-        >
-          {totalPages}
-        </Button>
-      );
+      items.push(totalPages);
     }
 
     return items;
@@ -131,31 +87,59 @@ export default function ShopPagination({
   // Don't render pagination if there's only one page
   if (totalPages <= 1) return null;
 
+  const paginationItems = generatePaginationItems();
+
   return (
-    <div className="flex items-center justify-center space-x-2 py-8">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={!hasPreviousPage}
-        className="h-9 w-9"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        <span className="sr-only">Previous page</span>
-      </Button>
+    <Pagination className="my-8">
+      <PaginationContent>
+        {/* Previous page button */}
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={
+              !hasPreviousPage
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
+            aria-disabled={!hasPreviousPage}
+          />
+        </PaginationItem>
 
-      {generatePaginationItems()}
+        {/* Page numbers */}
+        {paginationItems.map((item, index) => {
+          if (item === "ellipsis-start" || item === "ellipsis-end") {
+            return (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            );
+          }
 
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={!hasNextPage}
-        className="h-9 w-9"
-      >
-        <ChevronRight className="h-4 w-4" />
-        <span className="sr-only">Next page</span>
-      </Button>
-    </div>
+          const pageNum = item as number;
+          return (
+            <PaginationItem key={pageNum}>
+              <PaginationLink
+                onClick={() => handlePageChange(pageNum)}
+                isActive={currentPage === pageNum}
+                className="cursor-pointer"
+              >
+                {pageNum}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
+
+        {/* Next page button */}
+        <PaginationItem>
+          <PaginationNext
+            onClick={() => handlePageChange(currentPage + 1)}
+            className={
+              !hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"
+            }
+            aria-disabled={!hasNextPage}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 }
