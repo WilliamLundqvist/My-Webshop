@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 
 import {
   Accordion,
@@ -41,16 +41,17 @@ const sortOptions = [
   { value: "TITLE", order: "DESC", label: "Name: Z to A" },
 ];
 
-export function FilterSidebar({}) {
+function FilterSidebarComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const section = pathname.split("/")[3];
+  const section = useMemo(() => pathname.split("/")[3], [pathname]);
 
-  const currentSort = searchParams.get("sort") || "DATE";
-  const currentOrder = searchParams.get("order") || "DESC";
-  const currentCategory = searchParams.get("category") || "";
-  const searchQuery = searchParams.get("search") || "";
+  // Memoize URL params to prevent unnecessary renders
+  const currentSort = useMemo(() => searchParams.get("sort") || "DATE", [searchParams]);
+  const currentOrder = useMemo(() => searchParams.get("order") || "DESC", [searchParams]);
+  const currentCategory = useMemo(() => searchParams.get("category") || "", [searchParams]);
+  const searchQuery = useMemo(() => searchParams.get("search") || "", [searchParams]);
 
   // Local state to track selected values
   const [selectedSort, setSelectedSort] = useState(
@@ -62,8 +63,8 @@ export function FilterSidebar({}) {
   // Use our custom hook to get category data
   const { categories, loading, error } = useCategoryData(section);
 
-  // Update filters function
-  const updateFilters = ({
+  // Update filters function - memoize to prevent recreation on each render
+  const updateFilters = useCallback(({
     sort = currentSort,
     order = currentOrder,
     category = currentCategory,
@@ -95,10 +96,10 @@ export function FilterSidebar({}) {
 
     // Navigate to the new URL
     router.push(`${pathname}?${params.toString()}`);
-  };
+  }, [currentSort, currentOrder, currentCategory, searchQuery, pathname, router, searchParams]);
 
   // Handle sort change
-  const handleSortChange = (value) => {
+  const handleSortChange = useCallback((value) => {
     setSelectedSort(value);
     const option = sortOptions.find(
       (opt) => `${opt.value}-${opt.order}` === value
@@ -106,24 +107,24 @@ export function FilterSidebar({}) {
     if (option) {
       updateFilters({ sort: option.value, order: option.order });
     }
-  };
+  }, [updateFilters]);
 
   // Handle category change
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = useCallback((category) => {
     const newCategory = category === selectedCategory ? "" : category;
     setSelectedCategory(newCategory);
     updateFilters({ category: newCategory });
-  };
+  }, [selectedCategory, updateFilters]);
 
   // Handle price range change
-  const handlePriceRangeChange = (priceRange) => {
+  const handlePriceRangeChange = useCallback((priceRange) => {
     const newPriceRange = priceRange === selectedPriceRange ? "" : priceRange;
     setSelectedPriceRange(newPriceRange);
     // Add price range to URL parameters (implement as needed)
-  };
+  }, [selectedPriceRange]);
 
   // Clear all filters
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSelectedSort(`DATE-DESC`);
     setSelectedCategory("");
     setSelectedPriceRange("");
@@ -133,13 +134,19 @@ export function FilterSidebar({}) {
       params.set("search", searchQuery);
     }
     router.push(`${pathname}?${params.toString()}`);
-  };
+  }, [searchQuery, pathname, router]);
 
-  // Update local state when props change
+  // Update local state when URL params change, but avoid unnecessary updates
   useEffect(() => {
-    setSelectedSort(`${currentSort}-${currentOrder}`);
-    setSelectedCategory(currentCategory);
-  }, [currentSort, currentOrder, currentCategory]);
+    const sortValue = `${currentSort}-${currentOrder}`;
+    if (selectedSort !== sortValue) {
+      setSelectedSort(sortValue);
+    }
+    
+    if (selectedCategory !== currentCategory) {
+      setSelectedCategory(currentCategory);
+    }
+  }, [currentSort, currentOrder, currentCategory, selectedSort, selectedCategory]);
 
   return (
     <Sidebar className="border-r">
@@ -296,3 +303,6 @@ export function FilterSidebar({}) {
     </Sidebar>
   );
 }
+
+// Export a memoized version of the component
+export const FilterSidebar = memo(FilterSidebarComponent);

@@ -7,7 +7,6 @@ import Navigation from "../components/shop/Navigation";
 import Footer from "../components/shop/Footer";
 
 export default async function RootLayout({ children }) {
-  // Fetch data for navigation and footer at the layout level
   const client = await getClient();
 
   const [headerData, footerData] = await Promise.all([
@@ -21,6 +20,9 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
+      <head>
+      <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+      </head>
       <body>
         <FaustProvider>
           <Navigation

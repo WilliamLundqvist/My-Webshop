@@ -9,7 +9,8 @@ import {
 import { GET_PRODUCTS, GET_PRODUCT_COUNT } from "@/lib/graphql/queries";
 import ProductGrid from "@/components/shop/ProductGrid";
 import ShopPagination from "@/components/shop/ShopPagination";
-
+import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 export default async function ShopPage({ searchParams }) {
   // First, check if we have reference params from product detail navigation
   // and use them if available (maintaining consistent parameter naming)
@@ -179,7 +180,10 @@ export default async function ShopPage({ searchParams }) {
   }
 
   return (
-    <div className="mx-auto px-2 md:px-4">
+    
+    <div className="mx-auto px-2 md:px-4 flex ">
+      <FilterSidebar  />
+      <SidebarInset>
       <Breadcrumb className="py-4">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -229,6 +233,7 @@ export default async function ShopPage({ searchParams }) {
         hasNextPage={pageInfo.hasNextPage}
         hasPreviousPage={currentPage > 1}
       />
+      </SidebarInset>
     </div>
   );
 }
