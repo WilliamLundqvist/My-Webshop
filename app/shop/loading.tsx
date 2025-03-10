@@ -45,10 +45,7 @@ export default function ShopLoading() {
   return (
     <SidebarProvider defaultOpen={true}>
       <FilterSidebar
-        currentSort="DATE"
-        currentOrder="DESC"
-        currentCategory=""
-        searchQuery=""
+
       />
       <SidebarInset>
         <div className="mx-auto w-full px-2 md:px-4">

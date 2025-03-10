@@ -8,15 +8,14 @@ import {
 } from "@/components/ui/breadcrumb";
 import { GET_PRODUCTS, GET_PRODUCT_COUNT } from "@/lib/graphql/queries";
 import ProductGrid from "@/components/shop/ProductGrid";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import ShopPagination from "@/components/shop/ShopPagination";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
+import { redirect } from "next/navigation";
 
 export default async function ShopPage({ searchParams, params }) {
-  // First, check if we have reference params from product detail navigation
-  // and use them if available (maintaining consistent parameter naming)
 
+  const client = await getClient();
   const section = params.section;
 
   const finalSearchParams = { ...searchParams };
@@ -49,76 +48,66 @@ export default async function ShopPage({ searchParams, params }) {
 
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
-
-  // Debug the current page
-  console.log(`Current page (section ${section}): ${currentPage}`);
-
-  // Calculate cursor based on page number - fixed implementation
-  const calculateCursor = (page: number, pageSize: number) => {
-    if (page <= 1) return "";
-
-    // Fallback to offset-based cursor generation
-    const skipCount = (page - 1) * pageSize;
-    try {
-      // Format the cursor according to your GraphQL API's expectations
-      const cursor = btoa(`arrayconnection:${skipCount - 1}`);
-      console.log(`Generated cursor for page ${page}: ${cursor}`);
-      return cursor;
-    } catch (error) {
-      console.error("Error calculating pagination cursor:", error);
-      return "";
-    }
-  };
-
-  // Store cursors in a global object (only for server-side debugging)
-  if (typeof global.sectionPageCursors === "undefined") {
-    global.sectionPageCursors = {};
+  
+  // Create a cache for storing page-to-cursor mappings
+  // In production, this could be moved to Redis or another persistent cache
+  if (typeof global.cursorCache === "undefined") {
+    global.cursorCache = {};
   }
-
+  
+  const cacheKey = `${section || "all"}-${category || "none"}-${searchQuery || "none"}-${sortField}-${sortOrder}`;
+  
+  // Initialize after/cursor value
   let after = "";
-  const client = await getClient();
-
-  // For first page, no cursor needed
-  if (currentPage === 1) {
-    after = "";
+  
+  // Check if we can use a cached cursor for this page
+  if (currentPage > 1 && global.cursorCache[cacheKey]?.[currentPage - 1]) {
+    after = global.cursorCache[cacheKey][currentPage - 1];
+    console.log(`Using cached cursor for page ${currentPage}: ${after}`);
   }
-  // For subsequent pages, we need to fetch all previous pages' cursors
-  else {
-    // First, try to get the cursor for the previous page
-    try {
-      // Fetch the previous page to get its endCursor
-      const prevPage = currentPage - 1;
+  // For pages beyond page 1 without a cached cursor, we need to fetch sequentially
+  else if (currentPage > 1) {
+    console.log(`No cached cursor for page ${currentPage}, fetching pages sequentially`);
+    
+    // Create cache entry for this filter combination if it doesn't exist
+    if (!global.cursorCache[cacheKey]) {
+      global.cursorCache[cacheKey] = {};
+    }
+    
+    // Start from the beginning and fetch all pages up to the requested one
+    let lastCursor = "";
+    
+    for (let page = 1; page < currentPage; page++) {
       const prevPageResult = await client.query({
         query: GET_PRODUCTS,
         variables: {
           first,
-          after: calculateCursor(prevPage, first),
+          after: lastCursor,
           orderby: [{ field: sortField, order: sortOrder }],
           search: searchQuery,
           category: category ? category : section,
         },
         fetchPolicy: "network-only",
       });
-
-      // Use the endCursor from the previous page
-      after = prevPageResult.data.products.pageInfo.endCursor;
-      console.log(
-        `Using endCursor from previous page (section ${section}): ${after}`
-      );
-
-      // Store for debugging
-      global.sectionPageCursors[`${section}-${currentPage}`] = after;
-    } catch (error) {
-      console.error("Error fetching previous page cursor:", error);
-      after = calculateCursor(currentPage, first);
+      
+      if (!prevPageResult.data.products.pageInfo.hasNextPage) {
+        // We've reached the end but user requested a later page
+        console.log(`Page ${currentPage} is beyond the last page (${page})`);
+        // Redirect to the last valid page
+        return redirect(`/shop/section/${section}?page=${page}`);
+      }
+      
+      lastCursor = prevPageResult.data.products.pageInfo.endCursor;
+      
+      // Cache this cursor for future use
+      global.cursorCache[cacheKey][page] = lastCursor;
+      console.log(`Cached cursor for page ${page}: ${lastCursor}`);
     }
+    
+    after = lastCursor;
   }
-
-  console.log(
-    `Using cursor for page ${currentPage} (section ${section}): ${after}`
-  );
-
-  // Fetch products with pagination
+  
+  // Now fetch the current page data
   const { data } = await client.query({
     query: GET_PRODUCTS,
     variables: {
@@ -128,60 +117,60 @@ export default async function ShopPage({ searchParams, params }) {
       search: searchQuery,
       category: category ? category : section,
     },
-    fetchPolicy: "network-only", // Don't use cache for server components
+    fetchPolicy: "network-only",
   });
-
+  
   const products = data.products.nodes;
   const pageInfo = data.products.pageInfo;
-
-  // Store the endCursor for debugging
-  if (pageInfo.endCursor) {
-    global.sectionPageCursors[`${section}-${currentPage}`] = pageInfo.endCursor;
-    console.log(
-      `Stored endCursor for page ${currentPage} (section ${section}): ${pageInfo.endCursor}`
-    );
+  
+  // Store this page's endCursor for future requests
+  if (pageInfo.hasNextPage) {
+    if (!global.cursorCache[cacheKey]) {
+      global.cursorCache[cacheKey] = {};
+    }
+    global.cursorCache[cacheKey][currentPage] = pageInfo.endCursor;
+    console.log(`Cached cursor for current page ${currentPage}: ${pageInfo.endCursor}`);
   }
 
-  // Debug pagination info
-  console.log(`Page ${currentPage} (section ${section}) info:`, {
-    hasNextPage: pageInfo.hasNextPage,
-    hasPreviousPage: pageInfo.hasPreviousPage,
-    startCursor: pageInfo.startCursor,
-    endCursor: pageInfo.endCursor,
-    productsCount: products.length,
-  });
-
-  // Calculate total pages more accurately if possible
-  let totalPages;
-
+  // Calculate total pages - fallback if the count query fails
+  let totalPages = 1;
+  
   if (pageInfo.hasNextPage) {
-    // If there are more pages, we need to determine how many
-    try {
-      // Try to get a count of total products to calculate total pages
-      // This is optional and depends on your GraphQL schema supporting it
-      const countResponse = await client.query({
-        query: GET_PRODUCT_COUNT,
-        variables: {
-          search: searchQuery,
-          category: category ? category : section,
-        },
-        fetchPolicy: "network-only",
-      });
-
-      const totalProducts = countResponse.data.products.pageInfo.total || 0;
-      totalPages = Math.ceil(totalProducts / first);
-    } catch (error) {
-      // Fallback if count query fails or isn't available
-      totalPages = currentPage + 1; // At least one more page
-    }
+    totalPages = currentPage + 1; // At least one more page
   } else {
-    // If there are no more pages, we know the total
-    totalPages = currentPage;
+    totalPages = currentPage; // Current page is the last page
+  }
+  
+  try {
+    const countResponse = await client.query({
+      query: GET_PRODUCT_COUNT,
+      variables: {
+        search: searchQuery,
+        category: category ? category : section,
+      },
+      fetchPolicy: "network-only",
+    });
+
+    if (countResponse.data.products.found) {
+      const totalProducts = countResponse.data.products.found;
+      totalPages = Math.ceil(totalProducts / first);
+      console.log(`Total products: ${totalProducts}, Total pages: ${totalPages}`);
+    }
+  } catch (error) {
+    console.error("Error calculating total pages:", error);
+  }
+
+  console.log(`PageInfo: `, pageInfo);
+
+  // Create a helper function for page URL generation
+  function createPageUrl(pageNum) {
+    const params = new URLSearchParams(finalSearchParams);
+    params.set("page", pageNum.toString());
+    return `/shop/section/${section}?${params.toString()}`;
   }
 
   return (
-    <div className="mx-auto px-2 md:px-4 flex ">
-      <FilterSidebar />
+    <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
       <SidebarInset>
         <StickyFilterButton />
         <Breadcrumb className="py-4">
@@ -190,9 +179,13 @@ export default async function ShopPage({ searchParams, params }) {
             <Link href="/shop">Shop</Link>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <Link href={`/shop/section/${section}`}>{section}</Link>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
           {category && (
             <BreadcrumbItem>
-              <Link href={`/shop?category=${category}`}>{category}</Link>
+              <Link href={`/shop/section/${section}?category=${category}`}>{category}</Link>
             </BreadcrumbItem>
           )}
           {searchQuery && (
@@ -231,8 +224,12 @@ export default async function ShopPage({ searchParams, params }) {
         currentPage={currentPage}
         totalPages={totalPages}
         hasNextPage={pageInfo.hasNextPage}
-          hasPreviousPage={currentPage > 1}
-        />
+        hasPreviousPage={currentPage > 1}
+        pageInfo={{
+          startCursor: pageInfo.startCursor,
+          endCursor: pageInfo.endCursor
+        }}
+      />
       </SidebarInset>
     </div>
   );

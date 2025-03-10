@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product } from "@/types/product";
-import { Button } from "@/components/ui/button";
+
 import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {

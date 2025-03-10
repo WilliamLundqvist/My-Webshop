@@ -16,7 +16,7 @@ export default function HomePage() {
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: "url('https://placehold.co/1920x1080')",
+            backgroundImage: "url('https://placehold.co/1920x1080')",
               }}
             >
               <div className="absolute inset-0 bg-black/40" />

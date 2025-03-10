@@ -37,8 +37,8 @@ const sortOptions = [
   { value: "DATE", order: "DESC", label: "Newest" },
   { value: "PRICE", order: "ASC", label: "Price: Low to High" },
   { value: "PRICE", order: "DESC", label: "Price: High to Low" },
-  { value: "TITLE", order: "ASC", label: "Name: A to Z" },
-  { value: "TITLE", order: "DESC", label: "Name: Z to A" },
+  { value: "NAME", order: "ASC", label: "Name: A to Z" },
+  { value: "NAME", order: "DESC", label: "Name: Z to A" },
 ];
 
 function FilterSidebarComponent() {
@@ -111,10 +111,9 @@ function FilterSidebarComponent() {
 
   // Handle category change
   const handleCategoryChange = useCallback((category) => {
-    const newCategory = category === selectedCategory ? "" : category;
-    setSelectedCategory(newCategory);
-    updateFilters({ category: newCategory });
-  }, [selectedCategory, updateFilters]);
+    setSelectedCategory(category);
+    updateFilters({ category: category });
+  }, [updateFilters]);
 
   // Handle price range change
   const handlePriceRangeChange = useCallback((priceRange) => {
@@ -136,20 +135,9 @@ function FilterSidebarComponent() {
     router.push(`${pathname}?${params.toString()}`);
   }, [searchQuery, pathname, router]);
 
-  // Update local state when URL params change, but avoid unnecessary updates
-  useEffect(() => {
-    const sortValue = `${currentSort}-${currentOrder}`;
-    if (selectedSort !== sortValue) {
-      setSelectedSort(sortValue);
-    }
-    
-    if (selectedCategory !== currentCategory) {
-      setSelectedCategory(currentCategory);
-    }
-  }, [currentSort, currentOrder, currentCategory, selectedSort, selectedCategory]);
 
   return (
-    <Sidebar className="border-r">
+    <Sidebar className="border-r sidebar-container">
       <SidebarHeader className="border-b p-4">
         <div className="flex items-center">
           <Filter className="mr-2 h-4 w-4" />

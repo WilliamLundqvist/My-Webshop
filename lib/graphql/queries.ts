@@ -182,9 +182,7 @@ export const GET_PRODUCT_COUNT = gql`
         category: $category
       }
     ) {
-      pageInfo {
-        total
-      }
+      found
     }
   }
 `;

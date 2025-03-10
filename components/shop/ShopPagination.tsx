@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -17,6 +16,11 @@ interface ShopPaginationProps {
   totalPages: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  // Keep pageInfo in the interface for backward compatibility
+  pageInfo?: {
+    startCursor?: string;
+    endCursor?: string;
+  };
 }
 
 export default function ShopPagination({
@@ -28,174 +32,124 @@ export default function ShopPagination({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
-  // Store whether we've handled the invalid page already
-  const hasHandledInvalidPage = useRef(false);
-  // Store the latest valid page values
-  const latestProps = useRef({ currentPage, totalPages });
-  
-  // Update the latest props
-  useEffect(() => {
-    latestProps.current = { currentPage, totalPages };
-  }, [currentPage, totalPages]);
-  
-  // Memoize URL creation to avoid recreating during render
+
+  // Simple page URL generator
   const createPageUrl = useCallback((pageNum: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", pageNum.toString());
+    params.set("page", String(pageNum));
+    
+    // Remove any cursor parameters if they exist
+    params.delete("after");
+    params.delete("before");
+    
     return `${pathname}?${params.toString()}`;
   }, [pathname, searchParams]);
 
-  // Handle navigation outside of render
+  // Handle page navigation
   const handlePageChange = useCallback((pageNum: number) => {
-    // Defer navigation to avoid state updates during render
-    setTimeout(() => {
-      const url = createPageUrl(pageNum);
-      router.push(url);
-    }, 0);
-  }, [createPageUrl, router]);
-
-  // Handle invalid page checks completely outside of render
-  useEffect(() => {
-    if (
-      !hasHandledInvalidPage.current && 
-      currentPage > totalPages && 
-      totalPages > 0
-    ) {
-      hasHandledInvalidPage.current = true;
-      
-      // Use setTimeout to further separate from render cycle
-      setTimeout(() => {
-        const url = createPageUrl(totalPages);
-        router.push(url);
-      }, 0);
-    }
+    // Ensure page number is valid
+    const validPage = Math.max(1, Math.min(pageNum, totalPages || Number.MAX_SAFE_INTEGER));
     
-    return () => {
-      // Only reset on dependency changes - not on every render
-      if (latestProps.current.currentPage !== currentPage || 
-          latestProps.current.totalPages !== totalPages) {
-        hasHandledInvalidPage.current = false;
-      }
-    };
-  }, [currentPage, totalPages, createPageUrl, router]);
+    if (validPage === currentPage) return;
+    
+    // Use setTimeout to avoid React state updates during render
+    setTimeout(() => {
+      router.push(createPageUrl(validPage));
+    }, 0);
+  }, [createPageUrl, router, currentPage, totalPages]);
 
-  // Don't render pagination if there's only one page
-  if (totalPages <= 1) return null;
-
-  // Safely calculate current page - never exceeds total pages
-  const validCurrentPage = Math.min(currentPage, totalPages);
-  
-  // Generate pagination items based on current page and total pages
-  const paginationItems = (() => {
-    const items = [];
-    const maxVisiblePages = 5;
-
-    // Always show first page
-    items.push(1);
-
-    // Calculate range of visible pages
-    let startPage = Math.max(2, validCurrentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 3);
-
-    if (endPage - startPage < maxVisiblePages - 3) {
-      startPage = Math.max(2, endPage - (maxVisiblePages - 3));
-    }
-
-    // Add ellipsis if needed
-    if (startPage > 2) {
-      items.push("ellipsis-start");
-    }
-
-    // Add middle pages
-    for (let i = startPage; i <= endPage; i++) {
-      items.push(i);
-    }
-
-    // Add ellipsis if needed
-    if (endPage < totalPages - 1) {
-      items.push("ellipsis-end");
-    }
-
-    // Always show last page if there's more than one page
-    if (totalPages > 1) {
-      items.push(totalPages);
-    }
-
-    return items;
-  })();
+  // Don't show pagination if there's only one page
+  if (totalPages <= 1 && !hasNextPage && !hasPreviousPage) {
+    return null;
+  }
 
   return (
-    <Pagination className="my-8">
-      <PaginationContent>
-        {/* Previous page button */}
-        <PaginationItem>
-          <PaginationPrevious
-            href={createPageUrl(validCurrentPage - 1)}
-            className={
-              !hasPreviousPage
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
-            }
-            aria-disabled={!hasPreviousPage}
-            onClick={(e) => {
-              if (hasPreviousPage) {
-                e.preventDefault();
-                handlePageChange(validCurrentPage - 1);
-              }
-            }}
-          />
-        </PaginationItem>
-
-        {/* Page numbers */}
-        {paginationItems.map((item, index) => {
-          if (item === "ellipsis-start" || item === "ellipsis-end") {
-            return (
-              <PaginationItem key={`ellipsis-${index}`}>
-                <PaginationEllipsis />
-              </PaginationItem>
-            );
-          }
-
-          const pageNum = item as number;
-          return (
-            <PaginationItem key={pageNum}>
-              <PaginationLink
-                href={createPageUrl(pageNum)}
-                isActive={validCurrentPage === pageNum}
-                className="cursor-pointer"
+    <div className="mt-8 mb-12">
+      <Pagination>
+        <PaginationContent className="flex justify-between items-center">
+          {/* Page info - mobile friendly */}
+          <div className="text-sm text-muted-foreground hidden sm:block">
+            Page {currentPage} of {totalPages > 0 ? totalPages : '?'}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {/* Previous button */}
+            <PaginationItem>
+              <PaginationPrevious
+                href={hasPreviousPage ? createPageUrl(currentPage - 1) : '#'}
+                className={!hasPreviousPage ? "pointer-events-none opacity-50" : ""}
                 onClick={(e) => {
-                  e.preventDefault();
-                  if (validCurrentPage !== pageNum) {
-                    handlePageChange(pageNum);
+                  if (hasPreviousPage) {
+                    e.preventDefault();
+                    handlePageChange(currentPage - 1);
                   }
                 }}
-              >
-                {pageNum}
-              </PaginationLink>
+                aria-disabled={!hasPreviousPage}
+              />
             </PaginationItem>
-          );
-        })}
-
-        {/* Next page button */}
-        <PaginationItem>
-          <PaginationNext
-            href={createPageUrl(validCurrentPage + 1)}
-            className={
-              !hasNextPage || validCurrentPage >= totalPages
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
-            }
-            aria-disabled={!hasNextPage || validCurrentPage >= totalPages}
-            onClick={(e) => {
-              if (hasNextPage && validCurrentPage < totalPages) {
-                e.preventDefault();
-                handlePageChange(validCurrentPage + 1);
-              }
-            }}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+            
+            {/* Current page indicator - for mobile */}
+            <span className="text-sm sm:hidden">
+              {currentPage}/{totalPages > 0 ? totalPages : '?'}
+            </span>
+            
+            {/* Page numbers for larger screens */}
+            <div className="hidden sm:flex items-center">
+              {/* Generate simplified page numbers */}
+              {Array.from({ length: Math.min(5, totalPages || 5) }).map((_, i) => {
+                let pageNum = currentPage;
+                
+                // Simple pagination logic for small number of pages
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } 
+                // More complex logic for many pages
+                else {
+                  if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                }
+                
+                return (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink 
+                      href={createPageUrl(pageNum)}
+                      isActive={currentPage === pageNum}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage !== pageNum) {
+                          handlePageChange(pageNum);
+                        }
+                      }}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+            </div>
+            
+            {/* Next button */}
+            <PaginationItem>
+              <PaginationNext
+                href={hasNextPage ? createPageUrl(currentPage + 1) : '#'}
+                className={!hasNextPage ? "pointer-events-none opacity-50" : ""}
+                onClick={(e) => {
+                  if (hasNextPage) {
+                    e.preventDefault();
+                    handlePageChange(currentPage + 1);
+                  }
+                }}
+                aria-disabled={!hasNextPage}
+              />
+            </PaginationItem>
+          </div>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 }

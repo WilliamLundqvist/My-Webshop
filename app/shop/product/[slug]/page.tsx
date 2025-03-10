@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 
 import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
 import { Product } from "@/types/product";
+import { ArrowLeftIcon } from "lucide-react";
+import BackButton from "@/components/shop/BackButton";
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
+  const section = params.section;
 
   // Extract reference search parameters
   const refSearch = searchParams?.ref_search;
@@ -26,10 +29,10 @@ export default async function ProductPage({ params, searchParams }) {
     if (refCategory) params.set("category", refCategory);
 
     if (params.toString()) {
-      return `/shop?${params.toString()}`;
+      return `/shop/section/${section}?${params.toString()}`;
     }
 
-    return "/shop";
+    return `/shop/section/${section}`;
   };
 
   const backUrl = buildBackToResultsUrl();
@@ -62,6 +65,8 @@ export default async function ProductPage({ params, searchParams }) {
 
   return (
     <div className="container mx-auto px-md">
+      <BackButton />
+      
       {/* Rest of your component */}
       <ProductDetail product={product} />
     </div>
