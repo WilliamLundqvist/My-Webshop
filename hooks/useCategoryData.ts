@@ -16,6 +16,7 @@ export function useCategoryData(section: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+
   // Debugging only - can be removed in production
   const rerenders = useRef(0);
   rerenders.current++;
@@ -35,7 +36,9 @@ export function useCategoryData(section: string) {
 
   // Cleanup on unmount
   useEffect(() => {
+    console.log('Component mounted');
     return () => {
+      console.log('Component unmounted');
       isMountedRef.current = false;
     };
   }, []);
@@ -93,8 +96,9 @@ export function useCategoryData(section: string) {
       fetchPolicy: "network-only",
     })
       .then((result) => {
+
         // Check if component is still mounted
-        if (!isMountedRef.current) return;
+
 
         setCategoryData(result.data);
         setLoading(false);

@@ -61,7 +61,8 @@ function FilterSidebarComponent() {
   const [selectedPriceRange, setSelectedPriceRange] = useState("");
 
   // Use our custom hook to get category data
-  const { categories, loading, error } = useCategoryData(section);
+  const { categories, loading, error } =  useCategoryData(section);
+
 
   // Update filters function - memoize to prevent recreation on each render
   const updateFilters = useCallback(({
@@ -134,6 +135,7 @@ function FilterSidebarComponent() {
     }
     router.push(`${pathname}?${params.toString()}`);
   }, [searchQuery, pathname, router]);
+
 
 
   return (
