@@ -13,12 +13,24 @@ export default async function Page() {
   }
 
   const { data } = await client.query({
-    query: GET_VIEWER,
+    query: gql`
+      query GetViewerPublishedPosts {
+        viewer {
+          name
+          publishedPosts: posts(where: { status: PUBLISH }) {
+            nodes {
+              id
+              title
+            }
+          }
+        }
+      }
+    `,
   });
 
   return (
     <div className="container mx-auto py-xl px-md">
-      <div className="max-w-4xl mx-auto">
+      {/* <div className="max-w-4xl mx-auto">
         <div className="bg-surface p-lg rounded-lg mb-xl">
           <h1 className="text-2xl font-bold mb-md">My Account</h1>
           <div className="flex items-center justify-between mb-lg pb-md border-b border-border">
@@ -54,7 +66,8 @@ export default async function Page() {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }

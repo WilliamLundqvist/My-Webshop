@@ -9,7 +9,7 @@ import { processCategories } from '@/lib/utils';
 export function useCategoryData(section: string) {
   // Use refs to track if we've already fetched to avoid duplicate requests in StrictMode
   const hasFetchedRef = useRef(false);
-  const sectionRef = useRef(section);
+  const prevSectionRef = useRef(section);
   const isMountedRef = useRef(true);
 
   const [categoryData, setCategoryData] = useState(null);
@@ -24,9 +24,13 @@ export function useCategoryData(section: string) {
   // Get Apollo client instance directly
   const client = useApolloClient();
 
-  // Update section ref when it changes
+  // Reset hasFetched when section changes
   useEffect(() => {
-    sectionRef.current = section;
+    if (prevSectionRef.current !== section) {
+      console.log(`Section changed from ${prevSectionRef.current} to ${section}, will refetch`);
+      hasFetchedRef.current = false;
+      prevSectionRef.current = section;
+    }
   }, [section]);
 
   // Cleanup on unmount
@@ -36,10 +40,10 @@ export function useCategoryData(section: string) {
     };
   }, []);
 
-  // Fetch and process categories - only run once per section
+  // Fetch and process categories
   useEffect(() => {
     // Skip if already fetched this section to avoid StrictMode double fetching
-    if (hasFetchedRef.current && sectionRef.current === section) {
+    if (hasFetchedRef.current) {
       console.log(`Skipping duplicate fetch for section: ${section}`);
       return;
     }
@@ -58,7 +62,7 @@ export function useCategoryData(section: string) {
     // Skip fetching if we're already loading
     if (loading) return;
 
-    // Check if we have data in localStorage
+    // Check if we have data in localStorage and it's for the current section
     if (typeof window !== 'undefined') {
       try {
         const cachedData = localStorage.getItem(cacheKey);

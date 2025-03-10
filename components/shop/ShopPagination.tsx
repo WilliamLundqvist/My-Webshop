@@ -67,10 +67,7 @@ export default function ShopPagination({
     <div className="mt-8 mb-12">
       <Pagination>
         <PaginationContent className="flex justify-between items-center">
-          {/* Page info - mobile friendly */}
-          <div className="text-sm text-muted-foreground hidden sm:block">
-            Page {currentPage} of {totalPages > 0 ? totalPages : '?'}
-          </div>
+          
           
           <div className="flex items-center space-x-2">
             {/* Previous button */}
