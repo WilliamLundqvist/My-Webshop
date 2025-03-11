@@ -14,17 +14,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Use search params hook to get current URL parameters
   const searchParams = useSearchParams();
 
-  
   const [isHovered, setIsHovered] = useState(false);
 
   // Handle image which could be a string or an object with sourceUrl
-  const imageUrl =
+  const baseImage =
     typeof product.image === "string"
       ? product.image
       : product.image?.sourceUrl || "https://placehold.co/400x400";
 
 
-  const galleryImages = product.galleryImages?.nodes || [];
+  const galleryImage = product.galleryImages?.nodes[0]?.sourceUrl || baseImage;
 
   // Create product URL with preserved search parameters
   const createProductUrl = () => {
@@ -73,7 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <img
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                src={isHovered ? galleryImages[0].sourceUrl || imageUrl : imageUrl}
+                src={isHovered ? galleryImage : baseImage}  
                 alt={product.name}
                 width={400}
                 height={400}
