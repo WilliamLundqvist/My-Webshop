@@ -8,11 +8,9 @@ export default function ShopLayout({ children }) {
       <div className="flex flex-row w-full">
         {/* The FilterSidebar will always be in the DOM, but we'll control its visibility at the page level */}
         <FilterSidebar />
-        
+
         {/* Always render the children (the main content) */}
-        <div className="flex-1 pl-4">
-          {children}
-        </div>
+        <div className="flex-1 sm:pl-4">{children}</div>
       </div>
     </SidebarProvider>
   );

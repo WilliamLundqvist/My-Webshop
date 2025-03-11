@@ -59,40 +59,42 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div data-prefetch="true" className="product-card">
-      <Link href={createProductUrl()} prefetch={true}>
-        <Card className="gap-2 md:gap-4 h-full rounded-none">
-          <div className="aspect-square overflow-hidden">
-            <img
-              src={imageUrl}
-              alt={product.name}
-              width={400}
-              height={400}
-              className="h-full w-full object-cover object-top transition-transform duration-300 hover:scale-105"
-            />
-          </div>
-          <CardContent>
-            <h2 className="line-clamp-2 font-medium text-md">{product.name}</h2>
-            {product.rating !== undefined && product.reviews !== undefined && (
-              <div className="mt-2 flex items-center text-sm">
-                <span className="text-yellow-500">★★★★★</span>
-                <span className="ml-1 text-muted-foreground">
-                  {product.rating} ({product.reviews})
-                </span>
-              </div>
-            )}
-            <div
-              className="font-bold"
-              dangerouslySetInnerHTML={{ __html: product.price }}
-            ></div>
-          </CardContent>
-          <CardFooter className="mt-auto">
-            {/* <Button size="default" variant="default" className="w-full">
-              Add to Cart
-            </Button> */}
-          </CardFooter>
-        </Card>
-      </Link>
+    <div className="flex flex-col h-full">
+      <div className="relative flex-grow">
+        <Link href={createProductUrl()} prefetch={true}>
+          <Card className="gap-2 md:gap-4 h-full rounded-none">
+            <div className="aspect-square overflow-hidden">
+              <img
+                src={imageUrl}
+                alt={product.name}
+                width={400}
+                height={400}
+                className="h-full w-full object-cover object-top transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+            <div className="flex flex-col flex-grow">
+              <CardContent>
+                <h2 className="line-clamp-2 font-medium text-md">
+                  {product.name}
+                </h2>
+                {product.rating !== undefined &&
+                  product.reviews !== undefined && (
+                    <div className="mt-2 flex items-center text-sm">
+                      <span className="text-yellow-500">★★★★★</span>
+                      <span className="ml-1 text-muted-foreground">
+                        {product.rating} ({product.reviews})
+                      </span>
+                    </div>
+                  )}
+                <div
+                  className="font-bold"
+                  dangerouslySetInnerHTML={{ __html: product.price }}
+                ></div>
+              </CardContent>
+            </div>
+          </Card>
+        </Link>
+      </div>
     </div>
   );
 };

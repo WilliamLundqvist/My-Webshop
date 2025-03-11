@@ -5,5 +5,5 @@ import { redirect } from 'next/navigation';
 
 export async function logout() {
     await onLogout();
-    redirect('/');
+    redirect('/login');
 } 

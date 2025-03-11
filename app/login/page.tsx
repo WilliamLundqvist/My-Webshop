@@ -1,64 +1,34 @@
-'use client';
+"use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { loginAction } from './action';
-import { Button } from '@/components/ui/button';
-
-function SubmitButton() {
-  const status = useFormStatus();
-  return (
-    <Button type="submit" disabled={status.pending}>
-      {status.pending ? 'Loading...' : 'Login'}
-    </Button>
-  );
-}
+import { loginAction } from "./action";
+import { useFormState } from "react-dom";
 
 export default function Page() {
-  const [state, formAction] = useFormState(loginAction, {});
+  const [state, formAction, isPending] = useFormState(loginAction, {});
 
   return (
-    <div className="container mx-auto py-xl px-md">
-      <div className="max-w-md mx-auto">
-        <div className="bg-surface p-lg rounded-lg">
-          <h2 className="text-2xl font-bold mb-lg">Login</h2>
+    <>
+      <h2>Login</h2>
 
-          <form action={formAction} className="space-y-md">
-            <div>
-              <label htmlFor="usernameEmail" className="block text-sm font-medium mb-sm">
-                Username or Email
-              </label>
-              <input 
-                type="text" 
-                name="usernameEmail" 
-                id="usernameEmail"
-                className="w-full p-md border border-border rounded bg-background"
-              />
-            </div>
+      <form action={formAction}>
+        <fieldset>
+          <label htmlFor="usernameEmail">Username or Email</label>
+          <input type="name" name="usernameEmail" />
+        </fieldset>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-sm">
-                Password
-              </label>
-              <input 
-                type="password" 
-                name="password" 
-                id="password"
-                className="w-full p-md border border-border rounded bg-background"
-              />
-            </div>
+        <fieldset>
+          <label htmlFor="password">Password</label>
+          <input type="password" name="password" />
+        </fieldset>
 
-            <div className="pt-sm">
-              <SubmitButton />
-            </div>
+        <button disabled={isPending}>
+          {isPending ? "Loading..." : "Login"}
+        </button>
 
-            {state.error && (
-              <div className="p-md rounded bg-error/10 text-error border border-error/30 text-sm mt-md">
-                <div dangerouslySetInnerHTML={{ __html: state.error }}></div>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
-    </div>
+        {state.error && (
+          <p dangerouslySetInnerHTML={{ __html: state.error }}></p>
+        )}
+      </form>
+    </>
   );
 }

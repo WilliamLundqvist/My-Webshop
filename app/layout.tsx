@@ -5,6 +5,13 @@ import { GET_HEADER_LINKS, GET_FOOTER_LINKS } from "@/lib/graphql/queries";
 import "./globals.css";
 import Navigation from "../components/shop/Navigation";
 import Footer from "../components/shop/Footer";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+});
 
 export default async function RootLayout({ children }) {
   const client = await getClient();
@@ -21,9 +28,9 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-      <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head>
-      <body>
+      <body className={poppins.className}>
         <FaustProvider>
           <Navigation
             generalSettings={headerData.data.generalSettings}
