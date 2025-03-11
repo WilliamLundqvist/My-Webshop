@@ -1,34 +1,15 @@
 "use client";
 
-import { loginAction } from "./action";
-import { useFormState } from "react-dom";
+import { LoginForm } from "@/components/login-form";
+
 
 export default function Page() {
-  const [state, formAction, isPending] = useFormState(loginAction, {});
 
   return (
-    <>
-      <h2>Login</h2>
-
-      <form action={formAction}>
-        <fieldset>
-          <label htmlFor="usernameEmail">Username or Email</label>
-          <input type="name" name="usernameEmail" />
-        </fieldset>
-
-        <fieldset>
-          <label htmlFor="password">Password</label>
-          <input type="password" name="password" />
-        </fieldset>
-
-        <button disabled={isPending}>
-          {isPending ? "Loading..." : "Login"}
-        </button>
-
-        {state.error && (
-          <p dangerouslySetInnerHTML={{ __html: state.error }}></p>
-        )}
-      </form>
-    </>
+    <div className="flex min-h-[calc(100vh-100px)] w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <LoginForm />
+      </div>
+    </div>
   );
 }

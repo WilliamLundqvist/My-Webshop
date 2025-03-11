@@ -176,6 +176,7 @@ export default async function ShopPage({ searchParams, params }) {
     return `/shop/section/${section}?${params.toString()}`;
   }
 
+
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
       <SidebarInset>
@@ -221,6 +222,7 @@ export default async function ShopPage({ searchParams, params }) {
           <div className="text-sm text-muted-foreground">
             {products.length} products
           </div>
+          
         </div>
 
         {products.length > 0 ? (

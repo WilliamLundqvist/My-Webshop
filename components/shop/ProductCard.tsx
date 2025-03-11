@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product } from "@/types/product";
@@ -14,11 +14,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Use search params hook to get current URL parameters
   const searchParams = useSearchParams();
 
+  
+  const [isHovered, setIsHovered] = useState(false);
+
   // Handle image which could be a string or an object with sourceUrl
   const imageUrl =
     typeof product.image === "string"
       ? product.image
       : product.image?.sourceUrl || "https://placehold.co/400x400";
+
+
+  const galleryImages = product.galleryImages?.nodes || [];
 
   // Create product URL with preserved search parameters
   const createProductUrl = () => {
@@ -65,11 +71,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <Card className="gap-2 md:gap-4 h-full rounded-none">
             <div className="aspect-square overflow-hidden">
               <img
-                src={imageUrl}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                src={isHovered ? galleryImages[0].sourceUrl || imageUrl : imageUrl}
                 alt={product.name}
                 width={400}
                 height={400}
-                className="h-full w-full object-cover object-top transition-transform duration-300 hover:scale-105"
+                className="h-full w-full object-cover object-top"
               />
             </div>
             <div className="flex flex-col flex-grow">

@@ -27,6 +27,11 @@ export const GET_PRODUCTS = gql`
         ... on SimpleProduct {
           price(format: FORMATTED)
           stockStatus
+          galleryImages {
+            nodes {
+              sourceUrl
+            }
+          }
         }
         image {
           sourceUrl
@@ -34,6 +39,11 @@ export const GET_PRODUCTS = gql`
         ... on VariableProduct {
           stockStatus
           price(format: FORMATTED)
+          galleryImages {
+            nodes {
+              sourceUrl
+            }
+          }
         }
       }
       pageInfo {
