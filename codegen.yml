@@ -1,0 +1,15 @@
+overwrite: true
+schema: "https://din-wordpress-site.com/graphql"  # URL till din GraphQL endpoint
+documents: "lib/graphql/**/*.ts"  # Var dina GraphQL queries/mutations finns
+generates:
+  lib/graphql/generated/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      skipTypename: false
+      avoidOptionals: true 

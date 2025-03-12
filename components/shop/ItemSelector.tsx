@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Product } from "@/types/product";
+import { Products } from "@/types/product";
 import { Button } from "@/components/ui/button";
 
 interface ItemSelectorProps {
-  product: Product["products"]["nodes"][number];
+  product: Products["products"]["nodes"][number];
   onColorSelect: (color: string) => void;
   onAddToCart: (color: string, size: string) => void;
   isLoading?: boolean;

@@ -1,5 +1,14 @@
-export interface Product {
+
+
+
+export interface Products {
     products: {
+        pageInfo?: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+        };
         nodes: {
             id: string;
             name: string;
@@ -72,4 +81,8 @@ export interface Category {
         }[];
     };
 }
+
+
+// Alternativ 1: Ersätt hela filen med importer
+
 

@@ -1,71 +1,8 @@
 import { getAuthClient } from '@faustwp/experimental-app-router';
 import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
-
+import { GET_CART, ADD_TO_CART } from '@/lib/graphql/mutations';
 // GraphQL queries and mutations
-const ADD_TO_CART = gql`
-  mutation AddToCart($input: AddToCartInput!) {
-    addToCart(input: $input) {
-      cart {
-        contents {
-          nodes {
-            key
-            product {
-              node {
-                id
-                name
-              }
-            }
-            quantity
-            total
-          }
-        }
-        subtotal
-        total
-        isEmpty
-      }
-    }
-  }
-`;
-
-const GET_CART = gql`
-  query GetCart {
-    cart {
-      contents {
-        nodes {
-          key
-          product {
-            node {
-              id
-              name
-              slug
-              image {
-                sourceUrl
-              }
-            }
-          }
-          variation {
-            node {
-              id
-              name
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          quantity
-          total
-        }
-      }
-      subtotal
-      total
-      isEmpty
-    }
-  }
-`;
 
 export async function GET() {
     try {

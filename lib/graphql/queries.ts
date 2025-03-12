@@ -1,8 +1,8 @@
 
-import { Product } from "@/types/product";
+import { Products } from "@/types/product";
 import { gql, TypedDocumentNode } from "@apollo/client";
 
-export const GET_PRODUCTS = gql`
+export const GET_PRODUCTS: TypedDocumentNode<Products> = gql`
   query GetProducts(
     $first: Int
     $after: String
@@ -71,7 +71,7 @@ export const GET_VIEWER = gql`
   }
 `;
 
-export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Product> = gql`
+export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Products> = gql`
  query GET_PRODUCT_BY_SLUG($slug: [String]) {
   products(where: {slugIn: $slug}) {
     nodes {

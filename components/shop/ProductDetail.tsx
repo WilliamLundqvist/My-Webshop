@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Product } from "@/types/product";
+import { Products } from "@/types/product";
 import ItemCarousel from "./ItemCarousel";
 import ItemSelector from "./ItemSelector";
 import { useCart } from "@/lib/context/CartContext";
 
 interface ProductDetailProps {
-  product: Product["products"]["nodes"][number];
+  product: Products["products"]["nodes"][number];
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {

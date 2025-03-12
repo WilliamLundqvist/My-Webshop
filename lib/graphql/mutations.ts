@@ -1,24 +1,66 @@
 import { gql } from "@apollo/client";
 
+
 export const ADD_TO_CART = gql`
-mutation ADD_TO_CART($input: AddToCartInput!) {
+  mutation AddToCart($input: AddToCartInput!) {
     addToCart(input: $input) {
-      cartItem {
-        key
-        product {
-          node {
-            id
-            name
+      cart {
+        contents {
+          nodes {
+            key
+            product {
+              node {
+                id
+                name
+              }
             }
-        }
-        variation {
-          node {
-            id
-            name
+            quantity
+            total
           }
         }
-        quantity
+        subtotal
+        total
+        isEmpty
       }
+    }
+  }
+`;
+
+export const GET_CART = gql`
+  query GetCart {
+    cart {
+      contents {
+        nodes {
+          key
+          product {
+            node {
+              id
+              name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
+          variation {
+            node {
+              id
+              name
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
+            }
+          }
+          quantity
+          total
+        }
+      }
+      subtotal
+      total
+      isEmpty
     }
   }
 `;
