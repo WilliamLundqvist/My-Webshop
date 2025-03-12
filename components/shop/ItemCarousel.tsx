@@ -8,12 +8,16 @@ import {
 } from "../ui/carousel";
 import { Product } from "@/types/product";
 
-const ItemCarousel = ({
+interface ItemCarouselProps {
+  galleryImages: { sourceUrl: string }[];
+  product: Product["products"]["nodes"][number];
+  selectedColor?: string;
+}
+
+const ItemCarousel: React.FC<ItemCarouselProps> = ({
   galleryImages,
   product,
-}: {
-  galleryImages: { sourceUrl: string }[];
-  product: Product;
+  selectedColor,
 }) => {
   return (
     <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">

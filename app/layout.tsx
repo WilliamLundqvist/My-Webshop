@@ -1,4 +1,3 @@
-import "@/faust.config.js";
 import { FaustProvider } from "@faustwp/experimental-app-router/ssr";
 import { getClient } from "@faustwp/experimental-app-router";
 import { GET_HEADER_LINKS, GET_FOOTER_LINKS } from "@/lib/graphql/queries";
@@ -6,6 +5,8 @@ import "./globals.css";
 import Navigation from "../components/shop/Navigation";
 import Footer from "../components/shop/Footer";
 import { Poppins } from "next/font/google";
+import { Providers } from "./providers";
+import { CartProvider } from "@/lib/context/CartContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,21 +27,25 @@ export default async function RootLayout({ children }) {
   ]);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head>
-      <body className={poppins.className}>
+      <body className={`${poppins.className} min-h-screen bg-background text-foreground`}>
         <FaustProvider>
-          <Navigation
-            generalSettings={headerData.data.generalSettings}
-            primaryMenuItems={headerData.data.primaryMenuItems}
-          />
-          <main>{children}</main>
-          <Footer
-            menuItems={footerData.data.footerMenuItems.nodes || []}
-            siteName={headerData.data.generalSettings.title}
-          />
+          <CartProvider>
+              <Providers>
+                <Navigation
+                  generalSettings={headerData.data.generalSettings}
+                  primaryMenuItems={headerData.data.primaryMenuItems}
+                />
+                <main>{children}</main>
+                <Footer
+                  menuItems={footerData.data.footerMenuItems.nodes || []}
+                  siteName={headerData.data.generalSettings.title}
+                />
+              </Providers>
+          </CartProvider>
         </FaustProvider>
       </body>
     </html>

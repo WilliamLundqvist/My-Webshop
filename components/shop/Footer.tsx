@@ -11,7 +11,7 @@ interface FooterProps {
 
 export default function Footer({ siteName, menuItems }: FooterProps) {
   return (
-    <footer className="border-t bg-muted/40">
+    <footer className="border-t bg-muted/40 mt-auto">
       <div className="container py-8 md:py-12">
         <div className="grid gap-8 grid-cols-2 lg:grid-cols-4">
           <div>

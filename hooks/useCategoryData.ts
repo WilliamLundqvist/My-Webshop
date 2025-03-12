@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useApolloClient } from '@apollo/client';
 import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from '@/lib/graphql/queries';
 import { processCategories } from '@/lib/utils';
@@ -16,19 +16,12 @@ export function useCategoryData(section: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
-  // Debugging only - can be removed in production
-  const rerenders = useRef(0);
-  rerenders.current++;
-  console.log(`Rerenders: ${rerenders.current}`);
-
   // Get Apollo client instance directly
   const client = useApolloClient();
 
   // Reset hasFetched when section changes
   useEffect(() => {
     if (prevSectionRef.current !== section) {
-      console.log(`Section changed from ${prevSectionRef.current} to ${section}, will refetch`);
       hasFetchedRef.current = false;
       prevSectionRef.current = section;
     }
@@ -36,22 +29,19 @@ export function useCategoryData(section: string) {
 
   // Cleanup on unmount
   useEffect(() => {
-    console.log('Component mounted');
+    isMountedRef.current = true;
     return () => {
-      console.log('Component unmounted');
       isMountedRef.current = false;
     };
   }, []);
 
-  // Fetch and process categories
-  useEffect(() => {
+  // Memoize the fetch function to prevent recreating it on each render
+  const fetchCategories = useCallback(async () => {
     // Skip if already fetched this section to avoid StrictMode double fetching
     if (hasFetchedRef.current) {
-      console.log(`Skipping duplicate fetch for section: ${section}`);
       return;
     }
 
-    console.log(`Effect running for section: ${section}`);
     // Create a cache key for this section
     const cacheKey = `category_data_${section || 'default'}`;
 
@@ -71,7 +61,6 @@ export function useCategoryData(section: string) {
         const cachedData = localStorage.getItem(cacheKey);
 
         if (cachedData) {
-          console.log(`Using cached data for section: ${section}`);
           setCategoryData(JSON.parse(cachedData));
           setLoading(false);
           hasFetchedRef.current = true;
@@ -82,45 +71,47 @@ export function useCategoryData(section: string) {
       }
     }
 
-    console.log(`Fetching data for section: ${section}`);
-
     // Start loading
     setLoading(true);
     setError(null);
     hasFetchedRef.current = true;
 
-    // Manual query execution
-    client.query({
-      query: GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
-      variables: { section },
-      fetchPolicy: "network-only",
-    })
-      .then((result) => {
-
-        // Check if component is still mounted
-
-
-        setCategoryData(result.data);
-        setLoading(false);
-
-        // Store in localStorage for future visits
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(result.data));
-          } catch (err) {
-            console.error("Error saving to localStorage:", err);
-          }
-        }
-      })
-      .catch((err) => {
-        // Check if component is still mounted
-        if (!isMountedRef.current) return;
-
-        console.error("Error fetching categories:", err);
-        setError(err);
-        setLoading(false);
+    try {
+      // Manual query execution
+      const result = await client.query({
+        query: GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION,
+        variables: { section },
+        fetchPolicy: "network-only",
       });
+
+      // Check if component is still mounted
+      if (!isMountedRef.current) return;
+
+      setCategoryData(result.data);
+      setLoading(false);
+
+      // Store in localStorage for future visits
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(result.data));
+        } catch (err) {
+          console.error("Error saving to localStorage:", err);
+        }
+      }
+    } catch (err) {
+      // Check if component is still mounted
+      if (!isMountedRef.current) return;
+
+      console.error("Error fetching categories:", err);
+      setError(err);
+      setLoading(false);
+    }
   }, [section, client, loading]);
+
+  // Fetch and process categories
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   // Process the categories - memoize to prevent recalculation on every render
   const processedCategories = useMemo(() => {

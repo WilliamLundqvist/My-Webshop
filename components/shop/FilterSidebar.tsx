@@ -40,6 +40,7 @@ const priceRanges = [
 const MIN_PRICE = 0;
 const MAX_PRICE = 500;
 
+// Memoize sort options to prevent recreating on each render
 const sortOptions = [
   { value: "DATE", order: "DESC", label: "Newest" },
   { value: "PRICE", order: "ASC", label: "Price: Low to High" },
@@ -81,6 +82,23 @@ function FilterSidebarComponent() {
     [searchParams]
   );
 
+  // Local state to track selected values - initialize only once
+  const [selectedSort, setSelectedSort] = useState(() => 
+    `${currentSort}-${currentOrder}`
+  );
+  const [selectedCategory, setSelectedCategory] = useState(() => currentCategory);
+  const [priceRange, setPriceRange] = useState(() => [
+    currentPriceMin,
+    currentPriceMax,
+  ]);
+  const [searchTerm, setSearchTerm] = useState(() => searchQuery || "");
+
+  // Memoize the navigation function to prevent recreating it on each render
+  const navigateWithParams = useCallback((params) => {
+    router.push(`${pathname}?${params.toString()}`);
+  }, [pathname, router]);
+
+  // Memoize the update filters function
   const updateFilters = useCallback(
     ({
       sort = currentSort,
@@ -128,7 +146,7 @@ function FilterSidebarComponent() {
       }
 
       // Navigate to the new URL
-      router.push(`${pathname}?${params.toString()}`);
+      navigateWithParams(params);
     },
     [
       currentSort,
@@ -137,26 +155,13 @@ function FilterSidebarComponent() {
       currentPriceMin,
       currentPriceMax,
       searchQuery,
-      pathname,
-      router,
       searchParams,
+      navigateWithParams,
     ]
   );
 
-  // Local state to track selected values
-  const [selectedSort, setSelectedSort] = useState(
-    `${currentSort}-${currentOrder}`
-  );
-  const [selectedCategory, setSelectedCategory] = useState(currentCategory);
-  const [priceRange, setPriceRange] = useState([
-    currentPriceMin,
-    currentPriceMax,
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState(searchQuery || "");
-
-  // Debounced search function
-  const debouncedSearch = useCallback(
+  // Create debounced function for search - create only once
+  const debouncedSearch = useMemo(() => 
     debounce((value) => {
       const params = new URLSearchParams(searchParams.toString());
 
@@ -166,10 +171,18 @@ function FilterSidebarComponent() {
         params.delete("search");
       }
 
-      router.push(`${pathname}?${params.toString()}`);
+      navigateWithParams(params);
     }, 500),
-    [searchParams, pathname, router]
+    [searchParams, navigateWithParams]
   );
+
+  // Cleanup debounced functions on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+      debouncedUpdatePrice.cancel();
+    };
+  }, [debouncedSearch]);
 
   // Handle search input change
   const handleSearchChange = useCallback(
@@ -184,8 +197,8 @@ function FilterSidebarComponent() {
   // Use our custom hook to get category data
   const { categories, loading, error } = useCategoryData(section);
 
-  // Create debounced function for updating price
-  const debouncedUpdatePrice = useCallback(
+  // Create debounced function for updating price - create only once
+  const debouncedUpdatePrice = useMemo(() => 
     debounce((minPrice, maxPrice) => {
       const params = new URLSearchParams(searchParams.toString());
 
@@ -201,9 +214,9 @@ function FilterSidebarComponent() {
         params.delete("max_price");
       }
 
-      router.push(`${pathname}?${params.toString()}`);
+      navigateWithParams(params);
     }, 800),
-    [searchParams, pathname, router]
+    [searchParams, navigateWithParams]
   );
 
   // Handle sort change
@@ -238,9 +251,7 @@ function FilterSidebarComponent() {
     [debouncedUpdatePrice]
   );
 
-  // Update filters function - memoize to prevent recreation on each render
-
-  // Clear all filters (updated to also clear search)
+  // Clear all filters
   const clearFilters = useCallback(() => {
     setSelectedSort(`DATE-DESC`);
     setSelectedCategory("");
@@ -248,8 +259,82 @@ function FilterSidebarComponent() {
     setSearchTerm("");
 
     const params = new URLSearchParams();
-    router.push(`${pathname}?${params.toString()}`);
-  }, [pathname, router]);
+    navigateWithParams(params);
+  }, [navigateWithParams]);
+
+  // Memoize the category list rendering to prevent recreating on each render
+  const categoryList = useMemo(() => {
+    if (loading) return <div>Loading categories...</div>;
+    if (error) return <div>Error loading categories</div>;
+    if (categories.length === 0) return <div>No categories found</div>;
+
+    return categories.map((category) => (
+      <div key={category.id} className="space-y-1">
+        <div
+          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
+            selectedCategory === category.slug
+              ? "bg-slate-100 font-medium"
+              : ""
+          }`}
+          onClick={() => handleCategoryChange(category.slug)}
+        >
+          <div className="flex items-center justify-between">
+            <span>{category.name}</span>
+            {category.children.nodes.length > 0 && (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
+        </div>
+
+        {/* Render subcategories */}
+        {category.children.nodes.length > 0 && (
+          <div className="ml-4 pl-2 border-l border-slate-200 space-y-1">
+            {category.children.nodes.map((grandchild) => (
+              <div
+                key={grandchild.id}
+                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
+                  selectedCategory === grandchild.slug
+                    ? "bg-slate-100 font-medium"
+                    : ""
+                }`}
+                onClick={() =>
+                  handleCategoryChange(grandchild.slug)
+                }
+              >
+                {grandchild.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    ));
+  }, [categories, loading, error, selectedCategory, handleCategoryChange]);
+
+  // Memoize the sort options rendering
+  const sortOptionsList = useMemo(() => {
+    return sortOptions.map((option) => {
+      const optionValue = `${option.value}-${option.order}`;
+      return (
+        <div
+          key={optionValue}
+          className="flex items-center space-x-2 cursor-pointer"
+        >
+          <RadioGroupItem
+            className="w-6 h-6"
+            value={optionValue}
+            id={`sort-${optionValue}`}
+            checked={selectedSort === optionValue}
+          />
+          <Label
+            htmlFor={`sort-${optionValue}`}
+            className="cursor-pointer w-full"
+          >
+            {option.label}
+          </Label>
+        </div>
+      );
+    });
+  }, [selectedSort]);
 
   return (
     <Sidebar className="border-r">
@@ -283,7 +368,7 @@ function FilterSidebarComponent() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <Accordion type="multiple">
+          <Accordion type="multiple" defaultValue={["sort", "categories", "price"]}>
             <AccordionItem value="sort">
               <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
                 Sort By
@@ -294,28 +379,7 @@ function FilterSidebarComponent() {
                   onValueChange={handleSortChange}
                   className="space-y-1"
                 >
-                  {sortOptions.map((option) => {
-                    const optionValue = `${option.value}-${option.order}`;
-                    return (
-                      <div
-                        key={optionValue}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <RadioGroupItem
-                          className="w-6 h-6"
-                          value={optionValue}
-                          id={`sort-${optionValue}`}
-                          checked={selectedSort === optionValue}
-                        />
-                        <Label
-                          htmlFor={`sort-${optionValue}`}
-                          className="cursor-pointer w-full"
-                        >
-                          {option.label}
-                        </Label>
-                      </div>
-                    );
-                  })}
+                  {sortOptionsList}
                 </RadioGroup>
               </AccordionContent>
             </AccordionItem>
@@ -325,54 +389,7 @@ function FilterSidebarComponent() {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2">
-                  {loading ? (
-                    <div>Loading categories...</div>
-                  ) : error ? (
-                    <div>Error loading categories</div>
-                  ) : categories.length === 0 ? (
-                    <div>No categories found</div>
-                  ) : (
-                    categories.map((category) => (
-                      <div key={category.id} className="space-y-1">
-                        <div
-                          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-                            selectedCategory === category.slug
-                              ? "bg-slate-100 font-medium"
-                              : ""
-                          }`}
-                          onClick={() => handleCategoryChange(category.slug)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span>{category.name}</span>
-                            {category.children.nodes.length > 0 && (
-                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Render subcategories */}
-                        {category.children.nodes.length > 0 && (
-                          <div className="ml-4 pl-2 border-l border-slate-200 space-y-1">
-                            {category.children.nodes.map((grandchild) => (
-                              <div
-                                key={grandchild.id}
-                                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-                                  selectedCategory === grandchild.slug
-                                    ? "bg-slate-100 font-medium"
-                                    : ""
-                                }`}
-                                onClick={() =>
-                                  handleCategoryChange(grandchild.slug)
-                                }
-                              >
-                                {grandchild.name}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
+                  {categoryList}
                 </div>
               </AccordionContent>
             </AccordionItem>

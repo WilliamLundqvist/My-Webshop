@@ -3,13 +3,17 @@ import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 
 interface ItemSelectorProps {
-  product: Product;
-  onAddToCart?: (color: string, size: string) => void;
+  product: Product["products"]["nodes"][number];
+  onColorSelect: (color: string) => void;
+  onAddToCart: (color: string, size: string) => void;
+  isLoading?: boolean;
 }
 
 const ItemSelector: React.FC<ItemSelectorProps> = ({
   product,
+  onColorSelect,
   onAddToCart,
+  isLoading = false
 }) => {
   // Extract variations from product
   const variations = product.variations?.nodes || [];
@@ -87,17 +91,12 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
   // Event handlers
   const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
-  }, []);
+    onColorSelect(color);
+  }, [onColorSelect]);
 
   const handleSizeSelect = useCallback((size: string) => {
     setSelectedSize(size);
   }, []);
-
-  const handleAddToCart = useCallback(() => {
-    if (selectedColor && selectedSize && onAddToCart) {
-      onAddToCart(selectedColor, selectedSize);
-    }
-  }, [selectedColor, selectedSize, onAddToCart]);
 
   return (
     <div className="space-y-6">
@@ -161,13 +160,13 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
       )}
 
       {/* Add to Cart Button */}
-      <Button
-        className="w-full py-6 text-lg font-medium bg-black text-white hover:bg-black/90 rounded-full"
-        disabled={!selectedSize || !selectedColor}
-        onClick={handleAddToCart}
+      <button
+        onClick={() => onAddToCart(selectedColor, selectedSize)}
+        disabled={isLoading || !selectedColor || !selectedSize}
+        className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
       >
-        ADD TO BAG
-      </Button>
+        {isLoading ? 'Lägger till...' : 'Lägg till i varukorg'}
+      </button>
     </div>
   );
 };

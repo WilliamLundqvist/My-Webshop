@@ -9,6 +9,8 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import CartDropdown from "./CartDropdown";
 
 interface NavigationProps {
   generalSettings: {
@@ -114,6 +116,7 @@ export default function Navigation({
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -205,13 +208,9 @@ export default function Navigation({
               <span className="sr-only">Account</span>
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-              3
-            </Badge>
-            <span className="sr-only">Cart</span>
-          </Button>
+   
+            <CartDropdown />
+      
         </div>
       </div>
     </header>

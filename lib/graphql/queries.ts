@@ -1,5 +1,6 @@
 
-import { gql } from "@apollo/client";
+import { Product } from "@/types/product";
+import { gql, TypedDocumentNode } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
   query GetProducts(
@@ -70,7 +71,7 @@ export const GET_VIEWER = gql`
   }
 `;
 
-export const GET_PRODUCT_BY_SLUG = gql`
+export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Product> = gql`
  query GET_PRODUCT_BY_SLUG($slug: [String]) {
   products(where: {slugIn: $slug}) {
     nodes {
@@ -87,6 +88,7 @@ export const GET_PRODUCT_BY_SLUG = gql`
       }
       ... on VariableProduct {
         id
+        databaseId
         name
         description(format: RAW)
         slug

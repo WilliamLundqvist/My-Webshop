@@ -44,9 +44,6 @@ export const ProductSkeleton = () => (
 export default function ShopLoading() {
   return (
     <SidebarProvider defaultOpen={true}>
-      <FilterSidebar
-
-      />
       <SidebarInset>
         <div className="mx-auto w-full px-2 md:px-4">
           <Breadcrumb className="py-4">

@@ -7,7 +7,7 @@ import { Product } from "@/types/product";
 import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {
-  product: Product;
+  product: Product["products"]["nodes"][number];
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
@@ -67,9 +67,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="flex flex-col h-full">
       <div className="relative flex-grow">
         <Link href={createProductUrl()} prefetch={true}>
-          <Card className="gap-2 md:gap-4 h-full rounded-none">
+          <Card className="gap-2 md:gap-4 h-full shadow-none rounded-none">
             <div className="aspect-square overflow-hidden">
               <img
+              
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 src={isHovered ? galleryImage : baseImage}  
@@ -94,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </div>
                   )}
                 <div
-                  className="font-bold"
+                  className="font-bold text-sm"
                   dangerouslySetInnerHTML={{ __html: product.price }}
                 ></div>
               </CardContent>

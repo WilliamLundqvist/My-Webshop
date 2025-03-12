@@ -13,6 +13,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
 import { redirect } from "next/navigation";
 
+// This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
   const client = await getClient();
   const section = params.section;
@@ -68,9 +69,7 @@ export default async function ShopPage({ searchParams, params }) {
   }
   // For pages beyond page 1 without a cached cursor, we need to fetch sequentially
   else if (currentPage > 1) {
-    console.log(
-      `No cached cursor for page ${currentPage}, fetching pages sequentially`
-    );
+ 
 
     // Create cache entry for this filter combination if it doesn't exist
     if (!global.cursorCache[cacheKey]) {
@@ -132,9 +131,7 @@ export default async function ShopPage({ searchParams, params }) {
       global.cursorCache[cacheKey] = {};
     }
     global.cursorCache[cacheKey][currentPage] = pageInfo.endCursor;
-    console.log(
-      `Cached cursor for current page ${currentPage}: ${pageInfo.endCursor}`
-    );
+
   }
 
   // Calculate total pages - fallback if the count query fails
@@ -159,9 +156,7 @@ export default async function ShopPage({ searchParams, params }) {
     if (countResponse.data.products.found) {
       const totalProducts = countResponse.data.products.found;
       totalPages = Math.ceil(totalProducts / first);
-      console.log(
-        `Total products: ${totalProducts}, Total pages: ${totalPages}`
-      );
+  
     }
   } catch (error) {
     console.error("Error calculating total pages:", error);
@@ -175,7 +170,6 @@ export default async function ShopPage({ searchParams, params }) {
     params.set("page", pageNum.toString());
     return `/shop/section/${section}?${params.toString()}`;
   }
-
 
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
@@ -222,7 +216,6 @@ export default async function ShopPage({ searchParams, params }) {
           <div className="text-sm text-muted-foreground">
             {products.length} products
           </div>
-          
         </div>
 
         {products.length > 0 ? (

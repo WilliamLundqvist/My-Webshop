@@ -46,7 +46,7 @@ export default async function ProductPage({ params, searchParams }) {
   });
 
   // Fix: Get the first product from the nodes array
-  const product: Product = data?.products?.nodes?.[0];
+  const product: Product["products"]["nodes"][number] = data?.products?.nodes?.[0];
 
   if (!product) {
     return (
@@ -66,8 +66,6 @@ export default async function ProductPage({ params, searchParams }) {
   return (
     <div className="container mx-auto px-md">
       <BackButton />
-      
-      {/* Rest of your component */}
       <ProductDetail product={product} />
     </div>
   );
