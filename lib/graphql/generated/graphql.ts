@@ -25169,10 +25169,21 @@ export type AddToCartMutationVariables = Exact<{
 
 export type AddToCartMutation = { __typename?: 'RootMutation', addToCart: { __typename?: 'AddToCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
 
-export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
+export type RemoveItemsFromCartMutationVariables = Exact<{
+  keys: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>> | InputMaybe<Scalars['ID']['input']>>;
+  all: InputMaybe<Scalars['Boolean']['input']>;
+}>;
 
 
-export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
+export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart: { __typename?: 'RemoveItemsFromCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
+
+export type UpdateCartItemQuantitiesMutationVariables = Exact<{
+  key: Scalars['ID']['input'];
+  quantity: Scalars['Int']['input'];
+}>;
+
+
+export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
 
 export type GetProductsQueryVariables = Exact<{
   first: InputMaybe<Scalars['Int']['input']>;
@@ -25190,12 +25201,12 @@ export type GetViewerQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetViewerQuery = { __typename?: 'RootQuery', viewer: { __typename?: 'User', name: string | null, email: string | null, posts: { __typename?: 'UserToPostConnection', nodes: Array<{ __typename?: 'Post', id: string, title: string | null }> } | null } | null };
 
-export type Get_Product_By_SlugQueryVariables = Exact<{
+export type GetProductBySlugQueryVariables = Exact<{
   slug: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
 }>;
 
 
-export type Get_Product_By_SlugQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct' } | { __typename?: 'GroupProduct' } | { __typename?: 'SimpleProduct', id: string, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation' } | { __typename?: 'VariableProduct', id: string, databaseId: number, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null }> } | null, variations: { __typename?: 'ProductWithVariationsToProductVariationConnection', nodes: Array<{ __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, price: string | null, stockStatus: StockStatusEnum | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }> } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, featuredImage: { __typename?: 'NodeWithFeaturedImageToMediaItemConnectionEdge', node: { __typename?: 'MediaItem', sourceUrl: string | null } } | null }> } | null };
+export type GetProductBySlugQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct' } | { __typename?: 'GroupProduct' } | { __typename?: 'SimpleProduct', id: string, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation' } | { __typename?: 'VariableProduct', id: string, databaseId: number, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null }> } | null, variations: { __typename?: 'ProductWithVariationsToProductVariationConnection', nodes: Array<{ __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, price: string | null, stockStatus: StockStatusEnum | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }> } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, featuredImage: { __typename?: 'NodeWithFeaturedImageToMediaItemConnectionEdge', node: { __typename?: 'MediaItem', sourceUrl: string | null } } | null }> } | null };
 
 export type GetFooterLayoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -25221,6 +25232,11 @@ export type GetProductCountQueryVariables = Exact<{
 
 
 export type GetProductCountQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', found: number | null } | null };
+
+export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
 
 export const ProductContentFullFragmentDoc = gql`
     fragment ProductContentFull on Product {
@@ -25561,76 +25577,108 @@ export function useAddToCartMutation(baseOptions?: Apollo.MutationHookOptions<Ad
 export type AddToCartMutationHookResult = ReturnType<typeof useAddToCartMutation>;
 export type AddToCartMutationResult = Apollo.MutationResult<AddToCartMutation>;
 export type AddToCartMutationOptions = Apollo.BaseMutationOptions<AddToCartMutation, AddToCartMutationVariables>;
-export const GetCartDocument = gql`
-    query GetCart {
-  cart {
-    contents {
-      nodes {
-        key
-        product {
-          node {
-            id
-            name
-            slug
-            image {
-              sourceUrl
+export const RemoveItemsFromCartDocument = gql`
+    mutation RemoveItemsFromCart($keys: [ID], $all: Boolean) {
+  removeItemsFromCart(input: {keys: $keys, all: $all}) {
+    cart {
+      contents {
+        nodes {
+          key
+          product {
+            node {
+              id
+              name
             }
           }
+          quantity
+          total
         }
-        variation {
-          node {
-            id
-            name
-            attributes {
-              nodes {
-                name
-                value
-              }
-            }
-          }
-        }
-        quantity
-        total
       }
+      subtotal
+      total
+      isEmpty
     }
-    subtotal
-    total
-    isEmpty
   }
 }
     `;
+export type RemoveItemsFromCartMutationFn = Apollo.MutationFunction<RemoveItemsFromCartMutation, RemoveItemsFromCartMutationVariables>;
 
 /**
- * __useGetCartQuery__
+ * __useRemoveItemsFromCartMutation__
  *
- * To run a query within a React component, call `useGetCartQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCartQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
+ * To run a mutation, you first call `useRemoveItemsFromCartMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveItemsFromCartMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const { data, loading, error } = useGetCartQuery({
+ * const [removeItemsFromCartMutation, { data, loading, error }] = useRemoveItemsFromCartMutation({
  *   variables: {
+ *      keys: // value for 'keys'
+ *      all: // value for 'all'
  *   },
  * });
  */
-export function useGetCartQuery(baseOptions?: Apollo.QueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+export function useRemoveItemsFromCartMutation(baseOptions?: Apollo.MutationHookOptions<RemoveItemsFromCartMutation, RemoveItemsFromCartMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+        return Apollo.useMutation<RemoveItemsFromCartMutation, RemoveItemsFromCartMutationVariables>(RemoveItemsFromCartDocument, options);
       }
-export function useGetCartLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+export type RemoveItemsFromCartMutationHookResult = ReturnType<typeof useRemoveItemsFromCartMutation>;
+export type RemoveItemsFromCartMutationResult = Apollo.MutationResult<RemoveItemsFromCartMutation>;
+export type RemoveItemsFromCartMutationOptions = Apollo.BaseMutationOptions<RemoveItemsFromCartMutation, RemoveItemsFromCartMutationVariables>;
+export const UpdateCartItemQuantitiesDocument = gql`
+    mutation UpdateCartItemQuantities($key: ID!, $quantity: Int!) {
+  updateItemQuantities(input: {items: {key: $key, quantity: $quantity}}) {
+    cart {
+      contents {
+        nodes {
+          key
+          product {
+            node {
+              id
+              name
+            }
+          }
+          quantity
+          total
         }
-export function useGetCartSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
-        }
-export type GetCartQueryHookResult = ReturnType<typeof useGetCartQuery>;
-export type GetCartLazyQueryHookResult = ReturnType<typeof useGetCartLazyQuery>;
-export type GetCartSuspenseQueryHookResult = ReturnType<typeof useGetCartSuspenseQuery>;
-export type GetCartQueryResult = Apollo.QueryResult<GetCartQuery, GetCartQueryVariables>;
+      }
+      subtotal
+      total
+      isEmpty
+    }
+  }
+}
+    `;
+export type UpdateCartItemQuantitiesMutationFn = Apollo.MutationFunction<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>;
+
+/**
+ * __useUpdateCartItemQuantitiesMutation__
+ *
+ * To run a mutation, you first call `useUpdateCartItemQuantitiesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCartItemQuantitiesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCartItemQuantitiesMutation, { data, loading, error }] = useUpdateCartItemQuantitiesMutation({
+ *   variables: {
+ *      key: // value for 'key'
+ *      quantity: // value for 'quantity'
+ *   },
+ * });
+ */
+export function useUpdateCartItemQuantitiesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>(UpdateCartItemQuantitiesDocument, options);
+      }
+export type UpdateCartItemQuantitiesMutationHookResult = ReturnType<typeof useUpdateCartItemQuantitiesMutation>;
+export type UpdateCartItemQuantitiesMutationResult = Apollo.MutationResult<UpdateCartItemQuantitiesMutation>;
+export type UpdateCartItemQuantitiesMutationOptions = Apollo.BaseMutationOptions<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>;
 export const GetProductsDocument = gql`
     query GetProducts($first: Int, $after: String, $orderby: [ProductsOrderbyInput], $search: String, $category: String) {
   products(
@@ -25757,8 +25805,8 @@ export type GetViewerQueryHookResult = ReturnType<typeof useGetViewerQuery>;
 export type GetViewerLazyQueryHookResult = ReturnType<typeof useGetViewerLazyQuery>;
 export type GetViewerSuspenseQueryHookResult = ReturnType<typeof useGetViewerSuspenseQuery>;
 export type GetViewerQueryResult = Apollo.QueryResult<GetViewerQuery, GetViewerQueryVariables>;
-export const Get_Product_By_SlugDocument = gql`
-    query GET_PRODUCT_BY_SLUG($slug: [String]) {
+export const GetProductBySlugDocument = gql`
+    query getProductBySlug($slug: [String]) {
   products(where: {slugIn: $slug}) {
     nodes {
       ... on SimpleProduct {
@@ -25822,37 +25870,37 @@ export const Get_Product_By_SlugDocument = gql`
     `;
 
 /**
- * __useGet_Product_By_SlugQuery__
+ * __useGetProductBySlugQuery__
  *
- * To run a query within a React component, call `useGet_Product_By_SlugQuery` and pass it any options that fit your needs.
- * When your component renders, `useGet_Product_By_SlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetProductBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProductBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGet_Product_By_SlugQuery({
+ * const { data, loading, error } = useGetProductBySlugQuery({
  *   variables: {
  *      slug: // value for 'slug'
  *   },
  * });
  */
-export function useGet_Product_By_SlugQuery(baseOptions?: Apollo.QueryHookOptions<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>) {
+export function useGetProductBySlugQuery(baseOptions?: Apollo.QueryHookOptions<GetProductBySlugQuery, GetProductBySlugQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>(Get_Product_By_SlugDocument, options);
+        return Apollo.useQuery<GetProductBySlugQuery, GetProductBySlugQueryVariables>(GetProductBySlugDocument, options);
       }
-export function useGet_Product_By_SlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>) {
+export function useGetProductBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProductBySlugQuery, GetProductBySlugQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>(Get_Product_By_SlugDocument, options);
+          return Apollo.useLazyQuery<GetProductBySlugQuery, GetProductBySlugQueryVariables>(GetProductBySlugDocument, options);
         }
-export function useGet_Product_By_SlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>) {
+export function useGetProductBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProductBySlugQuery, GetProductBySlugQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>(Get_Product_By_SlugDocument, options);
+          return Apollo.useSuspenseQuery<GetProductBySlugQuery, GetProductBySlugQueryVariables>(GetProductBySlugDocument, options);
         }
-export type Get_Product_By_SlugQueryHookResult = ReturnType<typeof useGet_Product_By_SlugQuery>;
-export type Get_Product_By_SlugLazyQueryHookResult = ReturnType<typeof useGet_Product_By_SlugLazyQuery>;
-export type Get_Product_By_SlugSuspenseQueryHookResult = ReturnType<typeof useGet_Product_By_SlugSuspenseQuery>;
-export type Get_Product_By_SlugQueryResult = Apollo.QueryResult<Get_Product_By_SlugQuery, Get_Product_By_SlugQueryVariables>;
+export type GetProductBySlugQueryHookResult = ReturnType<typeof useGetProductBySlugQuery>;
+export type GetProductBySlugLazyQueryHookResult = ReturnType<typeof useGetProductBySlugLazyQuery>;
+export type GetProductBySlugSuspenseQueryHookResult = ReturnType<typeof useGetProductBySlugSuspenseQuery>;
+export type GetProductBySlugQueryResult = Apollo.QueryResult<GetProductBySlugQuery, GetProductBySlugQueryVariables>;
 export const GetFooterLayoutDocument = gql`
     query GetFooterLayout {
   footerMenuItems: menuItems(where: {location: FOOTER}) {
@@ -26040,3 +26088,74 @@ export type GetProductCountQueryHookResult = ReturnType<typeof useGetProductCoun
 export type GetProductCountLazyQueryHookResult = ReturnType<typeof useGetProductCountLazyQuery>;
 export type GetProductCountSuspenseQueryHookResult = ReturnType<typeof useGetProductCountSuspenseQuery>;
 export type GetProductCountQueryResult = Apollo.QueryResult<GetProductCountQuery, GetProductCountQueryVariables>;
+export const GetCartDocument = gql`
+    query GetCart {
+  cart {
+    contents {
+      nodes {
+        key
+        product {
+          node {
+            id
+            name
+            slug
+            image {
+              sourceUrl
+            }
+          }
+        }
+        variation {
+          node {
+            id
+            name
+            attributes {
+              nodes {
+                name
+                value
+              }
+            }
+          }
+        }
+        quantity
+        total
+      }
+      itemCount
+    }
+    subtotal
+    total
+    isEmpty
+  }
+}
+    `;
+
+/**
+ * __useGetCartQuery__
+ *
+ * To run a query within a React component, call `useGetCartQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCartQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCartQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCartQuery(baseOptions?: Apollo.QueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+      }
+export function useGetCartLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+        }
+export function useGetCartSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+        }
+export type GetCartQueryHookResult = ReturnType<typeof useGetCartQuery>;
+export type GetCartLazyQueryHookResult = ReturnType<typeof useGetCartLazyQuery>;
+export type GetCartSuspenseQueryHookResult = ReturnType<typeof useGetCartSuspenseQuery>;
+export type GetCartQueryResult = Apollo.QueryResult<GetCartQuery, GetCartQueryVariables>;

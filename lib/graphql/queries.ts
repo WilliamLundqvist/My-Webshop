@@ -1,8 +1,8 @@
 
-import { Products } from "@/types/product";
 import { gql, TypedDocumentNode } from "@apollo/client";
+import { GetCartQuery, GetFooterLayoutQuery, GetHeaderLayoutQuery, GetProductBySlugQuery, GetProductsQuery, GetViewerQuery } from "./generated/graphql";
 
-export const GET_PRODUCTS: TypedDocumentNode<Products> = gql`
+export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery> = gql`
   query GetProducts(
     $first: Int
     $after: String
@@ -56,8 +56,9 @@ export const GET_PRODUCTS: TypedDocumentNode<Products> = gql`
     }
   }
 `;
-export const GET_VIEWER = gql`
-  query GetViewer {
+
+    export const GET_VIEWER: TypedDocumentNode<GetViewerQuery> = gql`
+      query GetViewer {
     viewer {
       name
           email
@@ -71,8 +72,8 @@ export const GET_VIEWER = gql`
   }
 `;
 
-export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Products> = gql`
- query GET_PRODUCT_BY_SLUG($slug: [String]) {
+export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<GetProductBySlugQuery> = gql`
+ query getProductBySlug($slug: [String]) {
   products(where: {slugIn: $slug}) {
     nodes {
       ... on SimpleProduct {
@@ -135,7 +136,7 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Products> = gql`
 }
 `;
 
-export const GET_FOOTER_LINKS = gql`
+export const GET_FOOTER_LINKS: TypedDocumentNode<GetFooterLayoutQuery> = gql`
   query GetFooterLayout {
     footerMenuItems: menuItems(where: { location: FOOTER }) {
       nodes {
@@ -147,7 +148,7 @@ export const GET_FOOTER_LINKS = gql`
   }
 `;
 
-export const GET_HEADER_LINKS = gql`
+export const GET_HEADER_LINKS: TypedDocumentNode<GetHeaderLayoutQuery> = gql`
   query GetHeaderLayout {
     generalSettings {
       title
@@ -199,3 +200,44 @@ export const GET_PRODUCT_COUNT = gql`
     }
   }
 `;
+
+export const GET_CART: TypedDocumentNode<GetCartQuery> = gql`
+  query GetCart {
+    cart {
+      contents {
+        nodes {
+          key
+          product {
+            node {
+              id
+              name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
+          variation {
+            node {
+              id
+              name
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
+            }
+          }
+          quantity
+          total
+        }
+        itemCount
+      }
+      subtotal
+      total
+      isEmpty
+    }
+  }
+`;
+

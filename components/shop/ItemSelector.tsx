@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Products } from "@/types/product";
+import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
+import { hasVariations, getVariations } from "@/lib/utils/productUtils";
 
 interface ItemSelectorProps {
-  product: Products["products"]["nodes"][number];
+  product: Product;
   onColorSelect: (color: string) => void;
   onAddToCart: (color: string, size: string) => void;
   isLoading?: boolean;
@@ -15,66 +16,73 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
   onAddToCart,
   isLoading = false
 }) => {
-  // Extract variations from product
-  const variations = product.variations?.nodes || [];
+  // Kontrollera om produkten har variationer och hämta dem säkert
+  const hasProductVariations = hasVariations(product);
+  const variations = hasProductVariations ? getVariations(product) : [];
 
-  // Extract available colors and sizes from product attributes
-  const colorAttribute = product.attributes?.nodes.find(
-    (attr) => attr.name.toLowerCase() === "color" || attr.name === "Color"
+  // Extrahera tillgängliga färger och storlekar från produktattribut
+  const attributes = product.__typename === "VariableProduct" ? product.attributes?.nodes || [] : [];
+
+  const colorAttribute = attributes.find(
+    (attr) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
   );
-  const sizeAttribute = product.attributes?.nodes.find(
-    (attr) => attr.name.toLowerCase() === "size" || attr.name === "Size"
+
+  const sizeAttribute = attributes.find(
+    (attr) => attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
   );
 
   const colors = colorAttribute?.options || [];
   const sizes = sizeAttribute?.options || [];
 
-  // State for selected color and size
+  // State för vald färg och storlek
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("");
 
-  // Get available sizes for a color
+  // Hämta tillgängliga storlekar för en färg
   const getAvailableSizesForColor = useCallback(
     (color: string) => {
-      if (!color) return [];
+      if (!color || !hasProductVariations) return [];
 
-      // Filter variations by the selected color
+      // Filtrera variationer efter vald färg
       const matchingVariations = variations.filter((variation) => {
         const variationAttrs = variation.attributes?.nodes || [];
         return variationAttrs.some(
-          (attr) => attr.name.toLowerCase() === "color" && attr.value === color
+          (attr) =>
+            (attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg") &&
+            attr.value === color
         );
       });
 
-      // Extract size values from matching variations
+      // Extrahera storleksvärden från matchande variationer
       const availableSizes = matchingVariations
         .map((variation) => {
-          const sizeAttr = variation.attributes.nodes.find(
-            (attr) => attr.name.toLowerCase() === "size"
+          const sizeAttr = variation.attributes?.nodes?.find(
+            (attr) => attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
           );
           return sizeAttr?.value || "";
         })
         .filter(Boolean);
 
-      return Array.from(new Set(availableSizes)); // Remove duplicates
+      return Array.from(new Set(availableSizes)); // Ta bort dubbletter
     },
-    [variations]
+    [variations, hasProductVariations]
   );
 
-  // Memoize available sizes for current color
+  // Memoize tillgängliga storlekar för aktuell färg
   const memoizedAvailableSizes = useMemo(
     () => getAvailableSizesForColor(selectedColor),
     [selectedColor, getAvailableSizesForColor]
   );
 
-  // Initialize selected color and size
+  // Initiera vald färg och storlek
   useEffect(() => {
     if (colors.length > 0 && !selectedColor) {
       setSelectedColor(colors[0]);
+      onColorSelect(colors[0]);
     }
-  }, [colors, selectedColor]);
+  }, [colors, selectedColor, onColorSelect]);
 
-  // Update size when color changes
+  // Uppdatera storlek när färg ändras
   useEffect(() => {
     if (selectedColor) {
       const availableSizes = getAvailableSizesForColor(selectedColor);
@@ -88,7 +96,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
     }
   }, [selectedColor, getAvailableSizesForColor, selectedSize]);
 
-  // Event handlers
+  // Händelsehanterare
   const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
     onColorSelect(color);
@@ -98,40 +106,48 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
     setSelectedSize(size);
   }, []);
 
+  // Logga för felsökning
+  console.log("Product:", product.__typename);
+  console.log("Has variations:", hasProductVariations);
+  console.log("Variations:", variations);
+  console.log("Colors:", colors);
+  console.log("Sizes:", sizes);
+  console.log("Selected color:", selectedColor);
+  console.log("Available sizes for color:", memoizedAvailableSizes);
+
   return (
     <div className="space-y-6">
-      {/* Color Selection */}
+      {/* Färgval */}
       {colors.length > 0 && (
         <div className="space-y-3">
-          <span className="font-medium">Select a color: {selectedColor}</span>
+          <span className="font-medium">Välj färg: {selectedColor}</span>
           <div className="flex space-x-2">
             {colors.map((color) => (
               <button
                 key={color}
                 onClick={() => handleColorSelect(color)}
-                className={`w-10 h-10 rounded-full border-2 ${
-                  selectedColor === color
-                    ? "border-black"
-                    : "border-transparent"
-                }`}
+                className={`w-10 h-10 rounded-full border-2 ${selectedColor === color
+                  ? "border-black"
+                  : "border-transparent"
+                  }`}
                 style={{
                   backgroundColor: color.toLowerCase(),
                   boxShadow:
                     selectedColor === color ? "0 0 0 2px white inset" : "none",
                 }}
-                aria-label={`Select ${color} color`}
+                aria-label={`Välj färg ${color}`}
               />
             ))}
           </div>
         </div>
       )}
 
-      {/* Size Selection */}
+      {/* Storleksval */}
       {sizes.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Select a size: {selectedSize}</span>
-            <button className="text-sm underline">Size Guide</button>
+            <span className="font-medium">Välj storlek: {selectedSize}</span>
+            <button className="text-sm underline">Storleksguide</button>
           </div>
           <div className="grid grid-cols-5 gap-2">
             {sizes.map((size) => {
@@ -143,13 +159,12 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
                   key={size}
                   onClick={() => isAvailable && handleSizeSelect(size)}
                   disabled={!isAvailable}
-                  className={`py-2 border-2 ${
-                    selectedSize === size
-                      ? "bg-black text-white border-black hover:bg-black/90 hover:text-white"
-                      : isAvailable
+                  className={`py-2 border-2 ${selectedSize === size
+                    ? "bg-black text-white border-black hover:bg-black/90 hover:text-white"
+                    : isAvailable
                       ? "border-gray-300 bg-accent hover:border-black"
                       : "border-gray-200 text-gray-300 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   {size}
                 </Button>
@@ -159,10 +174,10 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
         </div>
       )}
 
-      {/* Add to Cart Button */}
+      {/* Lägg till i kundvagn-knapp */}
       <button
         onClick={() => onAddToCart(selectedColor, selectedSize)}
-        disabled={isLoading || !selectedColor || !selectedSize}
+        disabled={isLoading || (!selectedColor && colors.length > 0) || (!selectedSize && sizes.length > 0)}
         className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
       >
         {isLoading ? 'Lägger till...' : 'Lägg till i varukorg'}

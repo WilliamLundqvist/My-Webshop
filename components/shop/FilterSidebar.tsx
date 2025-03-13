@@ -334,7 +334,7 @@ function FilterSidebarComponent() {
 
   return (
     <Sidebar variant="floating" className="h-[calc(100vh-80px)]">
-      <SidebarHeader className="border-b p-4 bp-6 pt-26">
+      <SidebarHeader className="border-b p-4 bp-6 ">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <Search className="mr-2 h-4 w-4" />

@@ -4,8 +4,7 @@ import { ProductDetail } from "@/components/shop/ProductDetail";
 import { Button } from "@/components/ui/button";
 
 import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
-import { Products } from "@/types/product";
-import { ArrowLeftIcon } from "lucide-react";
+import { Product, Products } from "@/types/product";
 import BackButton from "@/components/shop/BackButton";
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
@@ -46,7 +45,7 @@ export default async function ProductPage({ params, searchParams }) {
   });
 
   // Fix: Get the first product from the nodes array
-  const product: Products["products"]["nodes"][number] = data?.products?.nodes?.[0];
+  const product: Product = data?.products?.nodes?.[0];
 
   if (!product) {
     return (

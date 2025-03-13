@@ -2,10 +2,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, } from "@/components/ui/card";
-import { ProductNode } from "@/types/product";
+import { Products } from "@/types/product";
 import {
-  hasGalleryImages,
-  hasPrice,
+
   getFirstGalleryImage,
   getPrice
 } from "@/lib/utils/productUtils";
@@ -13,7 +12,7 @@ import {
 import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {
-  product: ProductNode;
+  product: Products["products"]["nodes"][number];
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {

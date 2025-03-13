@@ -1,4 +1,4 @@
-import { GetProductCountQuery, GetProductsQuery, RootQueryToProductUnionConnection } from "@/lib/graphql/generated/graphql";
+import { GetProductBySlugQuery, GetProductsQuery } from "@/lib/graphql/generated/graphql";
 
 export interface Category {
     id: string;
@@ -30,3 +30,5 @@ export type GroupProductNode = Extract<ProductNode, { __typename?: 'GroupProduct
 export type ExternalProductNode = Extract<ProductNode, { __typename?: 'ExternalProduct' }>;
 
 // Alla hjälpfunktioner har flyttats till lib/utils/productUtils.ts
+
+export type Product = GetProductBySlugQuery['products']['nodes'][number];

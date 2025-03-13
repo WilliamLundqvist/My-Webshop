@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { ProductNode } from "@/types/product";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   getAllProductImages,
   getColorImages,
@@ -12,12 +11,12 @@ import {
 import ItemCarousel from "./ItemCarousel";
 import ItemSelector from "./ItemSelector";
 import { useCart } from "@/lib/context/CartContext";
+import { AddToCartInput, AddToCartMutationVariables } from "@/lib/graphql/generated/graphql";
 
-interface ProductDetailProps {
-  product: ProductNode;
-}
 
-export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+
+export const ProductDetail = ({ product }) => {
+  console.log(product);
   // State for gallery images
   const [galleryImages, setGalleryImages] = useState<{ sourceUrl: string }[]>(
     []
@@ -103,14 +102,30 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       // Hämta databaseId säkert
       const productId = getDatabaseId(product);
 
-      if (productId) {
-        // Använd addToCart från context
-        const success = await addToCart(productId, 1, variationId);
+      console.log('Adding to cart:', { productId, variationId, color, size });
 
-        if (success) {
-          console.log(`Added to cart: ${product.name}, Color: ${color}, Size: ${size}`);
-          // Visa bekräftelse för användaren
+      if (!productId) {
+        console.error('Missing productId');
+        return;
+      }
+
+      const input: AddToCartMutationVariables = {
+        input: {
+          productId: productId,
+          quantity: 1,
+          variationId: variationId || undefined,
+          extraData: undefined,
+          clientMutationId: undefined,
+          variation: undefined
         }
+      };
+
+      // Använd addToCart från context
+      const success = await addToCart(input);
+
+      if (success) {
+        console.log(`Added to cart: ${product.name}, Color: ${color}, Size: ${size}`);
+        // Visa bekräftelse för användaren
       }
     } catch (error) {
       console.error("Failed to add to cart:", error);

@@ -34,17 +34,17 @@ export default async function RootLayout({ children }) {
       <body className={`${poppins.className} min-h-screen bg-background text-foreground`}>
         <FaustProvider>
           <CartProvider>
-              <Providers>
-                <Navigation
-                  generalSettings={headerData.data.generalSettings}
-                  primaryMenuItems={headerData.data.primaryMenuItems}
-                />
-                <main>{children}</main>
-                <Footer
-                  menuItems={footerData.data.footerMenuItems.nodes || []}
-                  siteName={headerData.data.generalSettings.title}
-                />
-              </Providers>
+            <Providers>
+              <Navigation
+                generalSettings={headerData.data.generalSettings}
+                primaryMenuItems={headerData.data.primaryMenuItems}
+              />
+              <main>{children}</main>
+              <Footer
+                menuItems={footerData.data.footerMenuItems.nodes || []}
+                siteName={headerData.data.generalSettings.title}
+              />
+            </Providers>
           </CartProvider>
         </FaustProvider>
       </body>

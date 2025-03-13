@@ -4,12 +4,50 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { updateCartItem } from "@/lib/services/cartService";
 
+// Custom hook för att lyssna på ändringar i kundvagnen
+function useCartChangeListener(onIncrease: () => void) {
+  const { cart, loading } = useCart();
+  const prevItemCount = useRef<number>(0);
+
+  useEffect(() => {
+    console.log("Cart updated:", {
+      loading,
+      currentCount: cart?.contents?.itemCount || 0,
+      prevCount: prevItemCount.current
+    });
+
+    // Kör bara när cart har laddats och inte är null
+    if (!loading && cart) {
+      const currentItemCount = cart.contents?.itemCount || 0;
+
+      // Om detta är första laddningen, bara spara värdet
+      if (prevItemCount.current === 0) {
+        prevItemCount.current = currentItemCount;
+        return;
+      }
+
+      // Om antalet varor har ökat, anropa callback
+      if (currentItemCount > prevItemCount.current) {
+        onIncrease();
+      }
+
+      // Uppdatera referensvärdet
+      prevItemCount.current = currentItemCount;
+    }
+  }, [cart, loading, onIncrease]);
+}
 
 export default function CartDropdown() {
-  const { cart, loading, refreshCart } = useCart();
+  const { cart, loading, removeCartItem, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Använd vår custom hook för att lyssna på ändringar i kundvagnen
+  useCartChangeListener(() => {
+    setIsOpen(true);
+  });
 
   // Stäng dropdown när man klickar utanför
   useEffect(() => {
@@ -18,7 +56,7 @@ export default function CartDropdown() {
         setIsOpen(false);
       }
     }
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -29,7 +67,7 @@ export default function CartDropdown() {
     <div className="relative" ref={dropdownRef}>
       {/* Cart Icon */}
       <Button
-        className="relative" 
+        className="relative"
         variant="ghost"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Visa kundvagn"
@@ -37,18 +75,18 @@ export default function CartDropdown() {
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        
+
         {/* Badge med antal produkter */}
-        {!loading && cart && cart.contentsCount > 0 && (
+        {!loading && cart && cart.contents.itemCount > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {cart.contentsCount}
+            {cart.contents.itemCount}
           </span>
         )}
       </Button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-96 bg-white rounded-md shadow-lg z-50">
           <div className="p-4 border-b">
             <h2 className="text-lg font-semibold">Din kundvagn</h2>
           </div>
@@ -65,29 +103,31 @@ export default function CartDropdown() {
                 {cart.contents.nodes.map((item: any) => {
                   const product = item.product.node;
                   const variation = item.variation?.node;
-                  
+
                   // Hitta attribut (färg, storlek, etc) om det finns
                   const attributes = variation?.attributes?.nodes || [];
-                  const color = attributes.find((attr: any) => 
+                  const color = attributes.find((attr: any) =>
                     attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
                   )?.value;
-                  const size = attributes.find((attr: any) => 
+                  const size = attributes.find((attr: any) =>
                     attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
                   )?.value;
-                  
+
                   return (
                     <div key={item.key} className="flex py-2 border-b">
                       {/* Produktbild */}
                       {product.image?.sourceUrl && (
                         <div className="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded overflow-hidden">
-                          <img 
-                            src={product.image.sourceUrl} 
+                          <Image
+                            src={product.image.sourceUrl}
                             alt={product.name}
                             className="w-full h-full object-cover"
+                            width={64}
+                            height={64}
                           />
                         </div>
                       )}
-                      
+
                       {/* Produktinfo */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium text-gray-900 truncate">
@@ -104,22 +144,29 @@ export default function CartDropdown() {
                           <span className="text-xs">
                             Antal: {item.quantity}
                           </span>
-                          <span 
-                            className="text-sm font-medium" 
+                          <span
+                            className="text-sm font-medium"
                             dangerouslySetInnerHTML={{ __html: item.total }}
                           />
                         </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        onClick={() => removeCartItem([item.key], false)}
+                      >
+                        Ta bort
+                      </Button>
+
                     </div>
                   );
                 })}
               </div>
-              
+
               {/* Totalsumma och knappar */}
               <div className="p-4 border-t">
                 <div className="flex justify-between mb-4">
                   <span className="font-medium">Totalt:</span>
-                  <span 
+                  <span
                     className="font-bold"
                     dangerouslySetInnerHTML={{ __html: cart.total }}
                   />
