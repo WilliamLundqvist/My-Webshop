@@ -2,9 +2,9 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
     schema: "https://faustexample.wpengine.com/graphql",
-    documents: ["src/**/*.{tsx,ts}"],
+    documents: ["lib/**/*.ts"],
     generates: {
-        "./src/__generated__/": {
+        "./lib/__generated__/": {
             preset: "client",
             plugins: [],
             presetConfig: {

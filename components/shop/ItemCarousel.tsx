@@ -6,11 +6,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
-import { Product } from "@/types/product";
+import { Products } from "@/types/product";
 
 interface ItemCarouselProps {
   galleryImages: { sourceUrl: string }[];
-  product: Product["products"]["nodes"][number];
+  product: Products["products"]["nodes"][number];
   selectedColor?: string;
 }
 

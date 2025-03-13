@@ -13,7 +13,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -21,10 +20,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { useCategoryData } from "@/hooks/useCategoryData";
 
@@ -83,7 +79,7 @@ function FilterSidebarComponent() {
   );
 
   // Local state to track selected values - initialize only once
-  const [selectedSort, setSelectedSort] = useState(() => 
+  const [selectedSort, setSelectedSort] = useState(() =>
     `${currentSort}-${currentOrder}`
   );
   const [selectedCategory, setSelectedCategory] = useState(() => currentCategory);
@@ -161,7 +157,7 @@ function FilterSidebarComponent() {
   );
 
   // Create debounced function for search - create only once
-  const debouncedSearch = useMemo(() => 
+  const debouncedSearch = useMemo(() =>
     debounce((value) => {
       const params = new URLSearchParams(searchParams.toString());
 
@@ -198,7 +194,7 @@ function FilterSidebarComponent() {
   const { categories, loading, error } = useCategoryData(section);
 
   // Create debounced function for updating price - create only once
-  const debouncedUpdatePrice = useMemo(() => 
+  const debouncedUpdatePrice = useMemo(() =>
     debounce((minPrice, maxPrice) => {
       const params = new URLSearchParams(searchParams.toString());
 
@@ -271,11 +267,10 @@ function FilterSidebarComponent() {
     return categories.map((category) => (
       <div key={category.id} className="space-y-1">
         <div
-          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-            selectedCategory === category.slug
-              ? "bg-slate-100 font-medium"
-              : ""
-          }`}
+          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${selectedCategory === category.slug
+            ? "bg-slate-100 font-medium"
+            : ""
+            }`}
           onClick={() => handleCategoryChange(category.slug)}
         >
           <div className="flex items-center justify-between">
@@ -292,11 +287,10 @@ function FilterSidebarComponent() {
             {category.children.nodes.map((grandchild) => (
               <div
                 key={grandchild.id}
-                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-                  selectedCategory === grandchild.slug
-                    ? "bg-slate-100 font-medium"
-                    : ""
-                }`}
+                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${selectedCategory === grandchild.slug
+                  ? "bg-slate-100 font-medium"
+                  : ""
+                  }`}
                 onClick={() =>
                   handleCategoryChange(grandchild.slug)
                 }
@@ -336,8 +330,10 @@ function FilterSidebarComponent() {
     });
   }, [selectedSort]);
 
+
+
   return (
-    <Sidebar className="border-r">
+    <Sidebar variant="floating" className="h-[calc(100vh-80px)]">
       <SidebarHeader className="border-b p-4 bp-6 pt-26">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
@@ -431,8 +427,8 @@ function FilterSidebarComponent() {
           Clear All Filters
         </Button>
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
+
   );
 }
 

@@ -1,66 +1,4 @@
-
-
-
-export interface Products {
-    products: {
-        pageInfo?: {
-            hasNextPage: boolean;
-            hasPreviousPage: boolean;
-            startCursor: string;
-            endCursor: string;
-        };
-        nodes: {
-            id: string;
-            name: string;
-            description?: string;
-            databaseId: number;
-            slug: string;
-            sku?: string;
-            price?: string;
-            stockStatus?: string;
-            image?: {
-                sourceUrl: string;
-            };
-            rating?: number;
-            reviews?: number;
-            attributes?: {
-                nodes: {
-                    name: string;
-                    options: string[];
-                }[];
-            };
-            variations?: {
-                nodes: {
-                    id: string;
-                    databaseId: string;
-                    name: string;
-                    price: string;
-                    stockStatus: string;
-                    attributes: {
-                        nodes: {
-                            name: string;
-                            value: string;
-                        }[];
-                    };
-                    image: {
-                        sourceUrl: string;
-                    };
-                }[];
-            };
-            galleryImages?: {
-                nodes: {
-                    sourceUrl: string;
-                }[];
-            };
-            featuredImage?: {
-                node: {
-                    sourceUrl: string;
-                };
-            };
-        }[];
-    };
-}
-
+import { GetProductCountQuery, GetProductsQuery, RootQueryToProductUnionConnection } from "@/lib/graphql/generated/graphql";
 
 export interface Category {
     id: string;
@@ -82,7 +20,13 @@ export interface Category {
     };
 }
 
+export type Products = GetProductsQuery;
 
-// Alternativ 1: Ersätt hela filen med importer
+// Typer för att förenkla åtkomst till produktnoder
+export type ProductNode = NonNullable<Products['products']>['nodes'][number];
+export type SimpleProductNode = Extract<ProductNode, { __typename?: 'SimpleProduct' }>;
+export type VariableProductNode = Extract<ProductNode, { __typename?: 'VariableProduct' }>;
+export type GroupProductNode = Extract<ProductNode, { __typename?: 'GroupProduct' }>;
+export type ExternalProductNode = Extract<ProductNode, { __typename?: 'ExternalProduct' }>;
 
-
+// Alla hjälpfunktioner har flyttats till lib/utils/productUtils.ts

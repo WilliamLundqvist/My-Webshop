@@ -1,12 +1,20 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Products } from "@/types/product";
+import { ProductNode } from "@/types/product";
+import {
+  getAllProductImages,
+  getColorImages,
+  hasVariations,
+  getVariations,
+  getDatabaseId,
+  getPrice
+} from "@/lib/utils/productUtils";
 import ItemCarousel from "./ItemCarousel";
 import ItemSelector from "./ItemSelector";
 import { useCart } from "@/lib/context/CartContext";
 
 interface ProductDetailProps {
-  product: Products["products"]["nodes"][number];
+  product: ProductNode;
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
@@ -14,10 +22,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [galleryImages, setGalleryImages] = useState<{ sourceUrl: string }[]>(
     []
   );
-  
+
   // Add state for selected color
   const [selectedColor, setSelectedColor] = useState<string>("");
-  
+
   // State for color-specific images
   const [colorImages, setColorImages] = useState<Record<string, string>>({});
 
@@ -27,45 +35,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
   // Process gallery images for the carousel
   useEffect(() => {
-    const imageSet = new Set<string>();
-    const colorImagesMap: Record<string, string> = {};
+    // Använd hjälpfunktionen för att samla alla bilder
+    const uniqueImages = getAllProductImages(product);
 
-    // Add product main image
-    if (product?.image?.sourceUrl) {
-      imageSet.add(product.image.sourceUrl);
-    }
+    // Använd hjälpfunktionen för att hämta färgspecifika bilder
+    const colorImagesMap = getColorImages(product);
 
-    // Add featured image if available
-    if (product?.featuredImage?.node?.sourceUrl) {
-      imageSet.add(product.featuredImage.node.sourceUrl);
-    }
-
-    // Add gallery images if available
-    if (product?.galleryImages?.nodes) {
-      product.galleryImages.nodes.forEach((img) => {
-        if (img.sourceUrl) imageSet.add(img.sourceUrl);
-      });
-    }
-    
-    // Extract color images from variations if available
-    if (product?.variations?.nodes) {
-      product.variations.nodes.forEach((variation) => {
-        // Assuming each variation has attributes like color and an image
-        const colorAttribute = variation.attributes?.nodes?.find(
-          (attr) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
-        );
-        
-        if (colorAttribute?.value && variation.image?.sourceUrl) {
-          colorImagesMap[colorAttribute.value] = variation.image.sourceUrl;
-        }
-      });
-    }
-
-    // Convert Set to array of image objects
-    const uniqueImages = Array.from(imageSet).map((sourceUrl) => ({
-      sourceUrl,
-    }));
-    
     setGalleryImages(uniqueImages);
     setColorImages(colorImagesMap);
   }, [product]);
@@ -80,13 +55,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     if (!selectedColor || !colorImages[selectedColor]) {
       return galleryImages;
     }
-    
+
     // Find if the color image is already in gallery
     const colorImageUrl = colorImages[selectedColor];
     const isColorImageInGallery = galleryImages.some(
       img => img.sourceUrl === colorImageUrl
     );
-    
+
     if (isColorImageInGallery) {
       // Reorder to put the color image first
       return [
@@ -99,37 +74,43 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     }
   }, [selectedColor, colorImages, galleryImages]);
 
-  // Handle add to cart action - nu mycket enklare!
+  // Handle add to cart action
   const handleAddToCart = async (color: string, size: string) => {
     setAddingToCart(true);
     try {
       // Hitta variation ID baserat på färg och storlek
       let variationId = null;
-      
-      if (product?.variations?.nodes && color && size) {
-        const variation = product.variations.nodes.find(v => {
+
+      if (hasVariations(product) && color && size) {
+        const variations = getVariations(product);
+        const variation = variations.find((v: any) => {
           const colorAttr = v.attributes?.nodes?.find(
-            attr => (attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg") && attr.value === color
+            (attr: any) => (attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg") && attr.value === color
           );
-          
+
           const sizeAttr = v.attributes?.nodes?.find(
-            attr => attr.name.toLowerCase() === "size" && attr.value === size
+            (attr: any) => attr.name.toLowerCase() === "size" && attr.value === size
           );
-          
+
           return colorAttr && sizeAttr;
         });
-        
+
         if (variation) {
           variationId = variation.databaseId;
         }
       }
-      
-      // Använd addToCart från context - den hanterar både API-anrop och state!
-      const success = await addToCart(product.databaseId, 1, variationId);
-      
-      if (success) {
-        console.log(`Added to cart: ${product.name}, Color: ${color}, Size: ${size}`);
-        // Visa bekräftelse för användaren
+
+      // Hämta databaseId säkert
+      const productId = getDatabaseId(product);
+
+      if (productId) {
+        // Använd addToCart från context
+        const success = await addToCart(productId, 1, variationId);
+
+        if (success) {
+          console.log(`Added to cart: ${product.name}, Color: ${color}, Size: ${size}`);
+          // Visa bekräftelse för användaren
+        }
       }
     } catch (error) {
       console.error("Failed to add to cart:", error);
@@ -139,15 +120,18 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     }
   };
 
+  // Säkert hämta price
+  const productPrice = getPrice(product);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <ItemCarousel 
-            galleryImages={getOrderedImages()} 
+          <ItemCarousel
+            galleryImages={getOrderedImages()}
             product={product}
-            selectedColor={selectedColor} 
+            selectedColor={selectedColor}
           />
         </div>
 
@@ -155,10 +139,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold">{product.name}</h1>
-            <p
-              className="text-xl font-medium mt-2"
-              dangerouslySetInnerHTML={{ __html: product.price }}
-            />
+            {productPrice && (
+              <p
+                className="text-xl font-medium mt-2"
+                dangerouslySetInnerHTML={{ __html: productPrice }}
+              />
+            )}
           </div>
           <div
             className="prose prose-sm"
@@ -166,8 +152,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           />
 
           {/* ItemSelector with color selection callback */}
-          <ItemSelector 
-            product={product} 
+          <ItemSelector
+            product={product}
             onColorSelect={handleColorSelect}
             onAddToCart={handleAddToCart}
             isLoading={addingToCart}

@@ -1,6 +1,6 @@
 overwrite: true
-schema: "https://din-wordpress-site.com/graphql"  # URL till din GraphQL endpoint
-documents: "lib/graphql/**/*.ts"  # Var dina GraphQL queries/mutations finns
+schema: "http://localhost:8000/graphql" # URL till din GraphQL endpoint
+documents: "lib/graphql/**/*.ts" # Var dina GraphQL queries/mutations finns
 generates:
   lib/graphql/generated/graphql.ts:
     plugins:
@@ -12,4 +12,4 @@ generates:
       withComponent: false
       withHOC: false
       skipTypename: false
-      avoidOptionals: true 
+      avoidOptionals: true

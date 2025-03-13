@@ -35,9 +35,6 @@ export default function Navigation({
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeCategory = searchParams.get("category");
-  const isShopPage = pathname === "/shop";
   const section = pathname.split("/")[3];
 
   // Extract menu items directly from props - memoize to prevent unnecessary processing
@@ -116,7 +113,6 @@ export default function Navigation({
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -148,12 +144,10 @@ export default function Navigation({
                   ))}
                 </nav>
 
-                {/* Only show category buttons on shop page */}
               </div>
             </SheetContent>
           </Sheet>
 
-          {/* Search icon on the left side for mobile only */}
           <div className="md:hidden">
             {isSearchOpen ? (
               <SearchForm />
@@ -208,9 +202,9 @@ export default function Navigation({
               <span className="sr-only">Account</span>
             </Button>
           </Link>
-   
-            <CartDropdown />
-      
+
+          <CartDropdown />
+
         </div>
       </div>
     </header>

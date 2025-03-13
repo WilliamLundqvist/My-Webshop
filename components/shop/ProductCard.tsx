@@ -1,13 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Product } from "@/types/product";
+import { Card, CardContent, } from "@/components/ui/card";
+import { ProductNode } from "@/types/product";
+import {
+  hasGalleryImages,
+  hasPrice,
+  getFirstGalleryImage,
+  getPrice
+} from "@/lib/utils/productUtils";
 
 import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {
-  product: Product["products"]["nodes"][number];
+  product: ProductNode;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
@@ -17,13 +23,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   // Handle image which could be a string or an object with sourceUrl
-  const baseImage =
-    typeof product.image === "string"
-      ? product.image
-      : product.image?.sourceUrl || "https://placehold.co/400x400";
+  const baseImage = product.image?.sourceUrl || "https://placehold.co/400x400";
 
-
-  const galleryImage = product.galleryImages?.nodes[0]?.sourceUrl || baseImage;
+  // Använd hjälpfunktionen för att säkert hämta första galleryImage
+  const galleryImage = getFirstGalleryImage(product, baseImage);
 
   // Create product URL with preserved search parameters
   const createProductUrl = () => {
@@ -63,18 +66,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return baseUrl;
   };
 
+  // Säkert hämta price
+  const productPrice = getPrice(product);
+
+  // Kontrollera om rating och reviews finns (dessa finns inte i GetProductsQuery som standard)
+  const hasRatingAndReviews = 'rating' in product && 'reviews' in product;
+
   return (
     <div className="flex flex-col h-full">
       <div className="relative flex-grow">
-        <Link href={createProductUrl()} prefetch={true}>
+        <Link href={createProductUrl()} >
           <Card className="gap-2 md:gap-4 h-full shadow-none rounded-none">
             <div className="aspect-square overflow-hidden">
               <img
-              
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                src={isHovered ? galleryImage : baseImage}  
-                alt={product.name}
+                src={isHovered ? galleryImage : baseImage}
+                alt={product.name || "Product"}
                 width={400}
                 height={400}
                 className="h-full w-full object-cover object-top"
@@ -85,19 +93,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <h2 className="line-clamp-2 font-medium text-md">
                   {product.name}
                 </h2>
-                {product.rating !== undefined &&
-                  product.reviews !== undefined && (
-                    <div className="mt-2 flex items-center text-sm">
-                      <span className="text-yellow-500">★★★★★</span>
-                      <span className="ml-1 text-muted-foreground">
-                        {product.rating} ({product.reviews})
-                      </span>
-                    </div>
-                  )}
-                <div
-                  className="font-bold text-sm"
-                  dangerouslySetInnerHTML={{ __html: product.price }}
-                ></div>
+                {hasRatingAndReviews && (
+                  <div className="mt-2 flex items-center text-sm">
+                    <span className="text-yellow-500">★★★★★</span>
+                    <span className="ml-1 text-muted-foreground">
+                      {(product as any).rating} ({(product as any).reviews})
+                    </span>
+                  </div>
+                )}
+                {productPrice && (
+                  <div
+                    className="font-bold text-sm"
+                    dangerouslySetInnerHTML={{ __html: productPrice }}
+                  ></div>
+                )}
               </CardContent>
             </div>
           </Card>

@@ -136,7 +136,7 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<Products> = gql`
 `;
 
 export const GET_FOOTER_LINKS = gql`
-  query GetLayout {
+  query GetFooterLayout {
     footerMenuItems: menuItems(where: { location: FOOTER }) {
       nodes {
             id
@@ -148,7 +148,7 @@ export const GET_FOOTER_LINKS = gql`
 `;
 
 export const GET_HEADER_LINKS = gql`
-  query GetLayout {
+  query GetHeaderLayout {
     generalSettings {
       title
           description
