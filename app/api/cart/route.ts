@@ -17,15 +17,15 @@ const emptyCart = {
 
 export async function GET(request: NextRequest) {
     try {
-      
+
         // Försök hämta klienten med explicit cookie-hantering
         const client = await getAuthClient();
-        
+
         if (!client) {
             console.log('User not authenticated, returning empty cart');
             return NextResponse.json({ cart: emptyCart });
         }
-        
+
         console.log('Client obtained successfully, fetching cart data');
         const { data } = await client.query({
             query: GET_CART,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     try {
         const requestData = await request.json();
         console.log('POST request data:', requestData);
-        
+
         // Extrahera input korrekt baserat på hur det skickas från cartService
         let input;
         if (requestData.input && requestData.input.input) {
@@ -57,13 +57,13 @@ export async function POST(request: NextRequest) {
             console.error('Invalid input format:', requestData);
             return NextResponse.json({ error: 'Invalid input format' }, { status: 400 });
         }
-        
+
         console.log('Processed input for ADD_TO_CART:', input);
 
         // Logga cookies för felsökning
         const requestCookies = request.headers.get('cookie');
         console.log('Request cookies:', requestCookies);
-        
+
         // Hämta cookies från Next.js API
         const cookieStore = cookies();
         const allCookies = cookieStore.getAll();
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         if (!client) {
             return NextResponse.json({ error: 'Authentication required to add items to cart' }, { status: 401 });
         }
-        
+
         console.log('Sending to GraphQL:', { input });
         const { data } = await client.mutate({
             mutation: ADD_TO_CART,
@@ -94,22 +94,22 @@ export async function DELETE(request: NextRequest) {
     try {
         const requestData = await request.json();
         console.log('DELETE request data:', requestData);
-        
+
         // Extrahera keys och all från requestData
         const keys = requestData.keys;
         const all = requestData.all || false;
-        
+
         if (!keys && !all) {
             console.error('Invalid input format:', requestData);
             return NextResponse.json({ error: 'Invalid input format: missing keys or all flag' }, { status: 400 });
         }
-        
+
         console.log('Processed input for REMOVE_FROM_CART:', { keys, all });
 
         // Logga cookies för felsökning
         const requestCookies = request.headers.get('cookie');
         console.log('Request cookies:', requestCookies);
-        
+
         // Hämta cookies från Next.js API
         const cookieStore = cookies();
         const allCookies = cookieStore.getAll();

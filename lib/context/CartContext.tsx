@@ -48,7 +48,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   } = useSWR('cart', fetchCart, {
     refreshInterval: 60000,
     revalidateOnFocus: true,
-    fallbackData: emptyCart // Använd tom kundvagn som fallback
+    fallbackData: emptyCart
   });
 
   const loading = !cart && !fetchError || actionInProgress;
