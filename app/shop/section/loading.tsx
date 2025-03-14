@@ -14,7 +14,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
