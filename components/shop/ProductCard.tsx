@@ -75,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div className="flex flex-col h-full">
       <div className="relative flex-grow">
         <Link href={createProductUrl()} >
-          <Card className="gap-2 md:gap-4 h-full shadow-none rounded-none">
+          <Card className="gap-2 md:gap-4 h-full border-[3px]">
             <div className="aspect-square overflow-hidden">
               <img
                 onMouseEnter={() => setIsHovered(true)}

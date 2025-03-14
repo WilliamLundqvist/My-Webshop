@@ -73,7 +73,7 @@ export default function ShopPagination({
   }
 
   return (
-    <div className="mt-8 mb-12">
+    <div className="my-8">
       <Pagination className="">
         <PaginationContent className="flex justify-between items-center">
           <div className="flex items-center space-x-2">

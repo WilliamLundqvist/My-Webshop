@@ -9,6 +9,8 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery> = gql`
     $orderby: [ProductsOrderbyInput]
     $search: String
     $category: String
+    $maxPrice: Float
+    $minPrice: Float
       
   ) {
     products(
@@ -18,6 +20,8 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery> = gql`
         orderby: $orderby
         search: $search
         category: $category
+        maxPrice: $maxPrice
+        minPrice: $minPrice
       }
     ) {
       nodes {
@@ -221,6 +225,9 @@ export const GET_CART: TypedDocumentNode<GetCartQuery> = gql`
             node {
               id
               name
+              image {
+                sourceUrl
+              }
               attributes {
                 nodes {
                   name

@@ -136,8 +136,11 @@ export default function Navigation({
                   {nonCategoryMenuItems.map((item) => (
                     <Button
                       key={item.id}
-                      variant="ghost"
-                      className="justify-start"
+                      variant={pathname === item.uri ? "secondary" : "ghost"}
+                      className={cn(
+                        "justify-start",
+                        pathname === item.uri && "font-semibold"
+                      )}
                       asChild
                     >
                       <Link href={item.uri}>{item.label}</Link>
@@ -149,16 +152,6 @@ export default function Navigation({
             </SheetContent>
           </Sheet>
 
-          <div className="md:hidden">
-            {isSearchOpen ? (
-              <SearchForm />
-            ) : (
-              <Button variant="ghost" size="icon" onClick={toggleSearch}>
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-              </Button>
-            )}
-          </div>
         </div>
 
         <Link href="/" className="md:mr-6 flex items-center space-x-2">
@@ -170,7 +163,15 @@ export default function Navigation({
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
           {/* Main menu items */}
           {menuItems.map((item) => (
-            <Button key={item.id} variant="ghost" className="h-auto" asChild>
+            <Button
+              key={item.id}
+              variant={pathname === item.uri ? "secondary" : "ghost"}
+              className={cn(
+                "h-auto",
+                pathname === item.uri && "font-semibold"
+              )}
+              asChild
+            >
               <Link
                 href={item.uri}
                 className={cn(

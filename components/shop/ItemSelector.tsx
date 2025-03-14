@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { hasVariations, getVariations } from "@/lib/utils/productUtils";
+import { Loader2 } from "lucide-react";
 
 interface ItemSelectorProps {
   product: Product;
@@ -180,7 +181,10 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({
         disabled={isLoading || (!selectedColor && colors.length > 0) || (!selectedSize && sizes.length > 0)}
         className="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
       >
-        {isLoading ? 'Lägger till...' : 'Lägg till i varukorg'}
+        {isLoading ? <div className="flex items-center justify-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Lägger till...
+        </div> : 'Lägg till i varukorg'}
       </button>
     </div>
   );

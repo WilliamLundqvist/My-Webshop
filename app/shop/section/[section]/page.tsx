@@ -45,6 +45,11 @@ export default async function ShopPage({ searchParams, params }) {
   const sortOrder = finalSearchParams?.order || "DESC"; // Default sort direction
   const searchQuery = finalSearchParams?.search || ""; // Get search query from URL
   const category = finalSearchParams?.category || ""; // Get category from URL
+  const maxPrice = finalSearchParams?.max_price || ""; // Get max price from URL
+  const minPrice = finalSearchParams?.min_price || ""; // Get min price from URL
+
+  console.log(`Max price: ${maxPrice}`);
+  console.log(`Min price: ${minPrice}`);
 
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
@@ -55,9 +60,8 @@ export default async function ShopPage({ searchParams, params }) {
     global.cursorCache = {};
   }
 
-  const cacheKey = `${section || "all"}-${category || "none"}-${
-    searchQuery || "none"
-  }-${sortField}-${sortOrder}`;
+  const cacheKey = `${section || "all"}-${category || "none"}-${searchQuery || "none"
+    }-${sortField}-${sortOrder}`;
 
   // Initialize after/cursor value
   let after = "";
@@ -69,7 +73,7 @@ export default async function ShopPage({ searchParams, params }) {
   }
   // For pages beyond page 1 without a cached cursor, we need to fetch sequentially
   else if (currentPage > 1) {
- 
+
 
     // Create cache entry for this filter combination if it doesn't exist
     if (!global.cursorCache[cacheKey]) {
@@ -88,6 +92,8 @@ export default async function ShopPage({ searchParams, params }) {
           orderby: [{ field: sortField, order: sortOrder }],
           search: searchQuery,
           category: category ? category : section,
+          maxPrice: maxPrice,
+          minPrice: minPrice,
         },
         fetchPolicy: "network-only",
       });
@@ -150,13 +156,12 @@ export default async function ShopPage({ searchParams, params }) {
         search: searchQuery,
         category: category ? category : section,
       },
-      fetchPolicy: "network-only",
     });
 
     if (countResponse.data.products.found) {
       const totalProducts = countResponse.data.products.found;
       totalPages = Math.ceil(totalProducts / first);
-  
+
     }
   } catch (error) {
     console.error("Error calculating total pages:", error);
@@ -210,8 +215,8 @@ export default async function ShopPage({ searchParams, params }) {
             {searchQuery
               ? `Search Results for "${searchQuery}"`
               : category
-              ? `${category}`
-              : "Products"}
+                ? `${category}`
+                : "Products"}
           </h1>
           <div className="text-sm text-muted-foreground">
             {products.length} products

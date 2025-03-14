@@ -64,7 +64,7 @@ export default async function ProductPage({ params, searchParams }) {
 
   return (
     <div className="container mx-auto px-md">
-      <BackButton />
+      <BackButton className="my-4" />
       <ProductDetail product={product} />
     </div>
   );

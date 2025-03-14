@@ -25167,7 +25167,7 @@ export type AddToCartMutationVariables = Exact<{
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'RootMutation', addToCart: { __typename?: 'AddToCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
+export type AddToCartMutation = { __typename?: 'RootMutation', addToCart: { __typename?: 'AddToCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type RemoveItemsFromCartMutationVariables = Exact<{
   keys: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>> | InputMaybe<Scalars['ID']['input']>>;
@@ -25175,7 +25175,7 @@ export type RemoveItemsFromCartMutationVariables = Exact<{
 }>;
 
 
-export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart: { __typename?: 'RemoveItemsFromCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
+export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart: { __typename?: 'RemoveItemsFromCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type UpdateCartItemQuantitiesMutationVariables = Exact<{
   key: Scalars['ID']['input'];
@@ -25183,7 +25183,7 @@ export type UpdateCartItemQuantitiesMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null } | { __typename?: 'GroupProduct', id: string, name: string | null } | { __typename?: 'SimpleProduct', id: string, name: string | null } | { __typename?: 'VariableProduct', id: string, name: string | null } } | null }> } | null } | null } | null };
+export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type GetProductsQueryVariables = Exact<{
   first: InputMaybe<Scalars['Int']['input']>;
@@ -25191,6 +25191,8 @@ export type GetProductsQueryVariables = Exact<{
   orderby: InputMaybe<Array<InputMaybe<ProductsOrderbyInput>> | InputMaybe<ProductsOrderbyInput>>;
   search: InputMaybe<Scalars['String']['input']>;
   category: InputMaybe<Scalars['String']['input']>;
+  maxPrice: InputMaybe<Scalars['Float']['input']>;
+  minPrice: InputMaybe<Scalars['Float']['input']>;
 }>;
 
 
@@ -25236,7 +25238,7 @@ export type GetProductCountQuery = { __typename?: 'RootQuery', products: { __typ
 export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
+export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
 
 export const ProductContentFullFragmentDoc = gql`
     fragment ProductContentFull on Product {
@@ -25538,11 +25540,31 @@ export const AddToCartDocument = gql`
             node {
               id
               name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
+          variation {
+            node {
+              id
+              name
+              image {
+                sourceUrl
+              }
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
             }
           }
           quantity
           total
         }
+        itemCount
       }
       subtotal
       total
@@ -25588,11 +25610,31 @@ export const RemoveItemsFromCartDocument = gql`
             node {
               id
               name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
+          variation {
+            node {
+              id
+              name
+              image {
+                sourceUrl
+              }
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
             }
           }
           quantity
           total
         }
+        itemCount
       }
       subtotal
       total
@@ -25639,11 +25681,31 @@ export const UpdateCartItemQuantitiesDocument = gql`
             node {
               id
               name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
+          variation {
+            node {
+              id
+              name
+              image {
+                sourceUrl
+              }
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
             }
           }
           quantity
           total
         }
+        itemCount
       }
       subtotal
       total
@@ -25680,11 +25742,11 @@ export type UpdateCartItemQuantitiesMutationHookResult = ReturnType<typeof useUp
 export type UpdateCartItemQuantitiesMutationResult = Apollo.MutationResult<UpdateCartItemQuantitiesMutation>;
 export type UpdateCartItemQuantitiesMutationOptions = Apollo.BaseMutationOptions<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>;
 export const GetProductsDocument = gql`
-    query GetProducts($first: Int, $after: String, $orderby: [ProductsOrderbyInput], $search: String, $category: String) {
+    query GetProducts($first: Int, $after: String, $orderby: [ProductsOrderbyInput], $search: String, $category: String, $maxPrice: Float, $minPrice: Float) {
   products(
     first: $first
     after: $after
-    where: {orderby: $orderby, search: $search, category: $category}
+    where: {orderby: $orderby, search: $search, category: $category, maxPrice: $maxPrice, minPrice: $minPrice}
   ) {
     nodes {
       id
@@ -25740,6 +25802,8 @@ export const GetProductsDocument = gql`
  *      orderby: // value for 'orderby'
  *      search: // value for 'search'
  *      category: // value for 'category'
+ *      maxPrice: // value for 'maxPrice'
+ *      minPrice: // value for 'minPrice'
  *   },
  * });
  */
@@ -26108,6 +26172,9 @@ export const GetCartDocument = gql`
           node {
             id
             name
+            image {
+              sourceUrl
+            }
             attributes {
               nodes {
                 name

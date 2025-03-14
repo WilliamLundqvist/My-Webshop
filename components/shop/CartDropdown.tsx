@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { updateCartItem } from "@/lib/services/cartService";
+import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
 
 // Custom hook för att lyssna på ändringar i kundvagnen
 function useCartChangeListener(onIncrease: () => void) {
@@ -40,7 +40,7 @@ function useCartChangeListener(onIncrease: () => void) {
 }
 
 export default function CartDropdown() {
-  const { cart, loading, removeCartItem, updateCartItem } = useCart();
+  const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +63,10 @@ export default function CartDropdown() {
     };
   }, []);
 
+  // Kontrollera om vi har data att visa, även om loading är true
+  const hasCartData = cart && cart.contents && cart.contents.nodes;
+  const isCartEmpty = !hasCartData || cart.isEmpty || cart.contents.itemCount === 0;
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Cart Icon */}
@@ -76,8 +80,8 @@ export default function CartDropdown() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
 
-        {/* Badge med antal produkter */}
-        {!loading && cart && cart.contents.itemCount > 0 && (
+        {/* Badge med antal produkter - visa alltid om vi har data */}
+        {hasCartData && cart.contents.itemCount > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {cart.contents.itemCount}
           </span>
@@ -91,9 +95,9 @@ export default function CartDropdown() {
             <h2 className="text-lg font-semibold">Din kundvagn</h2>
           </div>
 
-          {loading ? (
+          {!hasCartData && loading ? (
             <div className="p-4 text-center">Laddar...</div>
-          ) : !cart || cart.isEmpty ? (
+          ) : isCartEmpty ? (
             <div className="p-4 text-center">
               <p>Din kundvagn är tom</p>
             </div>
@@ -103,6 +107,7 @@ export default function CartDropdown() {
                 {cart.contents.nodes.map((item: any) => {
                   const product = item.product.node;
                   const variation = item.variation?.node;
+                  const isProcessing = processingItems.includes(item.key);
 
                   // Hitta attribut (färg, storlek, etc) om det finns
                   const attributes = variation?.attributes?.nodes || [];
@@ -114,13 +119,13 @@ export default function CartDropdown() {
                   )?.value;
 
                   return (
-                    <div key={item.key} className="flex py-2 border-b">
+                    <div key={item.key} className={`flex gap-2 py-2 border-b ${isProcessing ? 'opacity-70' : ''}`}>
                       {/* Produktbild */}
-                      {product.image?.sourceUrl && (
+                      {variation?.image?.sourceUrl && (
                         <div className="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded overflow-hidden">
                           <Image
-                            src={product.image.sourceUrl}
-                            alt={product.name}
+                            src={variation.image.sourceUrl}
+                            alt={variation.name || product.name}
                             className="w-full h-full object-cover"
                             width={64}
                             height={64}
@@ -150,17 +155,31 @@ export default function CartDropdown() {
                           />
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        onClick={() => removeCartItem([item.key], false)}
-                      >
-                        Ta bort
-                      </Button>
-
+                      <div className="flex flex-col gap-2 items-center justify-center">
+                        <Button
+                          className="w-full"
+                          variant="destructive"
+                          onClick={() => removeCartItem([item.key], false)}
+                          disabled={isProcessing || processingItems.length > 0}
+                        >
+                          <Trash2 className="w-2 h-2" />
+                        </Button>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => updateCartItem({ key: item.key, quantity: item.quantity - 1 })} size="icon"><Minus className="w-2 h-2" /></Button><Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => updateCartItem({ key: item.key, quantity: item.quantity + 1 })} size="icon"><Plus className="w-2 h-2" /></Button>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
+
+              {/* Visa loading-indikator om data uppdateras */}
+              {loading && (
+                <div className="p-2 flex gap-2 items-center justify-center text-sm text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uppdaterar...
+                </div>
+              )}
 
               {/* Totalsumma och knappar */}
               <div className="p-4 border-t">
