@@ -111,7 +111,7 @@ export default function Navigation({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="container mx-auto flex h-16 items-center justify-between">
+      <div className="max-w-[1400px] mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Sheet>
@@ -187,17 +187,7 @@ export default function Navigation({
         </nav>
 
         <div className="flex items-center space-x-4">
-          {/* Search icon on the right side for md screens and above */}
-          <div className="hidden md:block">
-            {isSearchOpen ? (
-              <SearchForm />
-            ) : (
-              <Button variant="ghost" size="icon" onClick={toggleSearch}>
-                <Search className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-              </Button>
-            )}
-          </div>
+
           <Link href="/my-account">
             <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />

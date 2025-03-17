@@ -31,11 +31,7 @@ export const ProductSkeleton = () => (
       </div>
     </CardContent>
     <CardFooter className="mt-auto">
-      <Button
-        size="default"
-        variant="outline"
-        className="w-full bg-gray-200 animate-pulse"
-      ></Button>
+
     </CardFooter>
   </Card>
 );

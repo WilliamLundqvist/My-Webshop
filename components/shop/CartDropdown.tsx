@@ -134,7 +134,7 @@ export default function CartDropdown() {
                       )}
 
                       {/* Produktinfo */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 flex flex-col min-w-0">
                         <h3 className="text-sm font-medium text-gray-900 truncate">
                           {product.name}
                         </h3>
@@ -145,7 +145,7 @@ export default function CartDropdown() {
                             {size && <span>Storlek: {size}</span>}
                           </p>
                         )}
-                        <div className="flex justify-between mt-1">
+                        <div className="flex items-end mt-auto justify-between">
                           <span className="text-xs">
                             Antal: {item.quantity}
                           </span>
@@ -175,7 +175,7 @@ export default function CartDropdown() {
 
               {/* Visa loading-indikator om data uppdateras */}
               {loading && (
-                <div className="p-2 flex gap-2 items-center justify-center text-sm text-gray-500">
+                <div className="p-2 flex gap-2     items-center justify-center text-sm text-gray-500">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Uppdaterar...
                 </div>

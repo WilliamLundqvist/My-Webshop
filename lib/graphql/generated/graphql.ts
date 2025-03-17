@@ -25196,7 +25196,7 @@ export type GetProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetProductsQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, id: string, name: string | null, description: string | null, slug: string | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, id: string, name: string | null, description: string | null, slug: string | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }>, pageInfo: { __typename?: 'RootQueryToProductUnionConnectionPageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null, endCursor: string | null } } | null };
+export type GetProductsQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, description: string | null, slug: string | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation', id: string, name: string | null, description: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, description: string | null, slug: string | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }>, pageInfo: { __typename?: 'RootQueryToProductUnionConnectionPageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null, endCursor: string | null } } | null };
 
 export type GetViewerQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -25208,7 +25208,7 @@ export type GetProductBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetProductBySlugQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct' } | { __typename?: 'GroupProduct' } | { __typename?: 'SimpleProduct', id: string, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation' } | { __typename?: 'VariableProduct', id: string, databaseId: number, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null }> } | null, variations: { __typename?: 'ProductWithVariationsToProductVariationConnection', nodes: Array<{ __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, price: string | null, stockStatus: StockStatusEnum | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }> } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, featuredImage: { __typename?: 'NodeWithFeaturedImageToMediaItemConnectionEdge', node: { __typename?: 'MediaItem', sourceUrl: string | null } } | null }> } | null };
+export type GetProductBySlugQuery = { __typename?: 'RootQuery', products: { __typename?: 'RootQueryToProductUnionConnection', nodes: Array<{ __typename?: 'ExternalProduct' } | { __typename?: 'GroupProduct' } | { __typename?: 'SimpleProduct', id: string, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, regularPrice: string | null, onSale: boolean | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProductVariation' } | { __typename?: 'VariableProduct', id: string, databaseId: number, name: string | null, description: string | null, slug: string | null, sku: string | null, price: string | null, regularPrice: string | null, onSale: boolean | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null }> } | null, variations: { __typename?: 'ProductWithVariationsToProductVariationConnection', nodes: Array<{ __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, price: string | null, stockStatus: StockStatusEnum | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null }> } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', sourceUrl: string | null }> } | null, featuredImage: { __typename?: 'NodeWithFeaturedImageToMediaItemConnectionEdge', node: { __typename?: 'MediaItem', sourceUrl: string | null } } | null }> } | null };
 
 export type GetFooterLayoutQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -25756,6 +25756,8 @@ export const GetProductsDocument = gql`
       ... on SimpleProduct {
         price(format: FORMATTED)
         stockStatus
+        regularPrice(format: FORMATTED)
+        onSale
         galleryImages {
           nodes {
             sourceUrl
@@ -25768,6 +25770,8 @@ export const GetProductsDocument = gql`
       ... on VariableProduct {
         stockStatus
         price(format: FORMATTED)
+        regularPrice(format: FORMATTED)
+        onSale
         galleryImages {
           nodes {
             sourceUrl
@@ -25880,6 +25884,8 @@ export const GetProductBySlugDocument = gql`
         slug
         sku
         price(format: FORMATTED)
+        regularPrice(format: FORMATTED)
+        onSale
         image {
           sourceUrl
         }
@@ -25892,6 +25898,8 @@ export const GetProductBySlugDocument = gql`
         slug
         sku
         price(format: FORMATTED)
+        regularPrice(format: FORMATTED)
+        onSale
         attributes {
           nodes {
             name

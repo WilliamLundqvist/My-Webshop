@@ -154,11 +154,23 @@ export const ProductDetail = ({ product }) => {
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold">{product.name}</h1>
-            {productPrice && (
+            {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && !product.onSale && (
               <p
                 className="text-xl font-medium mt-2"
                 dangerouslySetInnerHTML={{ __html: productPrice }}
               />
+            )}
+            {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && product.onSale && (
+              <div className="flex items-center gap-2">
+                <p
+                  className="text-xl font-medium mt-2"
+                  dangerouslySetInnerHTML={{ __html: productPrice }}
+                />
+                <p
+                  className="text-xl font-medium mt-2 line-through text-destructive"
+                  dangerouslySetInnerHTML={{ __html: product.regularPrice }}
+                />
+              </div>
             )}
           </div>
           <div

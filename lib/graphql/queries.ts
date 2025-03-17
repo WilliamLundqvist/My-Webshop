@@ -32,6 +32,8 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery> = gql`
         ... on SimpleProduct {
           price(format: FORMATTED)
           stockStatus
+          regularPrice(format: FORMATTED)
+          onSale
           galleryImages {
             nodes {
               sourceUrl
@@ -44,6 +46,8 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery> = gql`
         ... on VariableProduct {
           stockStatus
           price(format: FORMATTED)
+          regularPrice(format: FORMATTED)
+          onSale
           galleryImages {
             nodes {
               sourceUrl
@@ -86,7 +90,10 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<GetProductBySlugQuery> = gql
         description(format: RAW)
         slug
         sku
+
         price(format: FORMATTED)
+        regularPrice(format: FORMATTED)
+        onSale
         image {
           sourceUrl
         }
@@ -99,6 +106,8 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<GetProductBySlugQuery> = gql
         slug
         sku
         price(format: FORMATTED)
+        regularPrice(format: FORMATTED)
+        onSale
         attributes {
           nodes {
             name

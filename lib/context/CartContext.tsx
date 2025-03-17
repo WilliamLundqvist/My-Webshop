@@ -50,7 +50,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     isValidating
   } = useSWR('cart', fetchCart, {
     refreshInterval: 60000,
-    revalidateOnFocus: true,
+    revalidateOnFocus: false,
     fallbackData: emptyCart,
     keepPreviousData: true, // Behåll tidigare data medan ny data hämtas
     revalidateIfStale: true,

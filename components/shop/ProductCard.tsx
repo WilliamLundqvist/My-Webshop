@@ -100,11 +100,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </span>
                   </div>
                 )}
-                {productPrice && (
+                {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && !product.onSale && (
                   <div
                     className="font-bold text-sm"
                     dangerouslySetInnerHTML={{ __html: productPrice }}
                   ></div>
+                )}
+                {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && product.onSale && (
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="font-bold text-sm"
+                      dangerouslySetInnerHTML={{ __html: product.price }}
+                    ></div>
+                    <div
+                      className="font-bold text-sm line-through text-destructive"
+                      dangerouslySetInnerHTML={{ __html: product.regularPrice }}
+                    ></div>
+                  </div>
                 )}
               </CardContent>
             </div>

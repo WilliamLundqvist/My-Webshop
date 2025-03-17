@@ -333,7 +333,7 @@ function FilterSidebarComponent() {
 
 
   return (
-    <Sidebar variant="floating" className="h-[calc(100vh-80px)] sticky top-[80px]">
+    <Sidebar variant="floating" className="h-[calc(100vh-80px)] sticky top-[70px]">
       <SidebarHeader className="border-b p-4 bp-6 ">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
