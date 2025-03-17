@@ -1,10 +1,23 @@
 "use client";
 import { useCart } from "@/lib/context/CartContext";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
+
+// Debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 // Custom hook för att lyssna på ändringar i kundvagnen
 function useCartChangeListener(onIncrease: () => void) {
@@ -42,6 +55,7 @@ function useCartChangeListener(onIncrease: () => void) {
 export default function CartDropdown() {
   const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Använd vår custom hook för att lyssna på ändringar i kundvagnen
@@ -66,6 +80,29 @@ export default function CartDropdown() {
   // Kontrollera om vi har data att visa, även om loading är true
   const hasCartData = cart && cart.contents && cart.contents.nodes;
   const isCartEmpty = !hasCartData || cart.isEmpty || cart.contents.itemCount === 0;
+
+  // State to track item quantities for optimistic updates
+  const [itemQuantities, setItemQuantities] = useState(() => {
+    const quantities = {};
+    if (cart && cart.contents && cart.contents.nodes) {
+      cart.contents.nodes.forEach((item) => {
+        quantities[item.key] = item.quantity;
+      });
+    }
+    return quantities;
+  });
+
+  // Function to handle quantity change
+  const handleQuantityChange = (key, newQuantity) => {
+    setItemQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [key]: newQuantity,
+    }));
+    debouncedUpdateCartItem({ key, quantity: newQuantity });
+  };
+
+  // Debounced update cart item function
+  const debouncedUpdateCartItem = useCallback(debounce(updateCartItem, 700), []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -147,7 +184,7 @@ export default function CartDropdown() {
                         )}
                         <div className="flex items-end mt-auto justify-between">
                           <span className="text-xs">
-                            Antal: {item.quantity}
+                            Antal: {itemQuantities[item.key]}
                           </span>
                           <span
                             className="text-sm font-medium"
@@ -165,7 +202,8 @@ export default function CartDropdown() {
                           <Trash2 className="w-2 h-2" />
                         </Button>
                         <div className="flex items-center gap-2 justify-center">
-                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => updateCartItem({ key: item.key, quantity: item.quantity - 1 })} size="icon"><Minus className="w-2 h-2" /></Button><Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => updateCartItem({ key: item.key, quantity: item.quantity + 1 })} size="icon"><Plus className="w-2 h-2" /></Button>
+                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => handleQuantityChange(item.key, itemQuantities[item.key] - 1)} size="icon"><Minus className="w-2 h-2" /></Button>
+                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => handleQuantityChange(item.key, itemQuantities[item.key] + 1)} size="icon"><Plus className="w-2 h-2" /></Button>
                         </div>
                       </div>
                     </div>
