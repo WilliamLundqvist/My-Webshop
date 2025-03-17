@@ -20,37 +20,7 @@ function debounce(func, wait) {
 }
 
 // Custom hook för att lyssna på ändringar i kundvagnen
-function useCartChangeListener(onIncrease: () => void) {
-  const { cart, loading } = useCart();
-  const prevItemCount = useRef<number>(0);
 
-  useEffect(() => {
-    console.log("Cart updated:", {
-      loading,
-      currentCount: cart?.contents?.itemCount || 0,
-      prevCount: prevItemCount.current
-    });
-
-    // Kör bara när cart har laddats och inte är null
-    if (!loading && cart) {
-      const currentItemCount = cart.contents?.itemCount || 0;
-
-      // Om detta är första laddningen, bara spara värdet
-      if (prevItemCount.current === 0) {
-        prevItemCount.current = currentItemCount;
-        return;
-      }
-
-      // Om antalet varor har ökat, anropa callback
-      if (currentItemCount > prevItemCount.current) {
-        onIncrease();
-      }
-
-      // Uppdatera referensvärdet
-      prevItemCount.current = currentItemCount;
-    }
-  }, [cart, loading, onIncrease]);
-}
 
 export default function CartDropdown() {
   const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
@@ -58,10 +28,6 @@ export default function CartDropdown() {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Använd vår custom hook för att lyssna på ändringar i kundvagnen
-  useCartChangeListener(() => {
-    setIsOpen(true);
-  });
 
   // Stäng dropdown när man klickar utanför
   useEffect(() => {
@@ -92,8 +58,25 @@ export default function CartDropdown() {
     return quantities;
   });
 
+  // Uppdatera itemQuantities när cart ändras
+  useEffect(() => {
+    if (cart && cart.contents && cart.contents.nodes) {
+      const newQuantities = {};
+      cart.contents.nodes.forEach((item) => {
+        newQuantities[item.key] = item.quantity;
+      });
+      setItemQuantities(newQuantities);
+    }
+    setIsOpen(true);
+  }, [cart]);
+
   // Function to handle quantity change
-  const handleQuantityChange = (key, newQuantity) => {
+  const handleQuantityChange = (key: string, newQuantity: number) => {
+    // Förhindra att minska antalet under 1
+    if (newQuantity < 1) {
+      return;
+    }
+
     setItemQuantities((prevQuantities) => ({
       ...prevQuantities,
       [key]: newQuantity,

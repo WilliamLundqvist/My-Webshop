@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { loginAction } from "@/app/login/action"
 import { useFormState } from "react-dom";
-
+import Link from "next/link";
 export function LoginForm({
   className,
   ...props
@@ -52,11 +52,11 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input 
-                  id="password" 
-                  name="password" 
-                  type="password" 
-                  required 
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
                 />
               </div>
               <div className="flex flex-col gap-3">
@@ -67,9 +67,7 @@ export function LoginForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
+              <Link href="/sign-up">Sign up</Link>
             </div>
           </form>
         </CardContent>

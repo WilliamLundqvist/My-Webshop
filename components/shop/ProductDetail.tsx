@@ -11,7 +11,7 @@ import {
 import ItemCarousel from "./ItemCarousel";
 import ItemSelector from "./ItemSelector";
 import { useCart } from "@/lib/context/CartContext";
-import { AddToCartInput, AddToCartMutationVariables } from "@/lib/graphql/generated/graphql";
+import { AddToCartMutationVariables } from "@/lib/graphql/generated/graphql";
 
 
 

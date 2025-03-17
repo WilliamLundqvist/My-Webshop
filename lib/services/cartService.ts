@@ -63,7 +63,7 @@ export async function addToCart(variables: AddToCartMutationVariables) {
             variables: { input }
         });
         
-        console.log('Add to cart response:', data);
+        console.log('Add to cart response:', data.addToCart.cart);
         return data.addToCart.cart;
     } catch (error) {
         console.error('Error adding to cart:', error);

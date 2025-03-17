@@ -11165,14 +11165,10 @@ export enum PostStatusEnum {
   AutoDraft = 'AUTO_DRAFT',
   /** Objects with the draft status */
   Draft = 'DRAFT',
-  /** Objects with the failed status */
-  Failed = 'FAILED',
   /** Objects with the future status */
   Future = 'FUTURE',
   /** Objects with the inherit status */
   Inherit = 'INHERIT',
-  /** Objects with the in-progress status */
-  InProgress = 'IN_PROGRESS',
   /** Objects with the pending status */
   Pending = 'PENDING',
   /** Objects with the private status */
@@ -25185,6 +25181,22 @@ export type UpdateCartItemQuantitiesMutationVariables = Exact<{
 
 export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
+export type RegisterCustomerMutationVariables = Exact<{
+  country: InputMaybe<CountriesEnum>;
+  postcode: InputMaybe<Scalars['String']['input']>;
+  phone: InputMaybe<Scalars['String']['input']>;
+  lastName: InputMaybe<Scalars['String']['input']>;
+  email: InputMaybe<Scalars['String']['input']>;
+  firstName: InputMaybe<Scalars['String']['input']>;
+  address1: InputMaybe<Scalars['String']['input']>;
+  address2: InputMaybe<Scalars['String']['input']>;
+  city: InputMaybe<Scalars['String']['input']>;
+  password: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type RegisterCustomerMutation = { __typename?: 'RootMutation', registerCustomer: { __typename?: 'RegisterCustomerPayload', clientMutationId: string | null } | null };
+
 export type GetProductsQueryVariables = Exact<{
   first: InputMaybe<Scalars['Int']['input']>;
   after: InputMaybe<Scalars['String']['input']>;
@@ -25741,6 +25753,50 @@ export function useUpdateCartItemQuantitiesMutation(baseOptions?: Apollo.Mutatio
 export type UpdateCartItemQuantitiesMutationHookResult = ReturnType<typeof useUpdateCartItemQuantitiesMutation>;
 export type UpdateCartItemQuantitiesMutationResult = Apollo.MutationResult<UpdateCartItemQuantitiesMutation>;
 export type UpdateCartItemQuantitiesMutationOptions = Apollo.BaseMutationOptions<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>;
+export const RegisterCustomerDocument = gql`
+    mutation RegisterCustomer($country: CountriesEnum, $postcode: String, $phone: String, $lastName: String, $email: String, $firstName: String, $address1: String, $address2: String, $city: String, $password: String) {
+  registerCustomer(
+    input: {email: $email, firstName: $firstName, lastName: $lastName, shipping: {address1: $address1, address2: $address2, city: $city, country: $country, phone: $phone, postcode: $postcode}, password: $password, shippingSameAsBilling: true}
+  ) {
+    clientMutationId
+  }
+}
+    `;
+export type RegisterCustomerMutationFn = Apollo.MutationFunction<RegisterCustomerMutation, RegisterCustomerMutationVariables>;
+
+/**
+ * __useRegisterCustomerMutation__
+ *
+ * To run a mutation, you first call `useRegisterCustomerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterCustomerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerCustomerMutation, { data, loading, error }] = useRegisterCustomerMutation({
+ *   variables: {
+ *      country: // value for 'country'
+ *      postcode: // value for 'postcode'
+ *      phone: // value for 'phone'
+ *      lastName: // value for 'lastName'
+ *      email: // value for 'email'
+ *      firstName: // value for 'firstName'
+ *      address1: // value for 'address1'
+ *      address2: // value for 'address2'
+ *      city: // value for 'city'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useRegisterCustomerMutation(baseOptions?: Apollo.MutationHookOptions<RegisterCustomerMutation, RegisterCustomerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterCustomerMutation, RegisterCustomerMutationVariables>(RegisterCustomerDocument, options);
+      }
+export type RegisterCustomerMutationHookResult = ReturnType<typeof useRegisterCustomerMutation>;
+export type RegisterCustomerMutationResult = Apollo.MutationResult<RegisterCustomerMutation>;
+export type RegisterCustomerMutationOptions = Apollo.BaseMutationOptions<RegisterCustomerMutation, RegisterCustomerMutationVariables>;
 export const GetProductsDocument = gql`
     query GetProducts($first: Int, $after: String, $orderby: [ProductsOrderbyInput], $search: String, $category: String, $maxPrice: Float, $minPrice: Float) {
   products(

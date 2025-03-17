@@ -31,7 +31,7 @@ export default async function RootLayout({ children }) {
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head>
-      <body className={`${poppins.className} min-h-screen bg-background text-foreground`}>
+      <body className={`${poppins.className} min-h-screen flex flex-col bg-background text-foreground`}>
         <FaustProvider>
           <CartProvider>
             <Providers>
@@ -39,7 +39,7 @@ export default async function RootLayout({ children }) {
                 generalSettings={headerData.data.generalSettings}
                 primaryMenuItems={headerData.data.primaryMenuItems}
               />
-              <main>{children}</main>
+              <main className="flex-1">{children}</main>
               <Footer
                 menuItems={footerData.data.footerMenuItems.nodes || []}
                 siteName={headerData.data.generalSettings.title}
