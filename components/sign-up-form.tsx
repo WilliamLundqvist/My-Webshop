@@ -8,13 +8,13 @@ import { Label } from "./ui/label";
 import { cn } from "@/lib/utils/utils";
 import Link from "next/link";
 import { signUpAction } from "@/app/sign-up/action";
-import { Checkbox } from "./ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { registerSchema, type RegisterFormData } from "@/lib/validation/registerSchema";
 import { CountriesEnum } from "@/lib/graphql/generated/graphql";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
+
 const SignUpForm = () => {
   const [isPending, startTransition] = useTransition();
   const [formState, setFormState] = React.useState<{
