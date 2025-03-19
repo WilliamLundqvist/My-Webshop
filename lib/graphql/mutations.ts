@@ -4,6 +4,8 @@ import {
   UpdateCartItemQuantitiesMutation,
   RegisterCustomerMutation,
   AddToCartMutation,
+  CheckoutMutation,
+  CheckoutMutationVariables,
 } from "./generated/graphql";
 import { cartFragment } from "./fragments";
 
@@ -71,6 +73,37 @@ export const REGISTER_CUSTOMER: TypedDocumentNode<RegisterCustomerMutation> = gq
       }
     ) {
       clientMutationId
+    }
+  }
+`;
+
+export const CHECKOUT: TypedDocumentNode<CheckoutMutation, CheckoutMutationVariables> = gql`
+  mutation Checkout(
+    $paymentMethod: String!
+    $customerNote: String
+    $billing: CustomerAddressInput
+    $shipping: CustomerAddressInput
+    $shipToDifferentAddress: Boolean
+  ) {
+    checkout(
+      input: {
+        paymentMethod: $paymentMethod
+        customerNote: $customerNote
+        billing: $billing
+        shipping: $shipping
+        shipToDifferentAddress: $shipToDifferentAddress
+      }
+    ) {
+      clientMutationId
+      order {
+        id
+        databaseId
+        orderKey
+        orderNumber
+        status
+        total
+      }
+      redirect
     }
   }
 `;

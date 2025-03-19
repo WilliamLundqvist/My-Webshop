@@ -5,7 +5,6 @@ import { logout } from "./actions";
 import Link from "next/link";
 import { GET_CART, GET_VIEWER } from "@/lib/graphql/queries";
 
-
 export default async function Page() {
   const client = await getAuthClient();
 
@@ -40,10 +39,18 @@ export default async function Page() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produkt</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pris</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Antal</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Totalt</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Produkt
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Pris
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Antal
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Totalt
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -53,11 +60,14 @@ export default async function Page() {
 
                       // Hitta attribut (färg, storlek, etc) om det finns
                       const attributes = variation?.attributes?.nodes || [];
-                      const color = attributes.find(attr =>
-                        attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
+                      const color = attributes.find(
+                        (attr) =>
+                          attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
                       )?.value;
-                      const size = attributes.find(attr =>
-                        attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
+                      const size = attributes.find(
+                        (attr) =>
+                          attr.name.toLowerCase() === "size" ||
+                          attr.name.toLowerCase() === "storlek"
                       )?.value;
 
                       return (
@@ -100,7 +110,9 @@ export default async function Page() {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-right font-medium">Totalsumma:</td>
+                      <td colSpan={3} className="px-6 py-4 text-right font-medium">
+                        Totalsumma:
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div dangerouslySetInnerHTML={{ __html: cartData.data.cart.total }} />
                       </td>
@@ -117,20 +129,6 @@ export default async function Page() {
                 </Link>
               </div>
             </>
-          )}
-        </div>
-
-        {/* Inläggssektionen */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Mina inlägg</h3>
-          {viewerData.data.viewer.posts.nodes.length === 0 ? (
-            <p>Du har inga inlägg</p>
-          ) : (
-            <ul className="list-disc pl-5">
-              {viewerData.data.viewer.posts.nodes.map((post) => (
-                <li key={post.id} className="mb-1">{post.title}</li>
-              ))}
-            </ul>
           )}
         </div>
 

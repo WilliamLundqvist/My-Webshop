@@ -244,3 +244,51 @@ export const GET_CART: TypedDocumentNode<GetCartQuery, GetCartQueryVariables> = 
   }
   ${cartFragment}
 `;
+
+export const GET_CUSTOMER = gql`
+  query GetCustomer {
+    customer {
+      firstName
+      lastName
+      email
+      billing {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+        email
+        phone
+        company
+      }
+      shipping {
+        firstName
+        lastName
+        address1
+        address2
+        city
+        state
+        postcode
+        country
+        phone
+        company
+      }
+    }
+  }
+`;
+
+export const GET_PAYMENT_METHODS = gql`
+  query GetPaymentMethods {
+    paymentGateways {
+      nodes {
+        id
+        title
+        description
+        icon
+      }
+    }
+  }
+`;

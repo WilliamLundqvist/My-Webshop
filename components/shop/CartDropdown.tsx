@@ -14,6 +14,7 @@ import {
   getCartItemCount,
   getCartItemColor,
   getCartItemSize,
+  getCartTotal,
 } from "@/lib/utils/cartUtils";
 
 export default function CartDropdown() {
@@ -227,30 +228,30 @@ export default function CartDropdown() {
               )}
 
               {/* Totalsumma och knappar */}
-              <div className="p-4 border-t">
-                <div className="flex justify-between mb-4">
-                  <span className="font-medium">Totalt:</span>
-                  <span className="font-bold">
-                    {cart?.total ? formatPrice(cart.total) : "0 kr"}
-                  </span>
+              {!checkCartEmpty(cart) && (
+                <div className="p-4 border-t">
+                  <div className="flex justify-between mb-4">
+                    <span className="font-medium">Totalt:</span>
+                    <span className="font-bold">{formatPrice(getCartTotal(cart))}</span>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <Link
+                      href="/cart"
+                      className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded text-center hover:bg-gray-300"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Visa kundvagn
+                    </Link>
+                    <Link
+                      href="/checkout"
+                      className="w-full bg-black text-white py-2 px-4 rounded text-center hover:bg-gray-900"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Till kassan
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  <Link
-                    href="/cart"
-                    className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded text-center hover:bg-gray-300"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Visa kundvagn
-                  </Link>
-                  <Link
-                    href="/checkout"
-                    className="w-full bg-black text-white py-2 px-4 rounded text-center hover:bg-gray-900"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Till kassan
-                  </Link>
-                </div>
-              </div>
+              )}
             </>
           )}
         </div>

@@ -10315,14 +10315,10 @@ export enum PostStatusEnum {
   AutoDraft = 'AUTO_DRAFT',
   /** Objects with the draft status */
   Draft = 'DRAFT',
-  /** Objects with the failed status */
-  Failed = 'FAILED',
   /** Objects with the future status */
   Future = 'FUTURE',
   /** Objects with the inherit status */
   Inherit = 'INHERIT',
-  /** Objects with the in-progress status */
-  InProgress = 'IN_PROGRESS',
   /** Objects with the pending status */
   Pending = 'PENDING',
   /** Objects with the private status */
@@ -23992,6 +23988,32 @@ export type RegisterCustomerMutationVariables = Exact<{
 
 export type RegisterCustomerMutation = { __typename?: 'RootMutation', registerCustomer: { __typename?: 'RegisterCustomerPayload', clientMutationId: string | null } | null };
 
+export type CreateOrderMutationVariables = Exact<{
+  paymentMethod: Scalars['String']['input'];
+  isPaid: InputMaybe<Scalars['Boolean']['input']>;
+  transactionId: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<OrderStatusEnum>;
+  customerNote: InputMaybe<Scalars['String']['input']>;
+  billing: InputMaybe<CustomerAddressInput>;
+  shipping: InputMaybe<CustomerAddressInput>;
+  metaData: InputMaybe<Array<InputMaybe<MetaDataInput>> | InputMaybe<MetaDataInput>>;
+  lineItems: InputMaybe<Array<InputMaybe<LineItemInput>> | InputMaybe<LineItemInput>>;
+}>;
+
+
+export type CreateOrderMutation = { __typename?: 'RootMutation', createOrder: { __typename?: 'CreateOrderPayload', clientMutationId: string | null, order: { __typename?: 'Order', id: string, databaseId: number | null, orderKey: string | null, orderNumber: string | null, status: OrderStatusEnum | null, total: string | null } | null } | null };
+
+export type CheckoutMutationVariables = Exact<{
+  paymentMethod: Scalars['String']['input'];
+  customerNote: InputMaybe<Scalars['String']['input']>;
+  billing: InputMaybe<CustomerAddressInput>;
+  shipping: InputMaybe<CustomerAddressInput>;
+  shipToDifferentAddress: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type CheckoutMutation = { __typename?: 'RootMutation', checkout: { __typename?: 'CheckoutPayload', clientMutationId: string | null, redirect: string | null, order: { __typename?: 'Order', id: string, databaseId: number | null, orderKey: string | null, orderNumber: string | null, status: OrderStatusEnum | null, total: string | null } | null } | null };
+
 export type GetProductsQueryVariables = Exact<{
   first: InputMaybe<Scalars['Int']['input']>;
   after: InputMaybe<Scalars['String']['input']>;
@@ -24046,6 +24068,16 @@ export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
+
+export type GetCustomerQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCustomerQuery = { __typename?: 'RootQuery', customer: { __typename?: 'Customer', firstName: string | null, lastName: string | null, email: string | null, billing: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, postcode: string | null, country: CountriesEnum | null, email: string | null, phone: string | null, company: string | null } | null, shipping: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, postcode: string | null, country: CountriesEnum | null, phone: string | null, company: string | null } | null } | null };
+
+export type GetPaymentMethodsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPaymentMethodsQuery = { __typename?: 'RootQuery', paymentGateways: { __typename?: 'RootQueryToPaymentGatewayConnection', nodes: Array<{ __typename?: 'PaymentGateway', id: string, title: string | null, description: string | null, icon: string | null }> } | null };
 
 export const CartFragmentFragmentDoc = gql`
     fragment CartFragment on Cart {
@@ -24250,6 +24282,105 @@ export function useRegisterCustomerMutation(baseOptions?: Apollo.MutationHookOpt
 export type RegisterCustomerMutationHookResult = ReturnType<typeof useRegisterCustomerMutation>;
 export type RegisterCustomerMutationResult = Apollo.MutationResult<RegisterCustomerMutation>;
 export type RegisterCustomerMutationOptions = Apollo.BaseMutationOptions<RegisterCustomerMutation, RegisterCustomerMutationVariables>;
+export const CreateOrderDocument = gql`
+    mutation CreateOrder($paymentMethod: String!, $isPaid: Boolean, $transactionId: String, $status: OrderStatusEnum, $customerNote: String, $billing: CustomerAddressInput, $shipping: CustomerAddressInput, $metaData: [MetaDataInput], $lineItems: [LineItemInput]) {
+  createOrder(
+    input: {paymentMethod: $paymentMethod, isPaid: $isPaid, transactionId: $transactionId, status: $status, customerNote: $customerNote, billing: $billing, shipping: $shipping, metaData: $metaData, lineItems: $lineItems}
+  ) {
+    clientMutationId
+    order {
+      id
+      databaseId
+      orderKey
+      orderNumber
+      status
+      total
+    }
+  }
+}
+    `;
+export type CreateOrderMutationFn = Apollo.MutationFunction<CreateOrderMutation, CreateOrderMutationVariables>;
+
+/**
+ * __useCreateOrderMutation__
+ *
+ * To run a mutation, you first call `useCreateOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrderMutation, { data, loading, error }] = useCreateOrderMutation({
+ *   variables: {
+ *      paymentMethod: // value for 'paymentMethod'
+ *      isPaid: // value for 'isPaid'
+ *      transactionId: // value for 'transactionId'
+ *      status: // value for 'status'
+ *      customerNote: // value for 'customerNote'
+ *      billing: // value for 'billing'
+ *      shipping: // value for 'shipping'
+ *      metaData: // value for 'metaData'
+ *      lineItems: // value for 'lineItems'
+ *   },
+ * });
+ */
+export function useCreateOrderMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrderMutation, CreateOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrderMutation, CreateOrderMutationVariables>(CreateOrderDocument, options);
+      }
+export type CreateOrderMutationHookResult = ReturnType<typeof useCreateOrderMutation>;
+export type CreateOrderMutationResult = Apollo.MutationResult<CreateOrderMutation>;
+export type CreateOrderMutationOptions = Apollo.BaseMutationOptions<CreateOrderMutation, CreateOrderMutationVariables>;
+export const CheckoutDocument = gql`
+    mutation Checkout($paymentMethod: String!, $customerNote: String, $billing: CustomerAddressInput, $shipping: CustomerAddressInput, $shipToDifferentAddress: Boolean) {
+  checkout(
+    input: {paymentMethod: $paymentMethod, customerNote: $customerNote, billing: $billing, shipping: $shipping, shipToDifferentAddress: $shipToDifferentAddress}
+  ) {
+    clientMutationId
+    order {
+      id
+      databaseId
+      orderKey
+      orderNumber
+      status
+      total
+    }
+    redirect
+  }
+}
+    `;
+export type CheckoutMutationFn = Apollo.MutationFunction<CheckoutMutation, CheckoutMutationVariables>;
+
+/**
+ * __useCheckoutMutation__
+ *
+ * To run a mutation, you first call `useCheckoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkoutMutation, { data, loading, error }] = useCheckoutMutation({
+ *   variables: {
+ *      paymentMethod: // value for 'paymentMethod'
+ *      customerNote: // value for 'customerNote'
+ *      billing: // value for 'billing'
+ *      shipping: // value for 'shipping'
+ *      shipToDifferentAddress: // value for 'shipToDifferentAddress'
+ *   },
+ * });
+ */
+export function useCheckoutMutation(baseOptions?: Apollo.MutationHookOptions<CheckoutMutation, CheckoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckoutMutation, CheckoutMutationVariables>(CheckoutDocument, options);
+      }
+export type CheckoutMutationHookResult = ReturnType<typeof useCheckoutMutation>;
+export type CheckoutMutationResult = Apollo.MutationResult<CheckoutMutation>;
+export type CheckoutMutationOptions = Apollo.BaseMutationOptions<CheckoutMutation, CheckoutMutationVariables>;
 export const GetProductsDocument = gql`
     query GetProducts($first: Int, $after: String, $orderby: [ProductsOrderbyInput], $search: String, $category: String, $maxPrice: Float, $minPrice: Float) {
   products(
@@ -24703,3 +24834,113 @@ export type GetCartQueryHookResult = ReturnType<typeof useGetCartQuery>;
 export type GetCartLazyQueryHookResult = ReturnType<typeof useGetCartLazyQuery>;
 export type GetCartSuspenseQueryHookResult = ReturnType<typeof useGetCartSuspenseQuery>;
 export type GetCartQueryResult = Apollo.QueryResult<GetCartQuery, GetCartQueryVariables>;
+export const GetCustomerDocument = gql`
+    query GetCustomer {
+  customer {
+    firstName
+    lastName
+    email
+    billing {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      email
+      phone
+      company
+    }
+    shipping {
+      firstName
+      lastName
+      address1
+      address2
+      city
+      state
+      postcode
+      country
+      phone
+      company
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCustomerQuery__
+ *
+ * To run a query within a React component, call `useGetCustomerQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCustomerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCustomerQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCustomerQuery(baseOptions?: Apollo.QueryHookOptions<GetCustomerQuery, GetCustomerQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCustomerQuery, GetCustomerQueryVariables>(GetCustomerDocument, options);
+      }
+export function useGetCustomerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCustomerQuery, GetCustomerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCustomerQuery, GetCustomerQueryVariables>(GetCustomerDocument, options);
+        }
+export function useGetCustomerSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCustomerQuery, GetCustomerQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCustomerQuery, GetCustomerQueryVariables>(GetCustomerDocument, options);
+        }
+export type GetCustomerQueryHookResult = ReturnType<typeof useGetCustomerQuery>;
+export type GetCustomerLazyQueryHookResult = ReturnType<typeof useGetCustomerLazyQuery>;
+export type GetCustomerSuspenseQueryHookResult = ReturnType<typeof useGetCustomerSuspenseQuery>;
+export type GetCustomerQueryResult = Apollo.QueryResult<GetCustomerQuery, GetCustomerQueryVariables>;
+export const GetPaymentMethodsDocument = gql`
+    query GetPaymentMethods {
+  paymentGateways {
+    nodes {
+      id
+      title
+      description
+      icon
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPaymentMethodsQuery__
+ *
+ * To run a query within a React component, call `useGetPaymentMethodsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPaymentMethodsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPaymentMethodsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPaymentMethodsQuery(baseOptions?: Apollo.QueryHookOptions<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>(GetPaymentMethodsDocument, options);
+      }
+export function useGetPaymentMethodsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>(GetPaymentMethodsDocument, options);
+        }
+export function useGetPaymentMethodsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>(GetPaymentMethodsDocument, options);
+        }
+export type GetPaymentMethodsQueryHookResult = ReturnType<typeof useGetPaymentMethodsQuery>;
+export type GetPaymentMethodsLazyQueryHookResult = ReturnType<typeof useGetPaymentMethodsLazyQuery>;
+export type GetPaymentMethodsSuspenseQueryHookResult = ReturnType<typeof useGetPaymentMethodsSuspenseQuery>;
+export type GetPaymentMethodsQueryResult = Apollo.QueryResult<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>;
