@@ -55,9 +55,7 @@ export default async function ProductPage({ params, searchParams }) {
           Product not found.
         </div>
         <Button asChild variant="outline">
-          <Link href={backUrl}>
-            {hasSearchContext ? "Back to Results" : "Back to Products"}
-          </Link>
+          <Link href={backUrl}>{hasSearchContext ? "Back to Results" : "Back to Products"}</Link>
         </Button>
       </div>
     );

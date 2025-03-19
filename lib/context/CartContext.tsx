@@ -1,18 +1,22 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import useSWR from 'swr';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import useSWR from "swr";
 import {
   getCart as fetchCart,
   addToCart as apiAddToCart,
   updateCartItem as apiUpdateCartItem,
-  removeCartItem as apiRemoveCartItem
-} from '@/lib/services/cartService';
-import { GetCartQuery, UpdateCartItemQuantitiesMutationVariables, AddToCartMutationVariables } from '../graphql/generated/graphql';
-import { useRouter } from 'next/navigation';
+  removeCartItem as apiRemoveCartItem,
+} from "@/lib/services/cartService";
+import {
+  GetCartQuery,
+  UpdateCartItemQuantitiesMutationVariables,
+  AddToCartMutationVariables,
+} from "../graphql/generated/graphql";
+import { useRouter } from "next/navigation";
 
 // Mer explicit typning
 interface CartContextType {
-  cart: GetCartQuery['cart'];
+  cart: GetCartQuery["cart"];
   loading: boolean;
   processingItems: string[];
   error: any;
@@ -27,11 +31,11 @@ interface CartContextType {
 const emptyCart = {
   contents: {
     nodes: [],
-    itemCount: 0
+    itemCount: 0,
   },
   subtotal: "0",
   total: "0",
-  isEmpty: true
+  isEmpty: true,
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -47,19 +51,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     data: cart,
     error: fetchError,
     mutate: refreshCart,
-    isValidating
-  } = useSWR('cart', fetchCart, {
+    isValidating,
+  } = useSWR("cart", fetchCart, {
     refreshInterval: 60000,
     revalidateOnFocus: false,
     fallbackData: emptyCart,
     keepPreviousData: true, // Behåll tidigare data medan ny data hämtas
     revalidateIfStale: true,
-    dedupingInterval: 2000 // Förhindra för många förfrågningar på kort tid
+    dedupingInterval: 2000, // Förhindra för många förfrågningar på kort tid
   });
-
-  // Ändra loading-logiken för att inte visa loading när vi har gammal data
-  // Nu visar vi bara loading när vi inte har någon data alls
-  const loading = (!cart && !fetchError) || (actionInProgress && !cart);
 
   // Centraliserad addToCart funktion
   const addToCart = async (input: AddToCartMutationVariables) => {
@@ -69,7 +69,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       // Optimistisk uppdatering - anta att det kommer att lyckas
       // Detta gör att UI uppdateras omedelbart medan API-anropet görs
-      const currentCart = cart || emptyCart;
 
       // Anropa API
       const updatedCart = await apiAddToCart(input);
@@ -78,19 +77,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (updatedCart === false) {
         setActionInProgress(false);
         // Omdirigera till inloggningssidan
-        router.push('/login');
+        router.push("/login");
         return false;
       }
 
       // Uppdatera global cart state endast om API-anropet lyckas
       // Använd false för revalidate för att använda den returnerade datan direkt
-      await refreshCart(updatedCart as GetCartQuery['cart'], false);
+      await refreshCart(updatedCart as GetCartQuery["cart"], false);
 
       setActionInProgress(false);
       return true;
     } catch (error) {
-      console.error('Error adding to cart:', error);
-      setActionError(error instanceof Error ? error.message : 'Failed to add to cart');
+      console.error("Error adding to cart:", error);
+      setActionError(error instanceof Error ? error.message : "Failed to add to cart");
 
       // Vid fel, återställ till den ursprungliga datan
       await refreshCart();
@@ -106,16 +105,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     try {
       // Optimistisk uppdatering kan implementeras här om det behövs
-      const currentCart = cart || emptyCart;
 
       const updatedCart = await apiUpdateCartItem(items);
-      await refreshCart(updatedCart as GetCartQuery['cart'], false);
+      await refreshCart(updatedCart as GetCartQuery["cart"], false);
 
       setActionInProgress(false);
       return true;
     } catch (error) {
-      console.error('Error updating cart item:', error);
-      setActionError(error instanceof Error ? error.message : 'Failed to update cart item');
+      console.error("Error updating cart item:", error);
+      setActionError(error instanceof Error ? error.message : "Failed to update cart item");
 
       // Vid fel, återställ till den ursprungliga datan
       await refreshCart();
@@ -126,29 +124,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeCartItem = async (keys: string[], all: boolean = false) => {
-    setProcessingItems(prev => [...prev, ...keys]);
+    setProcessingItems((prev) => [...prev, ...keys]);
     setActionInProgress(true);
     setActionError(null);
 
     try {
       // Optimistisk uppdatering kan implementeras här om det behövs
-      const currentCart = cart || emptyCart;
 
       const updatedCart = await apiRemoveCartItem(keys, all);
-      await refreshCart(updatedCart as GetCartQuery['cart'], false);
+      await refreshCart(updatedCart as GetCartQuery["cart"], false);
 
       setActionInProgress(false);
-      setProcessingItems(prev => prev.filter(key => !keys.includes(key)));
+      setProcessingItems((prev) => prev.filter((key) => !keys.includes(key)));
       return true;
     } catch (error) {
-      console.error('Error removing cart item:', error);
-      setActionError(error instanceof Error ? error.message : 'Failed to remove cart item');
+      console.error("Error removing cart item:", error);
+      setActionError(error instanceof Error ? error.message : "Failed to remove cart item");
 
       // Vid fel, återställ till den ursprungliga datan
       await refreshCart();
 
       setActionInProgress(false);
-      setProcessingItems(prev => prev.filter(key => !keys.includes(key)));
+      setProcessingItems((prev) => prev.filter((key) => !keys.includes(key)));
       return false;
     }
   };
@@ -161,7 +158,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addToCart,
     refreshCart,
     updateCartItem,
-    removeCartItem
+    removeCartItem,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -170,7 +167,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
-} 
+}

@@ -1,26 +1,20 @@
 "use client";
 import { useCart } from "@/lib/context/CartContext";
 import Link from "next/link";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
-
-// Debounce utility function
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-// Custom hook för att lyssna på ändringar i kundvagnen
-
+import { useDebounce } from "@/hooks/useDebounce";
+import { formatPrice } from "@/lib/utils/formatters";
+import { CartType, CartItemType } from "@/types/cart";
+import {
+  getCartItems,
+  isCartEmpty as checkCartEmpty,
+  getCartItemCount,
+  getCartItemColor,
+  getCartItemSize,
+} from "@/lib/utils/cartUtils";
 
 export default function CartDropdown() {
   const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
@@ -28,8 +22,6 @@ export default function CartDropdown() {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-
-  // Stäng dropdown när man klickar utanför
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -43,36 +35,37 @@ export default function CartDropdown() {
     };
   }, []);
 
-  // Kontrollera om vi har data att visa, även om loading är true
-  const hasCartData = cart && cart.contents && cart.contents.nodes;
-  const isCartEmpty = !hasCartData || cart.isEmpty || cart.contents.itemCount === 0;
+  // Använd hjälpfunktioner för säkrare typkontroll
+  const cartItems = getCartItems(cart);
+  const hasCartData = cartItems.length > 0;
+  const isCartEmpty = checkCartEmpty(cart);
+  const itemCount = getCartItemCount(cart);
 
-  // State to track item quantities for optimistic updates
-  const [itemQuantities, setItemQuantities] = useState(() => {
-    const quantities = {};
-    if (cart && cart.contents && cart.contents.nodes) {
-      cart.contents.nodes.forEach((item) => {
-        quantities[item.key] = item.quantity;
-      });
-    }
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(() => {
+    const quantities: Record<string, number> = {};
+    cartItems.forEach((item) => {
+      quantities[item.key] = item.quantity || 0;
+    });
     return quantities;
   });
 
-  // Uppdatera itemQuantities när cart ändras
   useEffect(() => {
-    if (cart && cart.contents && cart.contents.nodes) {
-      const newQuantities = {};
-      cart.contents.nodes.forEach((item) => {
-        newQuantities[item.key] = item.quantity;
+    if (cartItems.length > 0) {
+      const newQuantities: Record<string, number> = {};
+      cartItems.forEach((item) => {
+        newQuantities[item.key] = item.quantity || 0;
       });
       setItemQuantities(newQuantities);
     }
-    setIsOpen(true);
-  }, [cart]);
+  }, [cart, cartItems]);
 
-  // Function to handle quantity change
+  const debouncedUpdateCartItem = useDebounce(
+    (input: { key: string; quantity: number }) => updateCartItem(input),
+    700,
+    [updateCartItem]
+  );
+
   const handleQuantityChange = (key: string, newQuantity: number) => {
-    // Förhindra att minska antalet under 1
     if (newQuantity < 1) {
       return;
     }
@@ -84,9 +77,6 @@ export default function CartDropdown() {
     debouncedUpdateCartItem({ key, quantity: newQuantity });
   };
 
-  // Debounced update cart item function
-  const debouncedUpdateCartItem = useCallback(debounce(updateCartItem, 700), []);
-
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Cart Icon */}
@@ -96,14 +86,25 @@ export default function CartDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Visa kundvagn"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
 
         {/* Badge med antal produkter - visa alltid om vi har data */}
-        {hasCartData && cart.contents.itemCount > 0 && (
+        {hasCartData && itemCount > 0 && (
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {cart.contents.itemCount}
+            {itemCount}
           </span>
         )}
       </Button>
@@ -124,28 +125,36 @@ export default function CartDropdown() {
           ) : (
             <>
               <div className="max-h-80 overflow-y-auto p-2">
-                {cart.contents.nodes.map((item: any) => {
+                {cartItems.map((item: CartItemType) => {
                   const product = item.product.node;
                   const variation = item.variation?.node;
                   const isProcessing = processingItems.includes(item.key);
 
-                  // Hitta attribut (färg, storlek, etc) om det finns
-                  const attributes = variation?.attributes?.nodes || [];
-                  const color = attributes.find((attr: any) =>
-                    attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
-                  )?.value;
-                  const size = attributes.find((attr: any) =>
-                    attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
-                  )?.value;
+                  // Använd hjälpfunktionerna för att hämta färg och storlek
+                  const color = getCartItemColor(item);
+                  const size = getCartItemSize(item);
 
                   return (
-                    <div key={item.key} className={`flex gap-2 py-2 border-b ${isProcessing ? 'opacity-70' : ''}`}>
+                    <div
+                      key={item.key}
+                      className={`flex gap-2 py-2 border-b ${isProcessing ? "opacity-70" : ""}`}
+                    >
                       {/* Produktbild */}
-                      {variation?.image?.sourceUrl && (
+                      {variation?.image?.sourceUrl ? (
                         <div className="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded overflow-hidden">
                           <Image
                             src={variation.image.sourceUrl}
                             alt={variation.name || product.name}
+                            className="w-full h-full object-cover"
+                            width={64}
+                            height={64}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded overflow-hidden">
+                          <Image
+                            src={product.image.sourceUrl}
+                            alt={product.name}
                             className="w-full h-full object-cover"
                             width={64}
                             height={64}
@@ -166,13 +175,8 @@ export default function CartDropdown() {
                           </p>
                         )}
                         <div className="flex items-end mt-auto justify-between">
-                          <span className="text-xs">
-                            Antal: {itemQuantities[item.key]}
-                          </span>
-                          <span
-                            className="text-sm font-medium"
-                            dangerouslySetInnerHTML={{ __html: item.total }}
-                          />
+                          <span className="text-xs">Antal: {itemQuantities[item.key]}</span>
+                          <span className="text-sm font-medium">{formatPrice(item.total)}</span>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 items-center justify-center">
@@ -185,8 +189,28 @@ export default function CartDropdown() {
                           <Trash2 className="w-2 h-2" />
                         </Button>
                         <div className="flex items-center gap-2 justify-center">
-                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => handleQuantityChange(item.key, itemQuantities[item.key] - 1)} size="icon"><Minus className="w-2 h-2" /></Button>
-                          <Button className={`${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isProcessing || processingItems.length > 0} variant="outline" onClick={() => handleQuantityChange(item.key, itemQuantities[item.key] + 1)} size="icon"><Plus className="w-2 h-2" /></Button>
+                          <Button
+                            className={`${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={isProcessing || processingItems.length > 0}
+                            variant="outline"
+                            onClick={() =>
+                              handleQuantityChange(item.key, itemQuantities[item.key] - 1)
+                            }
+                            size="icon"
+                          >
+                            <Minus className="w-2 h-2" />
+                          </Button>
+                          <Button
+                            className={`${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+                            disabled={isProcessing || processingItems.length > 0}
+                            variant="outline"
+                            onClick={() =>
+                              handleQuantityChange(item.key, itemQuantities[item.key] + 1)
+                            }
+                            size="icon"
+                          >
+                            <Plus className="w-2 h-2" />
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -196,7 +220,7 @@ export default function CartDropdown() {
 
               {/* Visa loading-indikator om data uppdateras */}
               {loading && (
-                <div className="p-2 flex gap-2     items-center justify-center text-sm text-gray-500">
+                <div className="p-2 flex gap-2 items-center justify-center text-sm text-gray-500">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Uppdaterar...
                 </div>
@@ -206,10 +230,9 @@ export default function CartDropdown() {
               <div className="p-4 border-t">
                 <div className="flex justify-between mb-4">
                   <span className="font-medium">Totalt:</span>
-                  <span
-                    className="font-bold"
-                    dangerouslySetInnerHTML={{ __html: cart.total }}
-                  />
+                  <span className="font-bold">
+                    {cart?.total ? formatPrice(cart.total) : "0 kr"}
+                  </span>
                 </div>
                 <div className="flex flex-col space-y-2">
                   <Link

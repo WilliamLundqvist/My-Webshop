@@ -5,10 +5,10 @@ import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import CartDropdown from "./CartDropdown";
 
@@ -27,10 +27,7 @@ interface NavigationProps {
   };
 }
 
-export default function Navigation({
-  generalSettings,
-  primaryMenuItems,
-}: NavigationProps) {
+export default function Navigation({ generalSettings, primaryMenuItems }: NavigationProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
@@ -38,10 +35,7 @@ export default function Navigation({
   const section = pathname.split("/")[3];
 
   // Extract menu items directly from props - memoize to prevent unnecessary processing
-  const menuItems = useMemo(
-    () => primaryMenuItems?.nodes || [],
-    [primaryMenuItems]
-  );
+  const menuItems = useMemo(() => primaryMenuItems?.nodes || [], [primaryMenuItems]);
 
   // Function to check if a menu item is a category link
   const isCategoryLink = useCallback((uri: string) => {
@@ -65,9 +59,7 @@ export default function Navigation({
         const params = new URLSearchParams(window.location.search);
         params.set("search", searchQuery.trim());
         router.push(
-          section
-            ? `/shop/section/${section}?${params.toString()}`
-            : `/shop?${params.toString()}`
+          section ? `/shop/section/${section}?${params.toString()}` : `/shop?${params.toString()}`
         );
       }
     },
@@ -111,7 +103,7 @@ export default function Navigation({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="max-w-[1400px] mx-auto flex h-16 items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-6 flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Sheet>
@@ -128,36 +120,27 @@ export default function Navigation({
                   className="flex items-center space-x-2"
                   onClick={() => setIsSearchOpen(false)}
                 >
-                  <span className="font-bold">
-                    {generalSettings?.title || "Store"}
-                  </span>
+                  <span className="font-bold">{generalSettings?.title || "Store"}</span>
                 </Link>
                 <nav className="flex flex-col space-y-2">
                   {nonCategoryMenuItems.map((item) => (
                     <Button
                       key={item.id}
                       variant={pathname === item.uri ? "secondary" : "ghost"}
-                      className={cn(
-                        "justify-start",
-                        pathname === item.uri && "font-semibold"
-                      )}
+                      className={cn("justify-start", pathname === item.uri && "font-semibold")}
                       asChild
                     >
                       <Link href={item.uri}>{item.label}</Link>
                     </Button>
                   ))}
                 </nav>
-
               </div>
             </SheetContent>
           </Sheet>
-
         </div>
 
         <Link href="/" className="md:mr-6 flex items-center space-x-2">
-          <span className="text-xl font-bold">
-            {generalSettings?.title || "Store"}
-          </span>
+          <span className="text-xl font-bold">{generalSettings?.title || "Store"}</span>
         </Link>
 
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:space-x-1">
@@ -166,19 +149,12 @@ export default function Navigation({
             <Button
               key={item.id}
               variant={pathname === item.uri ? "secondary" : "ghost"}
-              className={cn(
-                "h-auto",
-                pathname === item.uri && "font-semibold"
-              )}
+              className={cn("h-auto", pathname === item.uri && "font-semibold")}
               asChild
             >
               <Link
                 href={item.uri}
-                className={cn(
-                  pathname === item.uri
-                    ? "text-foreground"
-                    : "text-muted-foreground"
-                )}
+                className={cn(pathname === item.uri ? "text-foreground" : "text-muted-foreground")}
               >
                 {item.label}
               </Link>
@@ -187,7 +163,6 @@ export default function Navigation({
         </nav>
 
         <div className="flex items-center space-x-4">
-
           <Link href="/my-account">
             <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
@@ -196,7 +171,6 @@ export default function Navigation({
           </Link>
 
           <CartDropdown />
-
         </div>
       </div>
     </header>

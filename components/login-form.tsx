@@ -1,21 +1,12 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { loginAction } from "@/app/login/action"
+import { cn } from "@/lib/utils/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { loginAction } from "@/app/login/action";
 import { useFormState } from "react-dom";
 import Link from "next/link";
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [state, formAction, isPending] = useFormState(loginAction, {});
 
   return (
@@ -24,9 +15,7 @@ export function LoginForm({
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           {state?.error && (
-            <CardDescription className="text-destructive">
-              {state.error}
-            </CardDescription>
+            <CardDescription className="text-destructive">{state.error}</CardDescription>
           )}
         </CardHeader>
         <CardContent>
@@ -52,12 +41,7 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                />
+                <Input id="password" name="password" type="password" required />
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" disabled={isPending} className="w-full">
@@ -66,12 +50,11 @@ export function LoginForm({
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/sign-up">Sign up</Link>
+              Don&apos;t have an account? <Link href="/sign-up">Sign up</Link>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

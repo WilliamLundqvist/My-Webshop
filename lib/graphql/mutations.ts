@@ -1,10 +1,9 @@
 import { gql, TypedDocumentNode } from "@apollo/client";
 import {
   RemoveItemsFromCartMutation,
-  UpdateCartItemQuantitiesMutation  ,
+  UpdateCartItemQuantitiesMutation,
   RegisterCustomerMutation,
   AddToCartMutation,
-
 } from "./generated/graphql";
 
 export const ADD_TO_CART: TypedDocumentNode<AddToCartMutation> = gql`
@@ -143,13 +142,36 @@ export const UPDATE_CART_ITEM: TypedDocumentNode<UpdateCartItemQuantitiesMutatio
 `;
 
 export const REGISTER_CUSTOMER: TypedDocumentNode<RegisterCustomerMutation> = gql`
-  mutation RegisterCustomer($country: CountriesEnum, $postcode: String, $phone: String, $lastName: String, $email: String, $firstName: String, $address1: String, $address2: String, $city: String, $password: String) {
+  mutation RegisterCustomer(
+    $country: CountriesEnum
+    $postcode: String
+    $phone: String
+    $lastName: String
+    $email: String
+    $firstName: String
+    $address1: String
+    $address2: String
+    $city: String
+    $password: String
+  ) {
     registerCustomer(
-      input: {email: $email, firstName: $firstName, lastName: $lastName, shipping: {address1: $address1, address2: $address2, city: $city, country: $country, phone: $phone, postcode: $postcode}, password: $password, shippingSameAsBilling: true}
+      input: {
+        email: $email
+        firstName: $firstName
+        lastName: $lastName
+        shipping: {
+          address1: $address1
+          address2: $address2
+          city: $city
+          country: $country
+          phone: $phone
+          postcode: $postcode
+        }
+        password: $password
+        shippingSameAsBilling: true
+      }
     ) {
       clientMutationId
     }
   }
 `;
-
-  

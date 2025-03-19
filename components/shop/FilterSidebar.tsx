@@ -3,8 +3,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter, ChevronRight, Search } from "lucide-react";
 import { useState, useCallback, useMemo, memo, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
-import debounce from "lodash/debounce";
 import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/useDebounce";
 
 import {
   Accordion,
@@ -49,50 +49,34 @@ function FilterSidebarComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const section = useMemo(() => pathname.split("/")[3], [pathname]);
 
-  // Memoize URL params to prevent unnecessary renders
-  const currentSort = useMemo(
-    () => searchParams.get("sort") || "DATE",
-    [searchParams]
-  );
-  const currentOrder = useMemo(
-    () => searchParams.get("order") || "DESC",
-    [searchParams]
-  );
-  const currentCategory = useMemo(
-    () => searchParams.get("category") || "",
-    [searchParams]
-  );
-  const searchQuery = useMemo(
-    () => searchParams.get("search") || "",
-    [searchParams]
-  );
+  // Använd useMemo endast för komplexa operationer
+  const section = pathname.split("/")[3];
 
-  const currentPriceMin = useMemo(
-    () => Number(searchParams.get("min_price") || MIN_PRICE),
-    [searchParams]
-  );
-  const currentPriceMax = useMemo(
-    () => Number(searchParams.get("max_price") || MAX_PRICE),
-    [searchParams]
-  );
+  // Hämta URL-parametrar direkt utan onödig memoization
+  const currentSort = searchParams.get("sort") || "DATE";
+  const currentOrder = searchParams.get("order") || "DESC";
+  const currentCategory = searchParams.get("category") || "";
+  const searchQuery = searchParams.get("search") || "";
+  const currentPriceMin = Number(searchParams.get("min_price") || MIN_PRICE);
+  const currentPriceMax = Number(searchParams.get("max_price") || MAX_PRICE);
+
+  // Memoize sortKey för att förenkla hantering av sort+order kombinationen
+  const sortKey = useMemo(() => `${currentSort}-${currentOrder}`, [currentSort, currentOrder]);
 
   // Local state to track selected values - initialize only once
-  const [selectedSort, setSelectedSort] = useState(() =>
-    `${currentSort}-${currentOrder}`
-  );
+  const [selectedSort, setSelectedSort] = useState(() => sortKey);
   const [selectedCategory, setSelectedCategory] = useState(() => currentCategory);
-  const [priceRange, setPriceRange] = useState(() => [
-    currentPriceMin,
-    currentPriceMax,
-  ]);
+  const [priceRange, setPriceRange] = useState(() => [currentPriceMin, currentPriceMax]);
   const [searchTerm, setSearchTerm] = useState(() => searchQuery || "");
 
   // Memoize the navigation function to prevent recreating it on each render
-  const navigateWithParams = useCallback((params) => {
-    router.push(`${pathname}?${params.toString()}`);
-  }, [pathname, router]);
+  const navigateWithParams = useCallback(
+    (params) => {
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router]
+  );
 
   // Memoize the update filters function
   const updateFilters = useCallback(
@@ -156,9 +140,9 @@ function FilterSidebarComponent() {
     ]
   );
 
-  // Create debounced function for search - create only once
-  const debouncedSearch = useMemo(() =>
-    debounce((value) => {
+  // Använd vårt nya useDebounce-hook istället för att skapa debound-funktioner med useMemo
+  const debouncedSearch = useDebounce(
+    (value) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (value) {
@@ -168,17 +152,10 @@ function FilterSidebarComponent() {
       }
 
       navigateWithParams(params);
-    }, 500),
+    },
+    500,
     [searchParams, navigateWithParams]
   );
-
-  // Cleanup debounced functions on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-      debouncedUpdatePrice.cancel();
-    };
-  }, [debouncedSearch]);
 
   // Handle search input change
   const handleSearchChange = useCallback(
@@ -193,9 +170,9 @@ function FilterSidebarComponent() {
   // Use our custom hook to get category data
   const { categories, loading, error } = useCategoryData(section);
 
-  // Create debounced function for updating price - create only once
-  const debouncedUpdatePrice = useMemo(() =>
-    debounce((minPrice, maxPrice) => {
+  // Använd vårt nya useDebounce-hook istället
+  const debouncedUpdatePrice = useDebounce(
+    (minPrice, maxPrice) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (minPrice > MIN_PRICE) {
@@ -211,7 +188,8 @@ function FilterSidebarComponent() {
       }
 
       navigateWithParams(params);
-    }, 800),
+    },
+    800,
     [searchParams, navigateWithParams]
   );
 
@@ -219,9 +197,7 @@ function FilterSidebarComponent() {
   const handleSortChange = useCallback(
     (value) => {
       setSelectedSort(value);
-      const option = sortOptions.find(
-        (opt) => `${opt.value}-${opt.order}` === value
-      );
+      const option = sortOptions.find((opt) => `${opt.value}-${opt.order}` === value);
       if (option) {
         updateFilters({ sort: option.value, order: option.order });
       }
@@ -267,10 +243,9 @@ function FilterSidebarComponent() {
     return categories.map((category) => (
       <div key={category.id} className="space-y-1">
         <div
-          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${selectedCategory === category.slug
-            ? "bg-slate-100 font-medium"
-            : ""
-            }`}
+          className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
+            selectedCategory === category.slug ? "bg-slate-100 font-medium" : ""
+          }`}
           onClick={() => handleCategoryChange(category.slug)}
         >
           <div className="flex items-center justify-between">
@@ -287,13 +262,10 @@ function FilterSidebarComponent() {
             {category.children.nodes.map((grandchild) => (
               <div
                 key={grandchild.id}
-                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${selectedCategory === grandchild.slug
-                  ? "bg-slate-100 font-medium"
-                  : ""
-                  }`}
-                onClick={() =>
-                  handleCategoryChange(grandchild.slug)
-                }
+                className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
+                  selectedCategory === grandchild.slug ? "bg-slate-100 font-medium" : ""
+                }`}
+                onClick={() => handleCategoryChange(grandchild.slug)}
               >
                 {grandchild.name}
               </div>
@@ -309,28 +281,20 @@ function FilterSidebarComponent() {
     return sortOptions.map((option) => {
       const optionValue = `${option.value}-${option.order}`;
       return (
-        <div
-          key={optionValue}
-          className="flex items-center space-x-2 cursor-pointer"
-        >
+        <div key={optionValue} className="flex items-center space-x-2 cursor-pointer">
           <RadioGroupItem
             className="w-6 h-6"
             value={optionValue}
             id={`sort-${optionValue}`}
             checked={selectedSort === optionValue}
           />
-          <Label
-            htmlFor={`sort-${optionValue}`}
-            className="cursor-pointer w-full"
-          >
+          <Label htmlFor={`sort-${optionValue}`} className="cursor-pointer w-full">
             {option.label}
           </Label>
         </div>
       );
     });
   }, [selectedSort]);
-
-
 
   return (
     <Sidebar variant="floating" className="h-[calc(100vh-80px)] sticky top-[70px]">
@@ -384,9 +348,7 @@ function FilterSidebarComponent() {
                 Categories
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-2">
-                  {categoryList}
-                </div>
+                <div className="space-y-2">{categoryList}</div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem defaultValue="price" value="price">
@@ -405,15 +367,10 @@ function FilterSidebarComponent() {
                     className="mb-6"
                   />
                   <div className="flex items-center justify-between text-sm">
-                    <div className="border rounded-md px-2 py-1">
-                      ${priceRange[0]}
-                    </div>
+                    <div className="border rounded-md px-2 py-1">${priceRange[0]}</div>
                     <div>to</div>
                     <div className="border rounded-md px-2 py-1">
-                      $
-                      {priceRange[1] === MAX_PRICE
-                        ? `${MAX_PRICE}+`
-                        : priceRange[1]}
+                      ${priceRange[1] === MAX_PRICE ? `${MAX_PRICE}+` : priceRange[1]}
                     </div>
                   </div>
                 </div>
@@ -428,7 +385,6 @@ function FilterSidebarComponent() {
         </Button>
       </SidebarFooter>
     </Sidebar>
-
   );
 }
 

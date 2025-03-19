@@ -30,9 +30,7 @@ export const ProductSkeleton = () => (
         <div className="w-10 h-4 bg-gray-200 rounded animate-pulse" />
       </div>
     </CardContent>
-    <CardFooter className="mt-auto">
-
-    </CardFooter>
+    <CardFooter className="mt-auto"></CardFooter>
   </Card>
 );
 
@@ -63,7 +61,7 @@ export default function ShopLoading() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 w-full my-6">
-            {Array.from({ length: 12 }).map((_, index) => (
+            {Array.from({ length: 20 }).map((_, index) => (
               <div key={`skeleton-${index}`}>
                 <ProductSkeleton />
               </div>
@@ -73,10 +71,7 @@ export default function ShopLoading() {
           <Pagination className="my-8">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  className="pointer-events-none opacity-50"
-                />
+                <PaginationPrevious href="#" className="pointer-events-none opacity-50" />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#" isActive={true}>
@@ -84,10 +79,7 @@ export default function ShopLoading() {
                 </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  className="pointer-events-none opacity-50"
-                />
+                <PaginationNext href="#" className="pointer-events-none opacity-50" />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

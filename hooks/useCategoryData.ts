@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { useApolloClient } from '@apollo/client';
-import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from '@/lib/graphql/queries';
-import { processCategories } from '@/lib/utils';
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useApolloClient } from "@apollo/client";
+import { GET_CATEGORIES_AND_UNDER_CATEGORIES_BY_SECTION } from "@/lib/graphql/queries";
+import { processCategories } from "@/lib/utils/utils";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Custom hook to fetch and process category data with localStorage caching
@@ -10,7 +11,7 @@ export function useCategoryData(section: string) {
   // Use refs to track if we've already fetched to avoid duplicate requests in StrictMode
   const hasFetchedRef = useRef(false);
   const prevSectionRef = useRef(section);
-  const isMountedRef = useRef(true);
+  const isMountedRef = useIsMounted();
 
   const [categoryData, setCategoryData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -27,14 +28,6 @@ export function useCategoryData(section: string) {
     }
   }, [section]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
   // Memoize the fetch function to prevent recreating it on each render
   const fetchCategories = useCallback(async () => {
     // Skip if already fetched this section to avoid StrictMode double fetching
@@ -43,7 +36,7 @@ export function useCategoryData(section: string) {
     }
 
     // Create a cache key for this section
-    const cacheKey = `category_data_${section || 'default'}`;
+    const cacheKey = `category_data_${section || "default"}`;
 
     // If no section, just set empty data instead of returning early
     if (!section) {
@@ -56,7 +49,7 @@ export function useCategoryData(section: string) {
     if (loading) return;
 
     // Check if we have data in localStorage and it's for the current section
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         const cachedData = localStorage.getItem(cacheKey);
 
@@ -91,7 +84,7 @@ export function useCategoryData(section: string) {
       setLoading(false);
 
       // Store in localStorage for future visits
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         try {
           localStorage.setItem(cacheKey, JSON.stringify(result.data));
         } catch (err) {
@@ -106,7 +99,7 @@ export function useCategoryData(section: string) {
       setError(err);
       setLoading(false);
     }
-  }, [section, client, loading]);
+  }, [section, client, loading, isMountedRef]);
 
   // Fetch and process categories
   useEffect(() => {
@@ -119,9 +112,12 @@ export function useCategoryData(section: string) {
   }, [categoryData]);
 
   // Memoize the return object to prevent reference changes
-  return useMemo(() => ({
-    categories: processedCategories,
-    loading,
-    error
-  }), [processedCategories, loading, error]);
-} 
+  return useMemo(
+    () => ({
+      categories: processedCategories,
+      loading,
+      error,
+    }),
+    [processedCategories, loading, error]
+  );
+}

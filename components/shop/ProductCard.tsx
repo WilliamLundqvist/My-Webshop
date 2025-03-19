@@ -1,15 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Products } from "@/types/product";
-import {
-
-  getFirstGalleryImage,
-  getPrice
-} from "@/lib/utils/productUtils";
+import { getFirstGalleryImage, getPrice } from "@/lib/utils/productUtils";
 
 import { useSearchParams } from "next/navigation";
+import { formatPrice } from "@/lib/utils/formatters";
 
 export interface ProductCardProps {
   product: Products["products"]["nodes"][number];
@@ -69,12 +66,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const productPrice = getPrice(product);
 
   // Kontrollera om rating och reviews finns (dessa finns inte i GetProductsQuery som standard)
-  const hasRatingAndReviews = 'rating' in product && 'reviews' in product;
+  const hasRatingAndReviews = "rating" in product && "reviews" in product;
 
   return (
     <div className="flex flex-col h-full">
       <div className="relative flex-grow">
-        <Link href={createProductUrl()} >
+        <Link href={createProductUrl()}>
           <Card className="gap-2 md:gap-4 h-full border-[3px]">
             <div className="aspect-square overflow-hidden">
               <img
@@ -89,9 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
             <div className="flex flex-col flex-grow">
               <CardContent>
-                <h2 className="line-clamp-2 font-medium text-md">
-                  {product.name}
-                </h2>
+                <h2 className="line-clamp-2 font-medium text-md">{product.name}</h2>
                 {hasRatingAndReviews && (
                   <div className="mt-2 flex items-center text-sm">
                     <span className="text-yellow-500">★★★★★</span>
@@ -100,24 +95,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     </span>
                   </div>
                 )}
-                {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && !product.onSale && (
-                  <div
-                    className="font-bold text-sm"
-                    dangerouslySetInnerHTML={{ __html: productPrice }}
-                  ></div>
-                )}
-                {productPrice && (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") && product.onSale && (
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="font-bold text-sm"
-                      dangerouslySetInnerHTML={{ __html: product.price }}
-                    ></div>
-                    <div
-                      className="font-bold text-sm line-through text-destructive"
-                      dangerouslySetInnerHTML={{ __html: product.regularPrice }}
-                    ></div>
-                  </div>
-                )}
+                {/* Display price if available */}
+                {productPrice &&
+                  (product.__typename === "SimpleProduct" ||
+                    product.__typename === "VariableProduct") &&
+                  !product.onSale && (
+                    <p className="text-sm font-medium mt-2" data-price={productPrice}>
+                      {formatPrice(productPrice)}
+                    </p>
+                  )}
+                {/* Display sale price and regular price if on sale */}
+                {product.__typename === "SimpleProduct" || product.__typename === "VariableProduct"
+                  ? product.onSale && (
+                      <div className="flex gap-2">
+                        <p className="text-sm font-medium mt-2">
+                          {formatPrice(product.price || "")}
+                        </p>
+                        <p className="text-sm line-through text-destructive mt-2">
+                          {formatPrice(product.regularPrice || "")}
+                        </p>
+                      </div>
+                    )
+                  : null}
               </CardContent>
             </div>
           </Card>
