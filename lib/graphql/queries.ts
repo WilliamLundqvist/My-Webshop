@@ -19,7 +19,7 @@ import {
   GetCategoriesAndUnderCategoriesBySectionQueryVariables,
   GetViewerQuery,
 } from "./generated/graphql";
-
+import { cartFragment } from "./fragments";
 export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryVariables> = gql`
   query GetProducts(
     $first: Int
@@ -239,42 +239,8 @@ export const GET_PRODUCT_COUNT: TypedDocumentNode<
 export const GET_CART: TypedDocumentNode<GetCartQuery, GetCartQueryVariables> = gql`
   query GetCart {
     cart {
-      contents {
-        nodes {
-          key
-          product {
-            node {
-              id
-              name
-              slug
-              image {
-                sourceUrl
-              }
-            }
-          }
-          variation {
-            node {
-              id
-              name
-              image {
-                sourceUrl
-              }
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          quantity
-          total
-        }
-        itemCount
-      }
-      subtotal
-      total
-      isEmpty
+      ...CartFragment
     }
   }
+  ${cartFragment}
 `;

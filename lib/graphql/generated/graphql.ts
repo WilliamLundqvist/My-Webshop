@@ -23951,50 +23951,14 @@ export type WritingSettings = {
   useSmilies: Maybe<Scalars['Boolean']['output']>;
 };
 
-type ProductContentSlice_ExternalProduct_Fragment = { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-type ProductContentSlice_GroupProduct_Fragment = { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-type ProductContentSlice_SimpleProduct_Fragment = { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-type ProductContentSlice_VariableProduct_Fragment = { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-export type ProductContentSliceFragment = ProductContentSlice_ExternalProduct_Fragment | ProductContentSlice_GroupProduct_Fragment | ProductContentSlice_SimpleProduct_Fragment | ProductContentSlice_VariableProduct_Fragment;
-
-export type ProductVariationContentSliceFragment = { __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, slug: string | null, price: string | null, regularPrice: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-type ProductContentFull_ExternalProduct_Fragment = { __typename?: 'ExternalProduct', id: string, databaseId: number, slug: string | null, name: string | null, type: ProductTypesEnum | null, description: string | null, shortDescription: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null }> } | null, productTags: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug: string | null, name: string | null }> } | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number }> } | null };
-
-type ProductContentFull_GroupProduct_Fragment = { __typename?: 'GroupProduct', id: string, databaseId: number, slug: string | null, name: string | null, type: ProductTypesEnum | null, description: string | null, shortDescription: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null }> } | null, productTags: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug: string | null, name: string | null }> } | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number }> } | null };
-
-type ProductContentFull_SimpleProduct_Fragment = { __typename?: 'SimpleProduct', onSale: boolean | null, stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, salePrice: string | null, stockQuantity: number | null, soldIndividually: boolean | null, id: string, databaseId: number, slug: string | null, name: string | null, type: ProductTypesEnum | null, description: string | null, shortDescription: string | null, rawPrice: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null }> } | null, productTags: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug: string | null, name: string | null }> } | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number }> } | null };
-
-type ProductContentFull_VariableProduct_Fragment = { __typename?: 'VariableProduct', onSale: boolean | null, price: string | null, regularPrice: string | null, salePrice: string | null, stockStatus: StockStatusEnum | null, stockQuantity: number | null, soldIndividually: boolean | null, id: string, databaseId: number, slug: string | null, name: string | null, type: ProductTypesEnum | null, description: string | null, shortDescription: string | null, rawPrice: string | null, variations: { __typename?: 'ProductWithVariationsToProductVariationConnection', nodes: Array<{ __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, price: string | null, regularPrice: string | null, salePrice: string | null, onSale: boolean | null, rawPrice: string | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, label: string | null, value: string | null }> } | null }> } | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null, galleryImages: { __typename?: 'ProductToMediaItemConnection', nodes: Array<{ __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null }> } | null, productTags: { __typename?: 'ProductToProductTagConnection', nodes: Array<{ __typename?: 'ProductTag', id: string, slug: string | null, name: string | null }> } | null, attributes: { __typename?: 'ProductToProductAttributeConnection', nodes: Array<{ __typename?: 'GlobalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number } | { __typename?: 'LocalProductAttribute', name: string | null, options: Array<string | null> | null, variation: boolean | null, id: string, attributeId: number }> } | null };
-
-export type ProductContentFullFragment = ProductContentFull_ExternalProduct_Fragment | ProductContentFull_GroupProduct_Fragment | ProductContentFull_SimpleProduct_Fragment | ProductContentFull_VariableProduct_Fragment;
-
-export type VariationContentFragment = { __typename?: 'SimpleProductVariation', id: string, name: string | null, slug: string | null, price: string | null, regularPrice: string | null, salePrice: string | null, stockStatus: StockStatusEnum | null, stockQuantity: number | null, onSale: boolean | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null };
-
-export type CartItemContentFragment = { __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, subtotal: string | null, subtotalTax: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, slug: string | null, price: string | null, regularPrice: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null, extraData: Array<{ __typename?: 'MetaData', key: string, value: string | null } | null> | null };
-
-export type CartContentFragment = { __typename?: 'Cart', needsShippingAddress: boolean | null, subtotal: string | null, subtotalTax: string | null, shippingTax: string | null, shippingTotal: string | null, total: string | null, totalTax: string | null, feeTax: string | null, feeTotal: string | null, discountTax: string | null, discountTotal: string | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, subtotal: string | null, subtotalTax: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, databaseId: number, name: string | null, slug: string | null, price: string | null, regularPrice: string | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null, extraData: Array<{ __typename?: 'MetaData', key: string, value: string | null } | null> | null }> } | null, appliedCoupons: Array<{ __typename?: 'AppliedCoupon', code: string, discountAmount: string, discountTax: string } | null> | null, availableShippingMethods: Array<{ __typename?: 'ShippingPackage', packageDetails: string | null, supportsShippingCalculator: boolean | null, rates: Array<{ __typename?: 'ShippingRate', id: string, instanceId: number | null, methodId: string, label: string | null, cost: string | null } | null> | null } | null> | null };
-
-export type AddressFieldsFragment = { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null };
-
-export type LineItemFieldsFragment = { __typename?: 'LineItem', databaseId: number | null, orderId: number | null, quantity: number | null, subtotal: string | null, total: string | null, totalTax: string | null, product: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null };
-
-export type OrderFieldsFragment = { __typename?: 'Order', id: string, databaseId: number | null, orderNumber: string | null, orderVersion: string | null, status: OrderStatusEnum | null, needsProcessing: boolean | null, subtotal: string | null, paymentMethodTitle: string | null, total: string | null, totalTax: string | null, date: string | null, dateCompleted: string | null, datePaid: string | null, billing: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, shipping: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, lineItems: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', databaseId: number | null, orderId: number | null, quantity: number | null, subtotal: string | null, total: string | null, totalTax: string | null, product: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null }> } | null };
-
-export type CustomerFieldsFragment = { __typename?: 'Customer', id: string, databaseId: number | null, firstName: string | null, lastName: string | null, displayName: string | null, billing: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, shipping: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, orders: { __typename?: 'CustomerToOrderConnection', nodes: Array<{ __typename?: 'Order', id: string, databaseId: number | null, orderNumber: string | null, orderVersion: string | null, status: OrderStatusEnum | null, needsProcessing: boolean | null, subtotal: string | null, paymentMethodTitle: string | null, total: string | null, totalTax: string | null, date: string | null, dateCompleted: string | null, datePaid: string | null, billing: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, shipping: { __typename?: 'CustomerAddress', firstName: string | null, lastName: string | null, company: string | null, address1: string | null, address2: string | null, city: string | null, state: string | null, country: CountriesEnum | null, postcode: string | null, phone: string | null } | null, lineItems: { __typename?: 'OrderToLineItemConnection', nodes: Array<{ __typename?: 'LineItem', databaseId: number | null, orderId: number | null, quantity: number | null, subtotal: string | null, total: string | null, totalTax: string | null, product: { __typename?: 'LineItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'GroupProduct', id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } | { __typename?: 'VariableProduct', price: string | null, regularPrice: string | null, soldIndividually: boolean | null, id: string, databaseId: number, name: string | null, slug: string | null, type: ProductTypesEnum | null, image: { __typename?: 'MediaItem', id: string, sourceUrl: string | null, altText: string | null } | null } } | null }> } | null }> } | null };
-
-export type CustomerContentFragment = { __typename?: 'Customer', id: string, sessionToken: string | null };
+export type CartFragmentFragment = { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null };
 
 export type AddToCartMutationVariables = Exact<{
   input: AddToCartInput;
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'RootMutation', addToCart: { __typename?: 'AddToCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
+export type AddToCartMutation = { __typename?: 'RootMutation', addToCart: { __typename?: 'AddToCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type RemoveItemsFromCartMutationVariables = Exact<{
   keys: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>> | InputMaybe<Scalars['ID']['input']>>;
@@ -24002,7 +23966,7 @@ export type RemoveItemsFromCartMutationVariables = Exact<{
 }>;
 
 
-export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart: { __typename?: 'RemoveItemsFromCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
+export type RemoveItemsFromCartMutation = { __typename?: 'RootMutation', removeItemsFromCart: { __typename?: 'RemoveItemsFromCartPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type UpdateCartItemQuantitiesMutationVariables = Exact<{
   key: Scalars['ID']['input'];
@@ -24010,7 +23974,7 @@ export type UpdateCartItemQuantitiesMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
+export type UpdateCartItemQuantitiesMutation = { __typename?: 'RootMutation', updateItemQuantities: { __typename?: 'UpdateItemQuantitiesPayload', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null } | null };
 
 export type RegisterCustomerMutationVariables = Exact<{
   country: InputMaybe<CountriesEnum>;
@@ -24081,341 +24045,69 @@ export type GetProductCountQuery = { __typename?: 'RootQuery', products: { __typ
 export type GetCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
+export type GetCartQuery = { __typename?: 'RootQuery', cart: { __typename?: 'Cart', subtotal: string | null, total: string | null, isEmpty: boolean | null, contents: { __typename?: 'CartToCartItemConnection', itemCount: number | null, nodes: Array<{ __typename?: 'SimpleCartItem', key: string, quantity: number | null, total: string | null, product: { __typename?: 'CartItemToProductConnectionEdge', node: { __typename?: 'ExternalProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'GroupProduct', id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'SimpleProduct', price: string | null, stockStatus: StockStatusEnum | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } | { __typename?: 'VariableProduct', stockStatus: StockStatusEnum | null, price: string | null, regularPrice: string | null, onSale: boolean | null, id: string, name: string | null, slug: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null } } | null, variation: { __typename?: 'CartItemToProductVariationConnectionEdge', node: { __typename?: 'SimpleProductVariation', id: string, name: string | null, image: { __typename?: 'MediaItem', sourceUrl: string | null } | null, attributes: { __typename?: 'ProductVariationToVariationAttributeConnection', nodes: Array<{ __typename?: 'VariationAttribute', name: string | null, value: string | null }> } | null } } | null }> } | null } | null };
 
-export const ProductContentFullFragmentDoc = gql`
-    fragment ProductContentFull on Product {
-  id
-  databaseId
-  slug
-  name
-  type
-  description
-  shortDescription(format: RAW)
-  image {
-    id
-    sourceUrl
-    altText
-  }
-  galleryImages {
+export const CartFragmentFragmentDoc = gql`
+    fragment CartFragment on Cart {
+  contents {
     nodes {
-      id
-      sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
-      altText
-    }
-  }
-  productTags(first: 20) {
-    nodes {
-      id
-      slug
-      name
-    }
-  }
-  attributes {
-    nodes {
-      id
-      attributeId
-      ... on LocalProductAttribute {
-        name
-        options
-        variation
-      }
-      ... on GlobalProductAttribute {
-        name
-        options
-        variation
-      }
-    }
-  }
-  ... on SimpleProduct {
-    onSale
-    stockStatus
-    price
-    rawPrice: price(format: RAW)
-    regularPrice
-    salePrice
-    stockStatus
-    stockQuantity
-    soldIndividually
-  }
-  ... on VariableProduct {
-    onSale
-    price
-    rawPrice: price(format: RAW)
-    regularPrice
-    salePrice
-    stockStatus
-    stockQuantity
-    soldIndividually
-    variations(first: 50) {
-      nodes {
-        id
-        databaseId
-        name
-        price
-        rawPrice: price(format: RAW)
-        regularPrice
-        salePrice
-        onSale
-        attributes {
-          nodes {
-            name
-            label
-            value
+      key
+      product {
+        node {
+          id
+          name
+          slug
+          image {
+            sourceUrl
+          }
+          ... on SimpleProduct {
+            price(format: FORMATTED)
+            stockStatus
+            regularPrice(format: FORMATTED)
+            onSale
+          }
+          ... on VariableProduct {
+            stockStatus
+            price(format: FORMATTED)
+            regularPrice(format: FORMATTED)
+            onSale
           }
         }
       }
+      variation {
+        node {
+          id
+          name
+          image {
+            sourceUrl
+          }
+          attributes {
+            nodes {
+              name
+              value
+            }
+          }
+        }
+      }
+      quantity
+      total
     }
-  }
-}
-    `;
-export const VariationContentFragmentDoc = gql`
-    fragment VariationContent on ProductVariation {
-  id
-  name
-  slug
-  price
-  regularPrice
-  salePrice
-  stockStatus
-  stockQuantity
-  onSale
-  image {
-    id
-    sourceUrl
-    altText
-  }
-}
-    `;
-export const ProductContentSliceFragmentDoc = gql`
-    fragment ProductContentSlice on Product {
-  id
-  databaseId
-  name
-  slug
-  type
-  image {
-    id
-    sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
-    altText
-  }
-  ... on SimpleProduct {
-    price
-    regularPrice
-    soldIndividually
-  }
-  ... on VariableProduct {
-    price
-    regularPrice
-    soldIndividually
-  }
-}
-    `;
-export const ProductVariationContentSliceFragmentDoc = gql`
-    fragment ProductVariationContentSlice on ProductVariation {
-  id
-  databaseId
-  name
-  slug
-  image {
-    id
-    sourceUrl(size: WOOCOMMERCE_THUMBNAIL)
-    altText
-  }
-  price
-  regularPrice
-}
-    `;
-export const CartItemContentFragmentDoc = gql`
-    fragment CartItemContent on CartItem {
-  key
-  product {
-    node {
-      ...ProductContentSlice
-    }
-  }
-  variation {
-    node {
-      ...ProductVariationContentSlice
-    }
-  }
-  quantity
-  total
-  subtotal
-  subtotalTax
-  extraData {
-    key
-    value
-  }
-}
-    ${ProductContentSliceFragmentDoc}
-${ProductVariationContentSliceFragmentDoc}`;
-export const CartContentFragmentDoc = gql`
-    fragment CartContent on Cart {
-  contents(first: 100) {
     itemCount
-    nodes {
-      ...CartItemContent
-    }
-  }
-  appliedCoupons {
-    code
-    discountAmount
-    discountTax
-  }
-  needsShippingAddress
-  availableShippingMethods {
-    packageDetails
-    supportsShippingCalculator
-    rates {
-      id
-      instanceId
-      methodId
-      label
-      cost
-    }
   }
   subtotal
-  subtotalTax
-  shippingTax
-  shippingTotal
   total
-  totalTax
-  feeTax
-  feeTotal
-  discountTax
-  discountTotal
-}
-    ${CartItemContentFragmentDoc}`;
-export const AddressFieldsFragmentDoc = gql`
-    fragment AddressFields on CustomerAddress {
-  firstName
-  lastName
-  company
-  address1
-  address2
-  city
-  state
-  country
-  postcode
-  phone
-}
-    `;
-export const LineItemFieldsFragmentDoc = gql`
-    fragment LineItemFields on LineItem {
-  databaseId
-  product {
-    node {
-      ...ProductContentSlice
-    }
-  }
-  orderId
-  quantity
-  subtotal
-  total
-  totalTax
-}
-    ${ProductContentSliceFragmentDoc}`;
-export const OrderFieldsFragmentDoc = gql`
-    fragment OrderFields on Order {
-  id
-  databaseId
-  orderNumber
-  orderVersion
-  status
-  needsProcessing
-  subtotal
-  paymentMethodTitle
-  total
-  totalTax
-  date
-  dateCompleted
-  datePaid
-  billing {
-    ...AddressFields
-  }
-  shipping {
-    ...AddressFields
-  }
-  lineItems(first: 100) {
-    nodes {
-      ...LineItemFields
-    }
-  }
-}
-    ${AddressFieldsFragmentDoc}
-${LineItemFieldsFragmentDoc}`;
-export const CustomerFieldsFragmentDoc = gql`
-    fragment CustomerFields on Customer {
-  id
-  databaseId
-  firstName
-  lastName
-  displayName
-  billing {
-    ...AddressFields
-  }
-  shipping {
-    ...AddressFields
-  }
-  orders(first: 100) {
-    nodes {
-      ...OrderFields
-    }
-  }
-}
-    ${AddressFieldsFragmentDoc}
-${OrderFieldsFragmentDoc}`;
-export const CustomerContentFragmentDoc = gql`
-    fragment CustomerContent on Customer {
-  id
-  sessionToken
+  isEmpty
 }
     `;
 export const AddToCartDocument = gql`
     mutation AddToCart($input: AddToCartInput!) {
   addToCart(input: $input) {
     cart {
-      contents {
-        nodes {
-          key
-          product {
-            node {
-              id
-              name
-              slug
-              image {
-                sourceUrl
-              }
-            }
-          }
-          variation {
-            node {
-              id
-              name
-              image {
-                sourceUrl
-              }
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          quantity
-          total
-        }
-        itemCount
-      }
-      subtotal
-      total
-      isEmpty
+      ...CartFragment
     }
   }
 }
-    `;
+    ${CartFragmentFragmentDoc}`;
 export type AddToCartMutationFn = Apollo.MutationFunction<AddToCartMutation, AddToCartMutationVariables>;
 
 /**
@@ -24446,46 +24138,11 @@ export const RemoveItemsFromCartDocument = gql`
     mutation RemoveItemsFromCart($keys: [ID], $all: Boolean) {
   removeItemsFromCart(input: {keys: $keys, all: $all}) {
     cart {
-      contents {
-        nodes {
-          key
-          product {
-            node {
-              id
-              name
-              slug
-              image {
-                sourceUrl
-              }
-            }
-          }
-          variation {
-            node {
-              id
-              name
-              image {
-                sourceUrl
-              }
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          quantity
-          total
-        }
-        itemCount
-      }
-      subtotal
-      total
-      isEmpty
+      ...CartFragment
     }
   }
 }
-    `;
+    ${CartFragmentFragmentDoc}`;
 export type RemoveItemsFromCartMutationFn = Apollo.MutationFunction<RemoveItemsFromCartMutation, RemoveItemsFromCartMutationVariables>;
 
 /**
@@ -24517,46 +24174,11 @@ export const UpdateCartItemQuantitiesDocument = gql`
     mutation UpdateCartItemQuantities($key: ID!, $quantity: Int!) {
   updateItemQuantities(input: {items: {key: $key, quantity: $quantity}}) {
     cart {
-      contents {
-        nodes {
-          key
-          product {
-            node {
-              id
-              name
-              slug
-              image {
-                sourceUrl
-              }
-            }
-          }
-          variation {
-            node {
-              id
-              name
-              image {
-                sourceUrl
-              }
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
-          quantity
-          total
-        }
-        itemCount
-      }
-      subtotal
-      total
-      isEmpty
+      ...CartFragment
     }
   }
 }
-    `;
+    ${CartFragmentFragmentDoc}`;
 export type UpdateCartItemQuantitiesMutationFn = Apollo.MutationFunction<UpdateCartItemQuantitiesMutation, UpdateCartItemQuantitiesMutationVariables>;
 
 /**
@@ -25045,45 +24667,10 @@ export type GetProductCountQueryResult = Apollo.QueryResult<GetProductCountQuery
 export const GetCartDocument = gql`
     query GetCart {
   cart {
-    contents {
-      nodes {
-        key
-        product {
-          node {
-            id
-            name
-            slug
-            image {
-              sourceUrl
-            }
-          }
-        }
-        variation {
-          node {
-            id
-            name
-            image {
-              sourceUrl
-            }
-            attributes {
-              nodes {
-                name
-                value
-              }
-            }
-          }
-        }
-        quantity
-        total
-      }
-      itemCount
-    }
-    subtotal
-    total
-    isEmpty
+    ...CartFragment
   }
 }
-    `;
+    ${CartFragmentFragmentDoc}`;
 
 /**
  * __useGetCartQuery__

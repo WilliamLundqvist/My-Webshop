@@ -100,17 +100,17 @@ const CartPage = () => {
                           <Image
                             src={variation.image.sourceUrl}
                             alt={variation.name || product.name}
-                            className="w-16 h-16 object-cover rounded"
-                            width={64}
-                            height={64}
+                            className="w-24 h-24 object-cover rounded"
+                            width={96}
+                            height={96}
                           />
                         ) : (
                           <Image
                             src={product.image.sourceUrl}
                             alt={product.name}
-                            className="w-16 h-16 object-cover rounded"
-                            width={64}
-                            height={64}
+                            className="w-24 h-24 object-cover rounded"
+                            width={96}
+                            height={96}
                           />
                         )}
                         <div className="ml-2">
@@ -121,7 +121,12 @@ const CartPage = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {formatPrice(String(parseFloat(item.total) / item.quantity))}
+                      {formatPrice(
+                        item.product.node.__typename === "SimpleProduct" ||
+                          item.product.node.__typename === "VariableProduct"
+                          ? item.product.node.price
+                          : "Pris saknas"
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

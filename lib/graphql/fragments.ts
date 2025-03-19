@@ -13,6 +13,18 @@ export const cartFragment = gql`
             image {
               sourceUrl
             }
+            ... on SimpleProduct {
+              price(format: FORMATTED)
+              stockStatus
+              regularPrice(format: FORMATTED)
+              onSale
+            }
+            ... on VariableProduct {
+              stockStatus
+              price(format: FORMATTED)
+              regularPrice(format: FORMATTED)
+              onSale
+            }
           }
         }
         variation {
