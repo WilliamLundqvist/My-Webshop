@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Products } from "@/types/product";
 import { getFirstGalleryImage, getPrice } from "@/lib/utils/productUtils";
-
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { formatPrice } from "@/lib/utils/formatters";
 
@@ -70,11 +70,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="relative flex-grow">
+      <div className="relative flex-grow rounded-l-full">
         <Link href={createProductUrl()}>
           <Card className="gap-2 md:gap-4 h-full border-[3px]">
             <div className="aspect-square overflow-hidden">
-              <img
+              <Image
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 src={isHovered ? galleryImage : baseImage}
@@ -82,6 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 width={400}
                 height={400}
                 className="h-full w-full object-cover object-top"
+                loading="lazy"
               />
             </div>
             <div className="flex flex-col flex-grow">

@@ -60,8 +60,9 @@ export default async function ShopPage({ searchParams, params }) {
     global.cursorCache = {};
   }
 
-  const cacheKey = `${section || "all"}-${category || "none"}-${searchQuery || "none"
-    }-${sortField}-${sortOrder}`;
+  const cacheKey = `${section || "all"}-${category || "none"}-${
+    searchQuery || "none"
+  }-${sortField}-${sortOrder}`;
 
   // Initialize after/cursor value
   let after = "";
@@ -73,8 +74,6 @@ export default async function ShopPage({ searchParams, params }) {
   }
   // For pages beyond page 1 without a cached cursor, we need to fetch sequentially
   else if (currentPage > 1) {
-
-
     // Create cache entry for this filter combination if it doesn't exist
     if (!global.cursorCache[cacheKey]) {
       global.cursorCache[cacheKey] = {};
@@ -92,8 +91,6 @@ export default async function ShopPage({ searchParams, params }) {
           orderby: [{ field: sortField, order: sortOrder }],
           search: searchQuery,
           category: category ? category : section,
-          maxPrice: maxPrice,
-          minPrice: minPrice,
         },
         fetchPolicy: "network-only",
       });
@@ -137,7 +134,6 @@ export default async function ShopPage({ searchParams, params }) {
       global.cursorCache[cacheKey] = {};
     }
     global.cursorCache[cacheKey][currentPage] = pageInfo.endCursor;
-
   }
 
   // Calculate total pages - fallback if the count query fails
@@ -161,7 +157,6 @@ export default async function ShopPage({ searchParams, params }) {
     if (countResponse.data.products.found) {
       const totalProducts = countResponse.data.products.found;
       totalPages = Math.ceil(totalProducts / first);
-
     }
   } catch (error) {
     console.error("Error calculating total pages:", error);
@@ -170,11 +165,6 @@ export default async function ShopPage({ searchParams, params }) {
   console.log(`PageInfo: `, pageInfo);
 
   // Create a helper function for page URL generation
-  function createPageUrl(pageNum) {
-    const params = new URLSearchParams(finalSearchParams);
-    params.set("page", pageNum.toString());
-    return `/shop/section/${section}?${params.toString()}`;
-  }
 
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
@@ -193,9 +183,7 @@ export default async function ShopPage({ searchParams, params }) {
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <Link href={`/shop/section/${section}?category=${category}`}>
-                    {category}
-                  </Link>
+                  <Link href={`/shop/section/${section}?category=${category}`}>{category}</Link>
                 </BreadcrumbItem>
               </>
             )}
@@ -218,9 +206,7 @@ export default async function ShopPage({ searchParams, params }) {
                 ? `${category}`
                 : "Products"}
           </h1>
-          <div className="text-sm text-muted-foreground">
-            {products.length} products
-          </div>
+          <div className="text-sm text-muted-foreground">{products.length} products</div>
         </div>
 
         {products.length > 0 ? (

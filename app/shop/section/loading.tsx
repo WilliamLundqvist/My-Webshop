@@ -17,7 +17,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export const ProductSkeleton = () => (
   <Card className="gap-2 md:gap-4 h-full">

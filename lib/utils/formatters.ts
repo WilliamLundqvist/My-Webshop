@@ -20,12 +20,16 @@ export function stripHtml(htmlString: string): string {
 export function decodeHtmlEntities(html: string): string {
   if (!html) return "";
 
-  // Skapa en temporär div-element för att använda webbläsarens inbyggda parser
-  const txt = document.createElement("textarea");
-  txt.innerHTML = html;
-
-  // textContent ger den decodade versionen
-  return txt.value;
+  // Server-safe implementation that works both in browser and server
+  return html
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&euro;/g, "€")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec));
 }
 
 /**

@@ -4,7 +4,7 @@ import { Filter, ChevronRight, Search } from "lucide-react";
 import { useState, useCallback, useMemo, memo, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 import {
   Accordion,
@@ -22,15 +22,7 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { useCategoryData } from "@/hooks/useCategoryData";
-
-// Sample price ranges - replace with your actual data (for fallback)
-const priceRanges = [
-  { id: "0-25", name: "Under $25" },
-  { id: "25-50", name: "$25 - $50" },
-  { id: "50-100", name: "$50 - $100" },
-  { id: "100+", name: "Over $100" },
-];
+import { useCategoryData } from "@/lib/hooks/useCategoryData";
 
 // Define min/max price constants
 const MIN_PRICE = 0;
@@ -67,7 +59,6 @@ function FilterSidebarComponent() {
   // Local state to track selected values - initialize only once
   const [selectedSort, setSelectedSort] = useState(() => sortKey);
   const [selectedCategory, setSelectedCategory] = useState(() => currentCategory);
-  const [priceRange, setPriceRange] = useState(() => [currentPriceMin, currentPriceMax]);
   const [searchTerm, setSearchTerm] = useState(() => searchQuery || "");
 
   // Memoize the navigation function to prevent recreating it on each render
@@ -80,13 +71,7 @@ function FilterSidebarComponent() {
 
   // Memoize the update filters function
   const updateFilters = useCallback(
-    ({
-      sort = currentSort,
-      order = currentOrder,
-      category = currentCategory,
-      min_price = currentPriceMin,
-      max_price = currentPriceMax,
-    }) => {
+    ({ sort = currentSort, order = currentOrder, category = currentCategory }) => {
       const params = new URLSearchParams(searchParams.toString());
 
       // Reset pagination when filters change
@@ -107,19 +92,6 @@ function FilterSidebarComponent() {
         }
       }
 
-      // Update price ranges if provided
-      if (min_price !== undefined && min_price > MIN_PRICE) {
-        params.set("min_price", min_price.toString());
-      } else {
-        params.delete("min_price");
-      }
-
-      if (max_price !== undefined && max_price < MAX_PRICE) {
-        params.set("max_price", max_price.toString());
-      } else {
-        params.delete("max_price");
-      }
-
       // Maintain search query if it exists
       if (searchQuery) {
         params.set("search", searchQuery);
@@ -128,16 +100,7 @@ function FilterSidebarComponent() {
       // Navigate to the new URL
       navigateWithParams(params);
     },
-    [
-      currentSort,
-      currentOrder,
-      currentCategory,
-      currentPriceMin,
-      currentPriceMax,
-      searchQuery,
-      searchParams,
-      navigateWithParams,
-    ]
+    [currentSort, currentOrder, currentCategory, searchQuery, searchParams, navigateWithParams]
   );
 
   // Använd vårt nya useDebounce-hook istället för att skapa debound-funktioner med useMemo
@@ -171,27 +134,6 @@ function FilterSidebarComponent() {
   const { categories, loading, error } = useCategoryData(section);
 
   // Använd vårt nya useDebounce-hook istället
-  const debouncedUpdatePrice = useDebounce(
-    (minPrice, maxPrice) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (minPrice > MIN_PRICE) {
-        params.set("min_price", minPrice.toString());
-      } else {
-        params.delete("min_price");
-      }
-
-      if (maxPrice < MAX_PRICE) {
-        params.set("max_price", maxPrice.toString());
-      } else {
-        params.delete("max_price");
-      }
-
-      navigateWithParams(params);
-    },
-    800,
-    [searchParams, navigateWithParams]
-  );
 
   // Handle sort change
   const handleSortChange = useCallback(
@@ -214,20 +156,10 @@ function FilterSidebarComponent() {
     [updateFilters]
   );
 
-  // Handle price range change
-  const handlePriceRangeChange = useCallback(
-    (values) => {
-      setPriceRange(values);
-      debouncedUpdatePrice(values[0], values[1]);
-    },
-    [debouncedUpdatePrice]
-  );
-
   // Clear all filters
   const clearFilters = useCallback(() => {
     setSelectedSort(`DATE-DESC`);
     setSelectedCategory("");
-    setPriceRange([MIN_PRICE, MAX_PRICE]);
     setSearchTerm("");
 
     const params = new URLSearchParams();
@@ -355,26 +287,6 @@ function FilterSidebarComponent() {
               <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
                 Price Range
               </AccordionTrigger>
-              <AccordionContent>
-                <div className="px-6 py-4">
-                  <Slider
-                    defaultValue={[currentPriceMin, currentPriceMax]}
-                    value={priceRange}
-                    min={MIN_PRICE}
-                    max={MAX_PRICE}
-                    step={5}
-                    onValueChange={handlePriceRangeChange}
-                    className="mb-6"
-                  />
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="border rounded-md px-2 py-1">${priceRange[0]}</div>
-                    <div>to</div>
-                    <div className="border rounded-md px-2 py-1">
-                      ${priceRange[1] === MAX_PRICE ? `${MAX_PRICE}+` : priceRange[1]}
-                    </div>
-                  </div>
-                </div>
-              </AccordionContent>
             </AccordionItem>
           </Accordion>
         </SidebarGroup>

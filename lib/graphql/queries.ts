@@ -18,8 +18,10 @@ import {
   GetCartQueryVariables,
   GetCategoriesAndUnderCategoriesBySectionQueryVariables,
   GetViewerQuery,
+  GetHomepageQuery,
+  GetHomepageQueryVariables,
 } from "./generated/graphql";
-import { cartFragment } from "./fragments";
+import { cartFragment, heroFragment } from "./fragments";
 export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryVariables> = gql`
   query GetProducts(
     $first: Int
@@ -27,20 +29,8 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryV
     $orderby: [ProductsOrderbyInput]
     $search: String
     $category: String
-    $maxPrice: Float
-    $minPrice: Float
   ) {
-    products(
-      first: $first
-      after: $after
-      where: {
-        orderby: $orderby
-        search: $search
-        category: $category
-        maxPrice: $maxPrice
-        minPrice: $minPrice
-      }
-    ) {
+    products(first: $first, after: $after, where: { orderby: $orderby, search: $search }) {
       nodes {
         id
         name
@@ -291,4 +281,13 @@ export const GET_PAYMENT_METHODS = gql`
       }
     }
   }
+`;
+
+export const GET_HOMEPAGE: TypedDocumentNode<GetHomepageQuery> = gql`
+  query GetHomepage {
+    page(id: "cG9zdDoy") {
+      ...HeroFragment
+    }
+  }
+  ${heroFragment}
 `;

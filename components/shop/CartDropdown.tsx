@@ -5,9 +5,9 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { formatPrice } from "@/lib/utils/formatters";
-import { CartType, CartItemType } from "@/types/cart";
+import { CartItemType } from "@/types/cart";
 import {
   getCartItems,
   isCartEmpty as checkCartEmpty,
@@ -20,6 +20,7 @@ import {
 export default function CartDropdown() {
   const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const cartRef = useRef(cart);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +50,15 @@ export default function CartDropdown() {
     });
     return quantities;
   });
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      if (cartRef.current !== cart) {
+        setIsOpen(true);
+        cartRef.current = cart;
+      }
+    }
+  }, [cart]);
 
   useEffect(() => {
     if (cartItems.length > 0) {

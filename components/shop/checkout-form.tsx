@@ -16,7 +16,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-
+import { useCart } from "@/lib/context/CartContext";
 type PaymentMethod = {
   id: string;
   title: string;
@@ -55,7 +55,7 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
     error?: string;
   }>({});
 
-  const { data: cartData } = useQuery(GET_CART);
+  const { cart } = useCart();
 
   // Installera react-hook-form med zod-validering
   const {
@@ -91,7 +91,7 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
   }, [initialCustomerData, setValue]);
 
   const onSubmit = async (data: CheckoutFormData) => {
-    if (!cartData?.cart) {
+    if (!cart) {
       setFormState({ error: "Din varukorg är tom" });
       return;
     }
@@ -128,10 +128,10 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
   };
 
   // Beräkna summor från kundvagn
-  const cartItems = cartData?.cart?.contents?.nodes || [];
-  const subtotal = cartData?.cart?.subtotal || "0";
-  const total = cartData?.cart?.total || "0";
-  const itemCount = cartData?.cart?.contents?.itemCount || 0;
+  const cartItems = cart?.contents?.nodes || [];
+  const subtotal = cart?.subtotal || "0";
+  const total = cart?.total || "0";
+  const itemCount = cart?.contents?.itemCount || 0;
 
   if (orderCompleted) {
     return (
@@ -169,7 +169,7 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
   return (
     <Card className="my-10">
       <CardHeader>
-        <CardTitle className="text-2xl">Checkout</CardTitle>
+        <CardTitle className="text-2xl mt-2">Checkout</CardTitle>
         {formState?.error && (
           <CardDescription className="text-destructive">{formState.error}</CardDescription>
         )}
@@ -236,7 +236,54 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                   <p className="text-sm text-destructive mt-1">{errors.phone.message}</p>
                 )}
               </div>
+              <div className="flex flex-row gap-3 w-full">
+                <div>
+                  <Label htmlFor="city">Stad</Label>
+                  <Input
+                    id="city"
+                    {...register("city")}
+                    className={errors.city ? "border-destructive" : "basis-1/2"}
+                  />
+                  {errors.city && (
+                    <p className="text-sm text-destructive mt-1">{errors.city.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="postcode">Postnummer</Label>
+                  <Input
+                    id="postcode"
+                    {...register("postcode")}
+                    className={errors.postcode ? "border-destructive" : ""}
+                  />
+                  {errors.postcode && (
+                    <p className="text-sm text-destructive mt-1">{errors.postcode.message}</p>
+                  )}
+                </div>
 
+                <div>
+                  <Label htmlFor="country">Land</Label>
+                  <Select
+                    onValueChange={(value) => setValue("country", value)}
+                    defaultValue={watch("country")}
+                  >
+                    <SelectTrigger
+                      id="country"
+                      className={errors.country ? "border-destructive" : ""}
+                    >
+                      <SelectValue placeholder="Välj land" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={CountriesEnum.Se}>Sverige</SelectItem>
+                      <SelectItem value={CountriesEnum.No}>Norge</SelectItem>
+                      <SelectItem value={CountriesEnum.Fi}>Finland</SelectItem>
+                      <SelectItem value={CountriesEnum.Dk}>Danmark</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.country && (
+                    <p className="text-sm text-destructive mt-1">{errors.country.message}</p>
+                  )}
+                </div>
+              </div>
               <h3 className="text-lg font-medium mt-4">Leveransadress</h3>
 
               <div>
@@ -260,55 +307,6 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 />
                 {errors.address2 && (
                   <p className="text-sm text-destructive mt-1">{errors.address2.message}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="city">Stad</Label>
-                  <Input
-                    id="city"
-                    {...register("city")}
-                    className={errors.city ? "border-destructive" : ""}
-                  />
-                  {errors.city && (
-                    <p className="text-sm text-destructive mt-1">{errors.city.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="postcode">Postnummer</Label>
-                  <Input
-                    id="postcode"
-                    {...register("postcode")}
-                    className={errors.postcode ? "border-destructive" : ""}
-                  />
-                  {errors.postcode && (
-                    <p className="text-sm text-destructive mt-1">{errors.postcode.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="country">Land</Label>
-                <Select
-                  onValueChange={(value) => setValue("country", value)}
-                  defaultValue={watch("country")}
-                >
-                  <SelectTrigger
-                    id="country"
-                    className={errors.country ? "border-destructive" : ""}
-                  >
-                    <SelectValue placeholder="Välj land" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={CountriesEnum.Se}>Sverige</SelectItem>
-                    <SelectItem value={CountriesEnum.No}>Norge</SelectItem>
-                    <SelectItem value={CountriesEnum.Fi}>Finland</SelectItem>
-                    <SelectItem value={CountriesEnum.Dk}>Danmark</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.country && (
-                  <p className="text-sm text-destructive mt-1">{errors.country.message}</p>
                 )}
               </div>
             </div>

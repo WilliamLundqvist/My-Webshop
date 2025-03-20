@@ -5,8 +5,16 @@ import { Input } from "@/components/ui/input";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductCard from "../components/shop/ProductCard";
+import { getClient } from "@faustwp/experimental-app-router";
+import { GET_HOMEPAGE } from "@/lib/graphql/queries";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const client = await getClient();
+
+  const { data } = await client.query({
+    query: GET_HOMEPAGE,
+  });
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
@@ -16,29 +24,27 @@ export default function HomePage() {
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-            backgroundImage: "url('https://placehold.co/1920x1080')",
+                backgroundImage: `url(${data?.page?.hero?.heroImage?.node?.sourceUrl})`,
               }}
             >
               <div className="absolute inset-0 bg-black/40" />
             </div>
             <div className="container relative flex h-full flex-col items-start justify-center gap-4 text-white">
               <h1 className="max-w-xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
-                Elevate Your Workout Experience
+                {data?.page?.hero?.heroHeading}
               </h1>
-              <p className="max-w-md text-lg">
-                Professional-grade equipment for your home or commercial gym
-              </p>
+              <p className="max-w-md text-lg">{data?.page?.hero?.heroSubheading}</p>
               <div className="flex gap-4">
-                <Button size="lg" className="font-medium">
-                  Shop Now
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                >
-                  View Collections
-                </Button>
+                <Link href={data?.page?.hero?.heroButton1?.url || "#"}>
+                  <Button size="lg" className="font-medium">
+                    {data?.page?.hero?.heroButton1?.title}
+                  </Button>
+                </Link>
+                <Link href={data?.page?.hero?.heroButton2?.url || "#"}>
+                  <Button size="lg" className="border-white text-white hover:bg-white/10">
+                    {data?.page?.hero?.heroButton2?.title}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -83,10 +89,7 @@ export default function HomePage() {
           <div className="container">
             <div className="mb-8 flex items-center justify-between">
               <h2 className="text-2xl font-bold">Featured Equipment</h2>
-              <Link
-                href="#"
-                className="text-sm font-medium underline-offset-4 hover:underline"
-              >
+              <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
                 View All
               </Link>
             </div>
@@ -141,7 +144,7 @@ export default function HomePage() {
                       reviews: 97,
                     },
                   ].map((product, index) => (
-                    <ProductCard key={index} product={product} />
+                    <ProductCard key={index} product={product as any} />
                   ))}
                 </div>
               </TabsContent>
@@ -149,9 +152,7 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {/* New arrivals products would go here */}
                   <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
-                    <p className="text-muted-foreground">
-                      New arrivals coming soon
-                    </p>
+                    <p className="text-muted-foreground">New arrivals coming soon</p>
                   </div>
                 </div>
               </TabsContent>
@@ -159,9 +160,7 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {/* Sale products would go here */}
                   <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
-                    <p className="text-muted-foreground">
-                      Sale items coming soon
-                    </p>
+                    <p className="text-muted-foreground">Sale items coming soon</p>
                   </div>
                 </div>
               </TabsContent>
@@ -174,13 +173,10 @@ export default function HomePage() {
           <div className="container">
             <div className="grid gap-8 md:grid-cols-2">
               <div className="flex flex-col justify-center">
-                <h2 className="mb-4 text-3xl font-bold">
-                  The Home Gym Collection
-                </h2>
+                <h2 className="mb-4 text-3xl font-bold">The Home Gym Collection</h2>
                 <p className="mb-6 text-lg text-muted-foreground">
-                  Everything you need to build the perfect home gym in one
-                  convenient package. Save up to 20% when you buy the complete
-                  set.
+                  Everything you need to build the perfect home gym in one convenient package. Save
+                  up to 20% when you buy the complete set.
                 </p>
                 <div>
                   <Button size="lg" className="font-medium">
@@ -202,15 +198,12 @@ export default function HomePage() {
         {/* Benefits Section */}
         <section className="py-12">
           <div className="container">
-            <h2 className="mb-8 text-center text-2xl font-bold">
-              Why Choose PowerFit
-            </h2>
+            <h2 className="mb-8 text-center text-2xl font-bold">Why Choose PowerFit</h2>
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 {
                   title: "Premium Quality",
-                  description:
-                    "Commercial-grade equipment built to last with premium materials",
+                  description: "Commercial-grade equipment built to last with premium materials",
                 },
                 {
                   title: "Free Shipping",
@@ -218,18 +211,14 @@ export default function HomePage() {
                 },
                 {
                   title: "Expert Support",
-                  description:
-                    "Get advice from fitness professionals on the right equipment",
+                  description: "Get advice from fitness professionals on the right equipment",
                 },
                 {
                   title: "Easy Returns",
                   description: "30-day money-back guarantee on all products",
                 },
               ].map((benefit, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center text-center"
-                >
+                <div key={index} className="flex flex-col items-center text-center">
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                     <div className="h-8 w-8 rounded-full bg-primary" />
                   </div>
@@ -247,8 +236,8 @@ export default function HomePage() {
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="mb-4 text-3xl font-bold">Join Our Community</h2>
               <p className="mb-6">
-                Subscribe to our newsletter for exclusive deals, fitness tips,
-                and new product announcements.
+                Subscribe to our newsletter for exclusive deals, fitness tips, and new product
+                announcements.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
                 <Input

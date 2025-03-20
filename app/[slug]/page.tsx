@@ -1,49 +1,123 @@
-import { getAuthClient, getClient } from "@faustwp/experimental-app-router";
-import { gql } from "@apollo/client";
-import { hasPreviewProps } from "./hasPreviewProps";
-import { PleaseLogin } from "@/components/shop/please-login";
+"use client";
+import { gql, useQuery } from "@apollo/client";
+import { useParams } from "next/navigation";
+import { WordPressBlocksViewer } from "@faustwp/blocks";
+import { flatListToHierarchical } from "@faustwp/core";
+import blocks from "@/wp-blocks";
+import { useState, useEffect } from "react";
 
-export default async function Page(props) {
-  const isPreview = hasPreviewProps(props);
-  const id = isPreview ? props.searchParams.p : props.params.slug;
-
-  let client = isPreview ? await getAuthClient() : await getClient();
-
-  if (!client) {
-    return <PleaseLogin />;
-  }
-
-  const { data } = await client.query({
-    query: gql`
-      query GetContentNode(
-        $id: ID!
-        $idType: ContentNodeIdTypeEnum!
-        $asPreview: Boolean!
-      ) {
-        contentNode(id: $id, idType: $idType, asPreview: $asPreview) {
-          ... on NodeWithTitle {
-            title
-          }
-          ... on NodeWithContentEditor {
-            content
-          }
-          date
+// Definiera query med nödvändiga fragment
+const GET_CONTENT_NODE = gql`
+  ${blocks.CoreParagraph?.fragments.entry || ""}
+  ${blocks.CoreHeading?.fragments.entry || ""}
+  ${blocks.CoreImage?.fragments.entry || ""}
+  ${blocks.CoreSeparator?.fragments.entry || ""}
+  ${blocks.CoreList?.fragments.entry || ""}
+  ${blocks.CoreListItem?.fragments.entry || ""}
+  ${blocks.CoreButton?.fragments.entry || ""}
+  ${blocks.CoreButtons?.fragments.entry || ""}
+  ${blocks.CoreCode?.fragments.entry || ""}
+  ${blocks.CoreQuote?.fragments.entry || ""}
+  ${blocks.CoreColumns?.fragments.entry || ""}
+  ${blocks.CoreColumn?.fragments.entry || ""}
+  query GetContentNode($id: ID!) {
+    contentNode(id: $id, idType: URI) {
+      ... on Post {
+        title
+        content
+        editorBlocks {
+          name
+          __typename
+          renderedHtml
+          id: clientId
+          parentId: parentClientId
+          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ""}
+          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ""}
+          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ""}
+          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ""}
+          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ""}
+          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ""}
+          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ""}
+          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ""}
+          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ""}
+          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ""}
+          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ""}
+          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ""}
         }
       }
-    `,
+      ... on Page {
+        title
+        content
+        editorBlocks {
+          name
+          __typename
+          renderedHtml
+          id: clientId
+          parentId: parentClientId
+          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ""}
+          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ""}
+          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ""}
+          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ""}
+          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ""}
+          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ""}
+          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ""}
+          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ""}
+          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ""}
+          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ""}
+          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ""}
+          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ""}
+        }
+      }
+      date
+    }
+  }
+`;
+
+export default function Page() {
+  const params = useParams();
+  const slug = params.slug;
+
+  // För att undvika hydration error
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const { loading, error, data } = useQuery(GET_CONTENT_NODE, {
     variables: {
-      id,
-      idType: isPreview ? "DATABASE_ID" : "URI",
-      asPreview: isPreview,
+      id: slug,
     },
+    skip: !slug,
   });
 
+  // Om vi inte är klient än, visa enbart laddningssidan
+  if (!isClient) {
+    return <div>Laddar...</div>;
+  }
+
+  if (loading) return <div>Laddar...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data?.contentNode) return <div>Innehållet kunde inte hittas</div>;
+
+  // Konvertera platt lista till hierarkisk struktur
+  const blockList = data?.contentNode?.editorBlocks
+    ? flatListToHierarchical(data.contentNode.editorBlocks, {
+        childrenKey: "innerBlocks",
+      })
+    : [];
+
   return (
-    <main>
-      <h2>{data?.contentNode?.title}</h2>
-      <div
-        dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? "" }}
-      />
+    <main className="wordpress-blocks-container max-w-screen-xl mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-8">{data?.contentNode?.title}</h2>
+
+      {blockList.length > 0 ? (
+        <div className="wp-blocks-wrapper">
+          <WordPressBlocksViewer blocks={blockList} />
+        </div>
+      ) : (
+        <div dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? "" }} />
+      )}
     </main>
   );
 }

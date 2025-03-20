@@ -1,0 +1,306 @@
+/**
+ * WordPress block-stilar
+ * Importerar stilar från WordPress för standardblocken
+ */
+
+/* Importerar WordPress generella block-stilar */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/style.min.css");
+
+/* Importerar WordPress tema-stilar */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/theme.min.css");
+
+/* Importerar stilar för kolumnblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/columns/style.min.css");
+
+/* Importerar stilar för gruppblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/group/style.min.css");
+
+/* Importerar stilar för bildblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/image/style.min.css");
+
+/* Importerar stilar för paragrafblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/paragraph/style.min.css");
+
+/* Importerar stilar för knappblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/button/style.min.css");
+
+/* Importerar stilar för rubrikblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/heading/style.min.css");
+
+/* Importerar stilar för listblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/list/style.min.css");
+
+/* Importerar stilar för citatblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/quote/style.min.css");
+
+/* Importerar stilar för kodblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/code/style.min.css");
+
+/* Importerar stilar för avdelarblock */
+@import url("https://s.w.org/wp-includes/css/dist/block-library/blocks/separator/style.min.css");
+
+/**
+ * Anpassade stilar för att säkerställa att WordPress-block visas rätt med Tailwind
+ * Notera att vi använder mer specifika selektorer för att överskriva Tailwind
+ */
+
+/* Container för WordPress-block */
+.wordpress-blocks-container {
+  line-height: 1.6;
+  color: #1e1e1e;
+}
+
+.wp-blocks-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Mer specifika selektorer för WordPress-block */
+.wp-blocks-wrapper .wp-block {
+  max-width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* Rubriker med mer specifika selektorer */
+.wp-blocks-wrapper .wp-block-heading h1,
+.wp-blocks-wrapper h1.wp-block-heading {
+  font-size: 2.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-heading h2,
+.wp-blocks-wrapper h2.wp-block-heading {
+  font-size: 2rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-heading h3,
+.wp-blocks-wrapper h3.wp-block-heading {
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-heading h4,
+.wp-blocks-wrapper h4.wp-block-heading {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-heading h5,
+.wp-blocks-wrapper h5.wp-block-heading {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-heading h6,
+.wp-blocks-wrapper h6.wp-block-heading {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Paragrafer */
+.wp-blocks-wrapper .wp-block-paragraph,
+.wp-blocks-wrapper p {
+  margin-bottom: 1.5rem !important;
+  line-height: 1.6 !important;
+}
+
+/* Bilder */
+.wp-blocks-wrapper .wp-block-image {
+  margin-bottom: 1.5rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-image img {
+  max-width: 100% !important;
+  display: block !important;
+}
+
+.wp-blocks-wrapper .wp-block-image figcaption {
+  margin-top: 0.5rem !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;
+  color: #555 !important;
+}
+
+/* Knappar */
+.wp-blocks-wrapper .wp-block-button {
+  margin-bottom: 1.5rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-button__link {
+  display: inline-block !important;
+  padding: 0.5em 1em !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  background-color: #32373c !important;
+  color: #fff !important;
+}
+
+.wp-blocks-wrapper .is-style-outline .wp-block-button__link {
+  background-color: transparent !important;
+  border: 2px solid currentColor !important;
+  color: #32373c !important;
+}
+
+/* Citat */
+.wp-blocks-wrapper .wp-block-quote {
+  border-left: 4px solid #646970 !important;
+  padding-left: 1.5rem !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 1.5rem !important;
+  font-style: italic !important;
+}
+
+.wp-blocks-wrapper .wp-block-quote cite {
+  font-size: 0.9rem !important;
+  color: #555 !important;
+  font-style: normal !important;
+  display: block !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Listor */
+.wp-blocks-wrapper .wp-block-list,
+.wp-blocks-wrapper ul,
+.wp-blocks-wrapper ol {
+  margin-bottom: 1.5rem !important;
+  padding-left: 2rem !important;
+  list-style-type: inherit !important;
+}
+
+.wp-blocks-wrapper ul {
+  list-style-type: disc !important;
+}
+
+.wp-blocks-wrapper ol {
+  list-style-type: decimal !important;
+}
+
+.wp-blocks-wrapper li {
+  margin-bottom: 0.5rem !important;
+  line-height: 1.6 !important;
+}
+
+.wp-blocks-wrapper .wp-block-list ul,
+.wp-blocks-wrapper .wp-block-list ol,
+.wp-blocks-wrapper ul ul,
+.wp-blocks-wrapper ul ol,
+.wp-blocks-wrapper ol ul,
+.wp-blocks-wrapper ol ol {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Kod */
+.wp-blocks-wrapper .wp-block-code {
+  font-family: monospace !important;
+  padding: 1rem !important;
+  border-radius: 4px !important;
+  background: #f0f0f0 !important;
+  margin-bottom: 1.5rem !important;
+  overflow: auto !important;
+  font-size: 0.9rem !important;
+}
+
+/* Avdelare */
+.wp-blocks-wrapper .wp-block-separator {
+  border: none !important;
+  border-top: 2px solid #ddd !important;
+  margin: 2rem 0 !important;
+  clear: both !important;
+}
+
+/* Kolumner */
+.wp-blocks-wrapper .wp-block-columns {
+  display: flex !important;
+  margin-bottom: 1.5rem !important;
+  flex-wrap: wrap !important;
+  gap: 2rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-column {
+  flex-grow: 1 !important;
+  min-width: 0 !important;
+  flex-basis: 0 !important;
+}
+
+/* Responsiv styling för kolumner */
+@media (max-width: 768px) {
+  .wp-blocks-wrapper .wp-block-columns {
+    flex-direction: column !important;
+  }
+
+  .wp-blocks-wrapper .wp-block-column {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .wp-blocks-wrapper .wp-block-heading h1,
+  .wp-blocks-wrapper h1.wp-block-heading {
+    font-size: 2rem !important;
+  }
+
+  .wp-blocks-wrapper .wp-block-heading h2,
+  .wp-blocks-wrapper h2.wp-block-heading {
+    font-size: 1.75rem !important;
+  }
+
+  .wp-blocks-wrapper .wp-block-heading h3,
+  .wp-blocks-wrapper h3.wp-block-heading {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Lägg till extra styling för att säkerställa korrekta listor */
+.wp-blocks-wrapper .wp-block-list li::marker {
+  color: inherit !important;
+}
+
+/* Fix för länkar */
+.wp-blocks-wrapper a {
+  color: #0073aa !important;
+  text-decoration: underline !important;
+  transition: color 0.2s ease-in-out !important;
+}
+
+.wp-blocks-wrapper a:hover {
+  color: #005177 !important;
+}
+
+/* Tabeller */
+.wp-blocks-wrapper .wp-block-table table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.wp-blocks-wrapper .wp-block-table th,
+.wp-blocks-wrapper .wp-block-table td {
+  padding: 0.7em !important;
+  border: 1px solid #ddd !important;
+}
+
+.wp-blocks-wrapper .wp-block-table th {
+  background-color: #f2f2f2 !important;
+  font-weight: 600 !important;
+}

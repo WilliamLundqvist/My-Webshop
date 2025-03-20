@@ -3,12 +3,11 @@ import React, { useState, useEffect } from "react";
 import {
   getCartItems,
   isCartEmpty as checkCartEmpty,
-  getCartItemCount,
   getCartItemColor,
   getCartItemSize,
 } from "@/lib/utils/cartUtils";
 import { useCart } from "@/lib/context/CartContext";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 import { CartItemType } from "@/types/cart";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
