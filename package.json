@@ -48,7 +48,7 @@
     "zod": "^3.24.2"
   },
   "engines": {
-    "node": ">=18.17.1",
+    "node": "18.17.1",
     "npm": ">=8"
   },
   "devDependencies": {
