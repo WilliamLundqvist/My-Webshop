@@ -5,16 +5,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Products } from '@/types/product';
 import { getFirstGalleryImage, getPrice } from '@/lib/utils/productUtils';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import { formatPrice } from '@/lib/utils/formatters';
 
 export interface ProductCardProps {
   product: Products['products']['nodes'][number];
+  searchParams: URLSearchParams;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
   // Use search params hook to get current URL parameters
-  const searchParams = useSearchParams();
 
   const [isHovered, setIsHovered] = useState(false);
 

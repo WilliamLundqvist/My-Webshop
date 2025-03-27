@@ -16,6 +16,8 @@ export default async function HomePage() {
     query: GET_HOMEPAGE,
   });
 
+  const searchParams = new URLSearchParams();
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
@@ -145,7 +147,7 @@ export default async function HomePage() {
                       reviews: 97,
                     },
                   ].map((product, index) => (
-                    <ProductCard key={index} product={product as any} />
+                    <ProductCard key={index} product={product as any} searchParams={searchParams} />
                   ))}
                 </div>
               </TabsContent>

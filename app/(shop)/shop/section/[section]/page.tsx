@@ -205,7 +205,7 @@ export default async function ShopPage({ searchParams, params }) {
         </div>
 
         {products.length > 0 ? (
-          <ProductGrid products={products} />
+          <ProductGrid products={products} searchParams={finalSearchParams} />
         ) : (
           <div className="py-xl text-center">
             <p className="text-lg text-text-secondary">No products found.</p>
