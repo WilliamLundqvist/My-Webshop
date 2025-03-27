@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from '@/components/ui/breadcrumb';
 import {
   Pagination,
   PaginationContent,
@@ -12,11 +12,11 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
-import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+} from '@/components/ui/pagination';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
+import Link from 'next/link';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 export const ProductSkeleton = () => (
   <Card className="gap-2 md:gap-4 h-full">
@@ -70,10 +70,7 @@ export default function ShopLoading() {
           <Pagination className="my-8">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  className="pointer-events-none opacity-50"
-                />
+                <PaginationPrevious href="#" className="pointer-events-none opacity-50" />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#" isActive={true}>
@@ -81,10 +78,7 @@ export default function ShopLoading() {
                 </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  className="pointer-events-none opacity-50"
-                />
+                <PaginationNext href="#" className="pointer-events-none opacity-50" />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
