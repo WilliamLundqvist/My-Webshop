@@ -1,0 +1,77 @@
+diff --git a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
+index 236a491..9b7b275 100644
+--- a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
++++ b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
+@@ -1,5 +1,7 @@
+ import { cookies } from 'next/headers.js';
+ import { getWpUrl, getWpSecret } from '../../faust-core-utils.js';
++import { NextResponse } from 'next/server';
++
+ export async function tokenHandler(req, s) {
+     var _a, _b;
+     try {
+@@ -32,21 +34,16 @@ export async function tokenHandler(req, s) {
+                 refreshToken,
+             }),
+         });
++
++        // Log response status and body
++        console.log('Response status:', response.status);
++        const responseBody = await response.text();
++        console.log('Response body:', responseBody);
++
+         if (!response.ok) {
+-            /**
+-             * Remove the refresh token from the cookie in the case the token is:
+-             * - expired
+-             * - invalid
+-             * - revoked
+-             * - from a different WordPress instance when developing on localhost
+-             */
+-            /**
+-             * @TODO Delete the cookie
+-             */
++            // @TODO Delete the cookie
+             // cookieStore.delete(cookieName);
+-            /**
+-             * @TODO throw different errors based on response
+-             */
++            // @TODO throw different errors based on response
+             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                 status: 401,
+                 headers: {
+@@ -54,14 +51,16 @@ export async function tokenHandler(req, s) {
+                 },
+             });
+         }
+-        const data = (await response.json());
+-        /**
+-         * @TODO Set the refresh token cookie with the new refresh token
+-         * and expiration.
+-         */
+-        const res = new s.NextResponse(JSON.stringify(data), {
++
++        const data = JSON.parse(responseBody);
++
++        const res = new NextResponse(JSON.stringify(data), { // Ensure correct usage
+             status: 200,
+         });
++
++        console.log("data", data);
++        console.log("res", res);
++
+         res.cookies.set(cookieName, data.refreshToken, {
+             secure: true,
+             httpOnly: true,
+@@ -69,9 +68,9 @@ export async function tokenHandler(req, s) {
+             expires: new Date(data.refreshTokenExpiration * 1000),
+             sameSite: 'lax',
+         });
++
+         return res;
+-    }
+-    catch (err) {
++    } catch (err) {
+         console.error('Invalid response for authorize handler:', err);
+         return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+             status: 500,

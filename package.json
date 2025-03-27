@@ -8,7 +8,8 @@
     "generate": "faust generatePossibleTypes",
     "stylesheet": "faust generateGlobalStylesheet",
     "start": "faust start",
-    "generate:types": "graphql-codegen --config codegen.ts"
+    "generate:types": "graphql-codegen --config codegen.ts",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0",
@@ -69,6 +70,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "next-secure-headers": "^2.2.0",
+    "patch-package": "^8.0.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.0.8",
