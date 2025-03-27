@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-<<<<<<< HEAD
-import SortDropdown from "./SortDropdown";
-=======
->>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
 
 interface ShopControlsProps {
   currentSort: string;
@@ -20,7 +16,7 @@ const ShopControls: React.FC<ShopControlsProps> = ({
   currentSort,
   currentOrder,
   productCount = 0,
-  searchQuery = "",
+  searchQuery = '',
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,17 +32,14 @@ const ShopControls: React.FC<ShopControlsProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -54,16 +47,16 @@ const ShopControls: React.FC<ShopControlsProps> = ({
     const params = new URLSearchParams(searchParams.toString());
 
     // Reset pagination when sorting changes
-    params.delete("after"); // Remove old cursor-based param if it exists
-    params.set("page", "1"); // Reset to page 1
+    params.delete('after'); // Remove old cursor-based param if it exists
+    params.set('page', '1'); // Reset to page 1
 
     // Update sort parameters
-    params.set("sort", field);
-    params.set("order", order);
+    params.set('sort', field);
+    params.set('order', order);
 
     // Maintain search query if it exists
     if (searchQuery) {
-      params.set("search", searchQuery);
+      params.set('search', searchQuery);
     }
 
     router.push(`/shop?${params.toString()}`);
@@ -72,14 +65,14 @@ const ShopControls: React.FC<ShopControlsProps> = ({
 
   // Combined sort options with direction
   const SORT_OPTIONS = [
-    { field: "DATE", order: "DESC", label: "Newest first" },
-    { field: "DATE", order: "ASC", label: "Oldest first" },
-    { field: "PRICE", order: "ASC", label: "Price: Low to high" },
-    { field: "PRICE", order: "DESC", label: "Price: High to low" },
-    { field: "NAME", order: "ASC", label: "Name: A to Z" },
-    { field: "NAME", order: "DESC", label: "Name: Z to A" },
-    { field: "RATING", order: "DESC", label: "Highest rated" },
-    { field: "RATING", order: "ASC", label: "Lowest rated" },
+    { field: 'DATE', order: 'DESC', label: 'Newest first' },
+    { field: 'DATE', order: 'ASC', label: 'Oldest first' },
+    { field: 'PRICE', order: 'ASC', label: 'Price: Low to high' },
+    { field: 'PRICE', order: 'DESC', label: 'Price: High to low' },
+    { field: 'NAME', order: 'ASC', label: 'Name: A to Z' },
+    { field: 'NAME', order: 'DESC', label: 'Name: Z to A' },
+    { field: 'RATING', order: 'DESC', label: 'Highest rated' },
+    { field: 'RATING', order: 'ASC', label: 'Lowest rated' },
   ];
 
   // Get display name for the current sort option
@@ -87,7 +80,7 @@ const ShopControls: React.FC<ShopControlsProps> = ({
     const sortOption = SORT_OPTIONS.find(
       (option) => option.field === currentSort && option.order === currentOrder
     );
-    return sortOption ? sortOption.label : "Sort by";
+    return sortOption ? sortOption.label : 'Sort by';
   };
 
   // If not mounted yet, show a placeholder
@@ -110,16 +103,6 @@ const ShopControls: React.FC<ShopControlsProps> = ({
   return (
     <div className="mb-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
       <div className="flex items-center gap-md">
-<<<<<<< HEAD
-        {/* <SortDropdown
-          currentSort={currentSort}
-          currentOrder={currentOrder}
-          productCount={productCount}
-          searchQuery={searchQuery}
-        /> */}
-
-=======
->>>>>>> e2c7074427215365a2b9c287da389bc2f6744418
         <div className="relative" ref={dropdownRef}>
           <Button
             variant="outline"
@@ -140,17 +123,15 @@ const ShopControls: React.FC<ShopControlsProps> = ({
                   <button
                     key={`${option.field}-${option.order}`}
                     className={`flex w-full items-center px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground ${
-                      option.field === currentSort &&
-                      option.order === currentOrder
-                        ? "bg-accent/50 text-accent-foreground"
-                        : ""
+                      option.field === currentSort && option.order === currentOrder
+                        ? 'bg-accent/50 text-accent-foreground'
+                        : ''
                     }`}
                     onClick={() => handleSortChange(option.field, option.order)}
                   >
-                    {option.field === currentSort &&
-                      option.order === currentOrder && (
-                        <span className="mr-2">•</span>
-                      )}
+                    {option.field === currentSort && option.order === currentOrder && (
+                      <span className="mr-2">•</span>
+                    )}
                     {option.label}
                   </button>
                 ))}
@@ -163,11 +144,8 @@ const ShopControls: React.FC<ShopControlsProps> = ({
       <div className="text-sm text-text-secondary">
         {productCount > 0 ? (
           <span>
-            Showing {productCount} product{productCount !== 1 ? "s" : ""} sorted
-            by{" "}
-            <span className="font-medium text-text-primary">
-              {getSortDisplayName()}
-            </span>
+            Showing {productCount} product{productCount !== 1 ? 's' : ''} sorted by{' '}
+            <span className="font-medium text-text-primary">{getSortDisplayName()}</span>
           </span>
         ) : (
           <span>No products found</span>

@@ -9,6 +9,6 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   root: true,
   rules: {
-    // Add any custom ESLint rules here
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };
