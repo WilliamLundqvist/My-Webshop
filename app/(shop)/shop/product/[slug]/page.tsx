@@ -4,7 +4,7 @@ import { ProductDetail } from '@/components/shop/ProductDetail';
 import { Button } from '@/components/ui/button';
 
 import { GET_PRODUCT_BY_SLUG } from '@/lib/graphql/queries';
-import { Product, Products } from '@/types/product';
+import { Product } from '@/types/product';
 import BackButton from '@/components/shop/BackButton';
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
