@@ -1,14 +1,17 @@
-import { getClient } from "@faustwp/experimental-app-router";
-import Link from "next/link";
-import { ProductDetail } from "@/components/shop/ProductDetail";
-import { Button } from "@/components/ui/button";
+import { getClient } from '@faustwp/experimental-app-router';
+import Link from 'next/link';
+import { ProductDetail } from '@/components/shop/ProductDetail';
+import { Button } from '@/components/ui/button';
 
-import { GET_PRODUCT_BY_SLUG } from "@/lib/graphql/queries";
-import { Product, Products } from "@/types/product";
-import BackButton from "@/components/shop/BackButton";
+import { GET_PRODUCT_BY_SLUG } from '@/lib/graphql/queries';
+import { Product, Products } from '@/types/product';
+import BackButton from '@/components/shop/BackButton';
 export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
   const section = params.section;
+
+  // Await hela searchParams-objektet
+  searchParams = await searchParams;
 
   // Extract reference search parameters
   const refSearch = searchParams?.ref_search;
@@ -21,11 +24,11 @@ export default async function ProductPage({ params, searchParams }) {
   const buildBackToResultsUrl = () => {
     const params = new URLSearchParams();
 
-    if (refSearch) params.set("search", refSearch);
-    if (refSort) params.set("sort", refSort);
-    if (refOrder) params.set("order", refOrder);
-    if (refPage) params.set("page", refPage);
-    if (refCategory) params.set("category", refCategory);
+    if (refSearch) params.set('search', refSearch);
+    if (refSort) params.set('sort', refSort);
+    if (refOrder) params.set('order', refOrder);
+    if (refPage) params.set('page', refPage);
+    if (refCategory) params.set('category', refCategory);
 
     if (params.toString()) {
       return `/shop/section/${section}?${params.toString()}`;
@@ -42,7 +45,7 @@ export default async function ProductPage({ params, searchParams }) {
   const { data } = await client.query({
     query: GET_PRODUCT_BY_SLUG,
     variables: { slug },
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   });
 
   // Fix: Get the first product from the nodes array
@@ -55,7 +58,7 @@ export default async function ProductPage({ params, searchParams }) {
           Product not found.
         </div>
         <Button asChild variant="outline">
-          <Link href={backUrl}>{hasSearchContext ? "Back to Results" : "Back to Products"}</Link>
+          <Link href={backUrl}>{hasSearchContext ? 'Back to Results' : 'Back to Products'}</Link>
         </Button>
       </div>
     );

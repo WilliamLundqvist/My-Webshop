@@ -1,15 +1,105 @@
+diff --git a/node_modules/@faustwp/experimental-app-router/dist/server-actions/logoutAction.js b/node_modules/@faustwp/experimental-app-router/dist/server-actions/logoutAction.js
+index 1057ac5..bce8a01 100644
+--- a/node_modules/@faustwp/experimental-app-router/dist/server-actions/logoutAction.js
++++ b/node_modules/@faustwp/experimental-app-router/dist/server-actions/logoutAction.js
+@@ -3,10 +3,10 @@ import { getWpUrl } from '../faust-core-utils.js';
+ export async function onLogout() {
+     'use server';
+     const wpCookieName = `${getWpUrl()}-rt`;
+-    const cookieStore = cookies();
++    const cookieStore = await cookies();
+     const wpCookie = cookieStore.get(wpCookieName);
+     if (wpCookie === null || wpCookie === void 0 ? void 0 : wpCookie.name) {
+-        cookieStore.delete(wpCookieName);
++        await cookieStore.delete(wpCookieName);
+         return true;
+     }
+     return false;
+diff --git a/node_modules/@faustwp/experimental-app-router/dist/server-actions/utils/setRefreshToken.js b/node_modules/@faustwp/experimental-app-router/dist/server-actions/utils/setRefreshToken.js
+index d54c28a..f501381 100644
+--- a/node_modules/@faustwp/experimental-app-router/dist/server-actions/utils/setRefreshToken.js
++++ b/node_modules/@faustwp/experimental-app-router/dist/server-actions/utils/setRefreshToken.js
+@@ -8,9 +8,9 @@ import { getWpUrl } from '../../faust-core-utils.js';
+  * @param refreshTokenExpiration The refresh token expiration from the token endpoint
+  */
+ export async function setRefreshToken(refreshToken, refreshTokenExpiration) {
+-    const cookieStore = cookies();
++    const cookieStore = await cookies();
+     const cookieName = `${getWpUrl()}-rt`;
+-    cookieStore.set(cookieName, refreshToken, {
++    await cookieStore.set(cookieName, refreshToken, {
+         secure: true,
+         httpOnly: true,
+         path: '/',
+diff --git a/node_modules/@faustwp/experimental-app-router/dist/server/auth/fetchTokens.js b/node_modules/@faustwp/experimental-app-router/dist/server/auth/fetchTokens.js
+index ac898fa..e1f03c0 100644
+--- a/node_modules/@faustwp/experimental-app-router/dist/server/auth/fetchTokens.js
++++ b/node_modules/@faustwp/experimental-app-router/dist/server/auth/fetchTokens.js
+@@ -11,9 +11,9 @@ import { getWpUrl } from '../../faust-core-utils.js';
+  */
+ export async function fetchTokens(code) {
+     var _a;
+-    const cookieStore = cookies();
++    const cookieStore = await cookies();
+     const cookieName = `${getWpUrl()}-rt`;
+-    if (!((_a = cookieStore.get(cookieName)) === null || _a === void 0 ? void 0 : _a.value) && !code) {
++    if (!((_a = await cookieStore.get(cookieName)) === null || _a === void 0 ? void 0 : _a.value) && !code) {
+         // The user is not authenticated.
+         return null;
+     }
+@@ -26,7 +26,7 @@ export async function fetchTokens(code) {
+             method: 'GET',
+             headers: {
+                 'Content-Type': 'application/json',
+-                Cookie: cookieStore.toString(),
++                Cookie: await cookieStore.toString(),
+             },
+             cache: 'no-store',
+         });
+diff --git a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/index.js b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/index.js
+index 59e5d20..4580e7b 100644
+--- a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/index.js
++++ b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/index.js
+@@ -1,12 +1,11 @@
+ import { notFound } from 'next/navigation.js';
+-import * as server from 'next/server.js';
+ import { tokenHandler } from './tokenHandler.js';
+ export async function GetFn(req) {
+     const { pathname } = new URL(req.url);
+     switch (pathname) {
+         case '/api/faust/token/':
+         case '/api/faust/token': {
+-            return tokenHandler(req, server);
++            return tokenHandler(req);
+         }
+         default: {
+             return notFound();
 diff --git a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
-index 236a491..9b7b275 100644
+index 236a491..1cba083 100644
 --- a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
 +++ b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
-@@ -1,5 +1,7 @@
+@@ -1,6 +1,8 @@
  import { cookies } from 'next/headers.js';
  import { getWpUrl, getWpSecret } from '../../faust-core-utils.js';
+-export async function tokenHandler(req, s) {
 +import { NextResponse } from 'next/server';
 +
- export async function tokenHandler(req, s) {
++export async function tokenHandler(req) {
      var _a, _b;
      try {
+         const secretKey = getWpSecret();
+@@ -9,9 +11,9 @@ export async function tokenHandler(req, s) {
+         }
+         const { url } = req;
+         const code = (_a = new URL(url).searchParams.get('code')) !== null && _a !== void 0 ? _a : undefined;
+-        const cookieStore = cookies();
++        const cookieStore = await cookies();
+         const cookieName = `${getWpUrl()}-rt`;
+-        const refreshToken = (_b = cookieStore.get(cookieName)) === null || _b === void 0 ? void 0 : _b.value;
++        const refreshToken = (_b = await cookieStore.get(cookieName)) === null || _b === void 0 ? void 0 : _b.value;
+         if (!refreshToken && !code) {
+             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                 status: 401,
 @@ -32,21 +34,16 @@ export async function tokenHandler(req, s) {
                  refreshToken,
              }),
@@ -40,7 +130,7 @@ index 236a491..9b7b275 100644
              return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                  status: 401,
                  headers: {
-@@ -54,14 +51,16 @@ export async function tokenHandler(req, s) {
+@@ -54,24 +51,26 @@ export async function tokenHandler(req, s) {
                  },
              });
          }
@@ -53,17 +143,18 @@ index 236a491..9b7b275 100644
 +
 +        const data = JSON.parse(responseBody);
 +
-+        const res = new NextResponse(JSON.stringify(data), { // Ensure correct usage
++        const res = NextResponse.json(data, {
              status: 200,
          });
+-        res.cookies.set(cookieName, data.refreshToken, {
 +
 +        console.log("data", data);
 +        console.log("res", res);
 +
-         res.cookies.set(cookieName, data.refreshToken, {
++        await res.cookies.set(cookieName, data.refreshToken, {
              secure: true,
              httpOnly: true,
-@@ -69,9 +68,9 @@ export async function tokenHandler(req, s) {
+             path: '/',
              expires: new Date(data.refreshTokenExpiration * 1000),
              sameSite: 'lax',
          });
