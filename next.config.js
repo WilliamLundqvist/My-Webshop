@@ -13,6 +13,9 @@ export default withFaust({
       },
     ];
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   images: {
     remotePatterns: [
       {

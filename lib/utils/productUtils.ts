@@ -1,6 +1,4 @@
-"use client";
-
-import { ProductNode, SimpleProductNode, VariableProductNode } from "@/types/product";
+import { ProductNode, SimpleProductNode, VariableProductNode } from '@/types/product';
 
 // Typskyddsfunktioner för att kontrollera produkttyper
 export function isSimpleProduct(product: ProductNode): product is SimpleProductNode {
@@ -20,37 +18,40 @@ export function isExternalProduct(product: ProductNode): product is any {
 }
 
 // Typskydd för att kontrollera om produkten har galleryImages
-export function hasGalleryImages(product: ProductNode): product is SimpleProductNode | VariableProductNode {
-  return (product.__typename === 'SimpleProduct' || product.__typename === 'VariableProduct') && 
-         product.galleryImages !== null && 
-         product.galleryImages !== undefined;
+export function hasGalleryImages(
+  product: ProductNode
+): product is SimpleProductNode | VariableProductNode {
+  return (
+    (product.__typename === 'SimpleProduct' || product.__typename === 'VariableProduct') &&
+    product.galleryImages !== null &&
+    product.galleryImages !== undefined
+  );
 }
 
 // Typskydd för att kontrollera om produkten har price
 export function hasPrice(product: ProductNode): product is SimpleProductNode | VariableProductNode {
-  return (product.__typename === 'SimpleProduct' || product.__typename === 'VariableProduct') && 
-         product.price !== null && 
-         product.price !== undefined;
+  return (
+    (product.__typename === 'SimpleProduct' || product.__typename === 'VariableProduct') &&
+    product.price !== null &&
+    product.price !== undefined
+  );
 }
 
 // Typskydd för att kontrollera om produkten har featuredImage
 export function hasFeaturedImage(product: any): boolean {
-  return product.featuredImage && 
-         product.featuredImage.node && 
-         product.featuredImage.node.sourceUrl;
+  return (
+    product.featuredImage && product.featuredImage.node && product.featuredImage.node.sourceUrl
+  );
 }
 
 // Typskydd för att kontrollera om produkten har variations
 export function hasVariations(product: any): boolean {
-  return product.variations && 
-         product.variations.nodes && 
-         Array.isArray(product.variations.nodes);
+  return product.variations && product.variations.nodes && Array.isArray(product.variations.nodes);
 }
 
 // Typskydd för att kontrollera om produkten har databaseId
 export function hasDatabaseId(product: any): boolean {
-  return product.databaseId !== undefined && 
-         product.databaseId !== null;
+  return product.databaseId !== undefined && product.databaseId !== null;
 }
 
 // Hjälpfunktion för att säkert hämta galleryImages
@@ -104,7 +105,7 @@ export function getDatabaseId(product: any): number | null {
 // Hjälpfunktion för att samla alla bilder från en produkt
 export function getAllProductImages(product: any): { sourceUrl: string }[] {
   const imageSet = new Set<string>();
-  
+
   // Add product main image
   if (product?.image?.sourceUrl) {
     imageSet.add(product.image.sourceUrl);
@@ -131,19 +132,19 @@ export function getAllProductImages(product: any): { sourceUrl: string }[] {
 // Hjälpfunktion för att hämta färgspecifika bilder från variationer
 export function getColorImages(product: any): Record<string, string> {
   const colorImagesMap: Record<string, string> = {};
-  
+
   if (hasVariations(product)) {
     product.variations.nodes.forEach((variation: any) => {
       // Assuming each variation has attributes like color and an image
       const colorAttribute = variation.attributes?.nodes?.find(
-        (attr: any) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
+        (attr: any) => attr.name.toLowerCase() === 'color' || attr.name.toLowerCase() === 'färg'
       );
-      
+
       if (colorAttribute?.value && variation.image?.sourceUrl) {
         colorImagesMap[colorAttribute.value] = variation.image.sourceUrl;
       }
     });
   }
-  
+
   return colorImagesMap;
-} 
+}

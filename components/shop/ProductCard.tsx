@@ -1,10 +1,8 @@
-'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Products } from '@/types/product';
-import { getFirstGalleryImage, getPrice } from '@/lib/utils/productUtils';
-import Image from 'next/image';
+import * as productUtils from '@/lib/utils/productUtils';
 import { formatPrice } from '@/lib/utils/formatters';
 
 export interface ProductCardProps {
@@ -13,56 +11,46 @@ export interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
-  // Use search params hook to get current URL parameters
-
-  const [isHovered, setIsHovered] = useState(false);
-
   // Handle image which could be a string or an object with sourceUrl
   const baseImage = product.image?.sourceUrl || 'https://placehold.co/400x400';
 
   // Använd hjälpfunktionen för att säkert hämta första galleryImage
-  const galleryImage = getFirstGalleryImage(product, baseImage);
+  const galleryImage = productUtils.getFirstGalleryImage(product, baseImage);
 
   // Create product URL with preserved search parameters
   const createProductUrl = () => {
-    // Create base product URL
     const baseUrl = `/shop/product/${product.slug}`;
 
-    // If no search params exist, return just the base URL
-    if (!searchParams || searchParams.toString() === '') {
+    // Om inga sökparametrar finns, returnera bara bas-URL:en
+    if (!searchParams || Object.keys(searchParams).length === 0) {
       return baseUrl;
     }
 
-    // Create a new URLSearchParams to hold the parameters we want to preserve
+    // Skapa nya parametrar för produkt-URL:en
     const params = new URLSearchParams();
 
-    // Preserve search query, sorting, and pagination parameters
-    if (searchParams.has('search')) {
-      params.set('ref_search', searchParams.get('search')!);
-    }
-    if (searchParams.has('sort')) {
-      params.set('ref_sort', searchParams.get('sort')!);
-    }
-    if (searchParams.has('order')) {
-      params.set('ref_order', searchParams.get('order')!);
-    }
-    if (searchParams.has('page')) {
-      params.set('ref_page', searchParams.get('page')!);
-    }
-    if (searchParams.has('category')) {
-      params.set('ref_category', searchParams.get('category')!);
-    }
+    // Mappa om sökparametrarna till ref_-parametrar
+    const paramMapping = {
+      search: 'ref_search',
+      sort: 'ref_sort',
+      order: 'ref_order',
+      page: 'ref_page',
+      category: 'ref_category',
+    };
 
-    // If we have parameters to preserve, append them to the URL
-    if (params.toString() !== '') {
-      return `${baseUrl}?${params.toString()}`;
-    }
+    // Gå igenom mappningen och sätt nya parametrar
+    Object.entries(paramMapping).forEach(([originalKey, newKey]) => {
+      if (searchParams[originalKey]) {
+        params.set(newKey, searchParams[originalKey]);
+      }
+    });
 
-    return baseUrl;
+    // Om vi har parametrar att bevara, lägg till dem i URL:en
+    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
   };
 
   // Säkert hämta price
-  const productPrice = getPrice(product);
+  const productPrice = productUtils.getPrice(product);
 
   // Kontrollera om rating och reviews finns (dessa finns inte i GetProductsQuery som standard)
 
@@ -71,15 +59,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
       <div className="relative flex-grow rounded-l-full">
         <Link href={createProductUrl()}>
           <Card className="gap-2 md:gap-4 h-full border-[3px]">
-            <div className="aspect-square overflow-hidden">
-              <Image
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                src={isHovered ? galleryImage : baseImage}
+            <div className="aspect-square overflow-hidden relative">
+              {/* Base image */}
+              <img
+                src={baseImage}
                 alt={product.name || 'Product'}
                 width={400}
                 height={400}
-                className="h-full w-full object-cover object-top"
+                className="h-full w-full object-cover object-top transition-opacity duration-300 group-hover:opacity-0"
+                loading="lazy"
+              />
+              {/* Hover image - positioned absolute on top */}
+              <img
+                src={galleryImage}
+                alt={`${product.name || 'Product'} alternate view`}
+                width={400}
+                height={400}
+                className="absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 loading="lazy"
               />
             </div>
