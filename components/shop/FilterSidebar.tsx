@@ -23,10 +23,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useCategoryData } from '@/lib/hooks/useCategoryData';
 
-// Define min/max price constants
-const MIN_PRICE = 0;
-const MAX_PRICE = 500;
-
 // Memoize sort options to prevent recreating on each render
 const sortOptions = [
   { value: 'DATE', order: 'DESC', label: 'Newest' },
@@ -49,8 +45,6 @@ function FilterSidebarComponent() {
   const currentOrder = searchParams.get('order') || 'DESC';
   const currentCategory = searchParams.get('category') || '';
   const searchQuery = searchParams.get('search') || '';
-  const currentPriceMin = Number(searchParams.get('min_price') || MIN_PRICE);
-  const currentPriceMax = Number(searchParams.get('max_price') || MAX_PRICE);
 
   // Memoize sortKey för att förenkla hantering av sort+order kombinationen
   const sortKey = useMemo(() => `${currentSort}-${currentOrder}`, [currentSort, currentOrder]);

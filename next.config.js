@@ -1,12 +1,12 @@
-import { withFaust } from "@faustwp/core";
-import { createSecureHeaders } from "next-secure-headers";
+import { withFaust } from '@faustwp/core';
+import { createSecureHeaders } from 'next-secure-headers';
 
 /** @type {import('next').NextConfig} */
 export default withFaust({
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: '/:path*',
         headers: createSecureHeaders({
           xssProtection: false,
         }),
@@ -14,11 +14,21 @@ export default withFaust({
     ];
   },
   images: {
-    domains: ["localhost"],
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "placehold.co",
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ngrok-free.app',
+        pathname: '/wp-content/uploads/**',
       },
     ],
   },

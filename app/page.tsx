@@ -1,12 +1,13 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductCard from "../components/shop/ProductCard";
-import { getClient } from "@faustwp/experimental-app-router";
-import { GET_HOMEPAGE } from "@/lib/graphql/queries";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ProductCard from '../components/shop/ProductCard';
+import { getClient } from '@faustwp/experimental-app-router';
+import { GET_HOMEPAGE } from '@/lib/graphql/queries';
+import Image from 'next/image';
 
 export default async function HomePage() {
   const client = await getClient();
@@ -35,12 +36,12 @@ export default async function HomePage() {
               </h1>
               <p className="max-w-md text-lg">{data?.page?.hero?.heroSubheading}</p>
               <div className="flex gap-4">
-                <Link href={data?.page?.hero?.heroButton1?.url || "#"}>
+                <Link href={data?.page?.hero?.heroButton1?.url || '#'}>
                   <Button size="lg" className="font-medium">
                     {data?.page?.hero?.heroButton1?.title}
                   </Button>
                 </Link>
-                <Link href={data?.page?.hero?.heroButton2?.url || "#"}>
+                <Link href={data?.page?.hero?.heroButton2?.url || '#'}>
                   <Button size="lg" className="border-white text-white hover:bg-white/10">
                     {data?.page?.hero?.heroButton2?.title}
                   </Button>
@@ -56,12 +57,12 @@ export default async function HomePage() {
             <h2 className="mb-6 text-2xl font-bold">Shop By Category</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {[
-                { name: "Dumbbells", image: "https://placehold.co/300x300" },
-                { name: "Kettlebells", image: "https://placehold.co/300x300" },
-                { name: "Barbells", image: "https://placehold.co/300x300" },
-                { name: "Benches", image: "https://placehold.co/300x300" },
-                { name: "Racks", image: "https://placehold.co/300x300" },
-                { name: "Accessories", image: "https://placehold.co/300x300" },
+                { name: 'Dumbbells', image: 'https://placehold.co/300x300' },
+                { name: 'Kettlebells', image: 'https://placehold.co/300x300' },
+                { name: 'Barbells', image: 'https://placehold.co/300x300' },
+                { name: 'Benches', image: 'https://placehold.co/300x300' },
+                { name: 'Racks', image: 'https://placehold.co/300x300' },
+                { name: 'Accessories', image: 'https://placehold.co/300x300' },
               ].map((category) => (
                 <Link
                   key={category.name}
@@ -70,7 +71,7 @@ export default async function HomePage() {
                 >
                   <div className="overflow-hidden rounded-full">
                     <img
-                      src={category.image || "https://placehold.co/300x300"}
+                      src={category.image || 'https://placehold.co/300x300'}
                       alt={category.name}
                       width={150}
                       height={150}
@@ -104,42 +105,42 @@ export default async function HomePage() {
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {[
                     {
-                      id: "product-1",
-                      name: "Premium Yoga Mat",
-                      slug: "premium-yoga-mat",
-                      sku: "YM001",
+                      id: 'product-1',
+                      name: 'Premium Yoga Mat',
+                      slug: 'premium-yoga-mat',
+                      sku: 'YM001',
                       price: 49.99,
-                      image: "https://placehold.co/400x400",
+                      image: 'https://placehold.co/400x400',
                       rating: 4.5,
                       reviews: 210,
                     },
                     {
-                      id: "product-2",
-                      name: "Resistance Bands Set",
-                      slug: "resistance-bands-set",
-                      sku: "RB002",
+                      id: 'product-2',
+                      name: 'Resistance Bands Set',
+                      slug: 'resistance-bands-set',
+                      sku: 'RB002',
                       price: 29.99,
-                      image: "https://placehold.co/400x400",
+                      image: 'https://placehold.co/400x400',
                       rating: 4.3,
                       reviews: 185,
                     },
                     {
-                      id: "product-3",
-                      name: "Adjustable Weight Bench",
-                      slug: "adjustable-weight-bench",
-                      sku: "WB003",
+                      id: 'product-3',
+                      name: 'Adjustable Weight Bench',
+                      slug: 'adjustable-weight-bench',
+                      sku: 'WB003',
                       price: 179.99,
-                      image: "https://placehold.co/400x400",
+                      image: 'https://placehold.co/400x400',
                       rating: 4.7,
                       reviews: 128,
                     },
                     {
-                      id: "product-4",
-                      name: "Competition Kettlebell Set",
-                      slug: "competition-kettlebell-set",
-                      sku: "KB004",
+                      id: 'product-4',
+                      name: 'Competition Kettlebell Set',
+                      slug: 'competition-kettlebell-set',
+                      sku: 'KB004',
                       price: 349.99,
-                      image: "https://placehold.co/400x400",
+                      image: 'https://placehold.co/400x400',
                       rating: 4.8,
                       reviews: 97,
                     },
@@ -185,10 +186,12 @@ export default async function HomePage() {
                 </div>
               </div>
               <div className="relative h-[300px] overflow-hidden rounded-lg md:h-auto">
-                <img
+                <Image
                   src="https://placehold.co/800x600"
                   alt="Home Gym Collection"
                   className="h-full w-full object-cover"
+                  width={800}
+                  height={600}
                 />
               </div>
             </div>
@@ -202,20 +205,20 @@ export default async function HomePage() {
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 {
-                  title: "Premium Quality",
-                  description: "Commercial-grade equipment built to last with premium materials",
+                  title: 'Premium Quality',
+                  description: 'Commercial-grade equipment built to last with premium materials',
                 },
                 {
-                  title: "Free Shipping",
-                  description: "Free shipping on all orders over $100",
+                  title: 'Free Shipping',
+                  description: 'Free shipping on all orders over $100',
                 },
                 {
-                  title: "Expert Support",
-                  description: "Get advice from fitness professionals on the right equipment",
+                  title: 'Expert Support',
+                  description: 'Get advice from fitness professionals on the right equipment',
                 },
                 {
-                  title: "Easy Returns",
-                  description: "30-day money-back guarantee on all products",
+                  title: 'Easy Returns',
+                  description: '30-day money-back guarantee on all products',
                 },
               ].map((benefit, index) => (
                 <div key={index} className="flex flex-col items-center text-center">

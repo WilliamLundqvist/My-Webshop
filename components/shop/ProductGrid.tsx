@@ -1,8 +1,8 @@
-import React from "react";
-import { Products } from "@/types/product";
-import ProductCard from "./ProductCard";
+import React, { Suspense } from 'react';
+import { Products } from '@/types/product';
+import ProductCard from './ProductCard';
 interface ProductGridProps {
-  products: Products["products"]["nodes"];
+  products: Products['products']['nodes'];
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
@@ -12,7 +12,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
         {products.map((product) => (
           <div key={product.id}>
             <div className="flex flex-col w-full h-full">
-              <ProductCard product={product} />
+              <Suspense fallback={<div>Loading...</div>}>
+                <ProductCard product={product} />
+              </Suspense>
             </div>
           </div>
         ))}
