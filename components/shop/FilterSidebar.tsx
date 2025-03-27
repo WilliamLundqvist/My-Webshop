@@ -1,7 +1,7 @@
 'use client';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Filter, ChevronRight, Search } from 'lucide-react';
-import { useState, useCallback, useMemo, memo } from 'react';
+import { useState, useCallback, useMemo, memo, Suspense } from 'react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
@@ -222,69 +222,71 @@ function FilterSidebarComponent() {
   }, [selectedSort]);
 
   return (
-    <Sidebar variant="floating" className="sticky top-[70px]">
-      <SidebarHeader className="border-b p-4 bp-6 ">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center">
-            <Search className="mr-2 h-4 w-4" />
-            <span className="text-sm font-medium">Search</span>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="h-4 w-4 text-muted-foreground" />
+    <Suspense fallback={<div>Loading...</div>}>
+      <Sidebar variant="floating" className="sticky top-[70px]">
+        <SidebarHeader className="border-b p-4 bp-6 ">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center">
+              <Search className="mr-2 h-4 w-4" />
+              <span className="text-sm font-medium">Search</span>
             </div>
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-10 text-sm w-full"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <Input
+                type="search"
+                placeholder="Search products..."
+                className="pl-10 text-sm w-full"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
           </div>
-        </div>
-      </SidebarHeader>
-      <SidebarHeader className=" p-4 pt-6 bp-2">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center">
-            <Filter className="mr-2 h-4 w-4" />
-            <span className="text-sm font-medium">Filters</span>
+        </SidebarHeader>
+        <SidebarHeader className=" p-4 pt-6 bp-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center">
+              <Filter className="mr-2 h-4 w-4" />
+              <span className="text-sm font-medium">Filters</span>
+            </div>
           </div>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <Accordion type="multiple" defaultValue={['sort', 'categories', 'price']}>
-            <AccordionItem value="sort">
-              <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
-                Sort By
-              </AccordionTrigger>
-              <AccordionContent>
-                <RadioGroup
-                  value={selectedSort}
-                  onValueChange={handleSortChange}
-                  className="space-y-1"
-                >
-                  {sortOptionsList}
-                </RadioGroup>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="categories">
-              <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
-                Categories
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-2">{categoryList}</div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter className="border-t p-4">
-        <Button variant="outline" className="w-full" onClick={clearFilters}>
-          Clear All Filters
-        </Button>
-      </SidebarFooter>
-    </Sidebar>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <Accordion type="multiple" defaultValue={['sort', 'categories', 'price']}>
+              <AccordionItem value="sort">
+                <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
+                  Sort By
+                </AccordionTrigger>
+                <AccordionContent>
+                  <RadioGroup
+                    value={selectedSort}
+                    onValueChange={handleSortChange}
+                    className="space-y-1"
+                  >
+                    {sortOptionsList}
+                  </RadioGroup>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="categories">
+                <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
+                  Categories
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2">{categoryList}</div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter className="border-t p-4">
+          <Button variant="outline" className="w-full" onClick={clearFilters}>
+            Clear All Filters
+          </Button>
+        </SidebarFooter>
+      </Sidebar>
+    </Suspense>
   );
 }
 
