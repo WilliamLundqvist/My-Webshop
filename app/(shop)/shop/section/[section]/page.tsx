@@ -1,17 +1,17 @@
-import { getClient } from "@faustwp/experimental-app-router";
-import Link from "next/link";
+import { getClient } from '@faustwp/experimental-app-router';
+import Link from 'next/link';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { GET_PRODUCTS, GET_PRODUCT_COUNT } from "@/lib/graphql/queries";
-import ProductGrid from "@/components/shop/ProductGrid";
-import ShopPagination from "@/components/shop/ShopPagination";
-import { SidebarInset } from "@/components/ui/sidebar";
-import { StickyFilterButton } from "@/components/shop/StickyFilterButton";
-import { redirect } from "next/navigation";
+} from '@/components/ui/breadcrumb';
+import { GET_PRODUCTS, GET_PRODUCT_COUNT } from '@/lib/graphql/queries';
+import ProductGrid from '@/components/shop/ProductGrid';
+import ShopPagination from '@/components/shop/ShopPagination';
+import { SidebarInset } from '@/components/ui/sidebar';
+import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
+import { redirect } from 'next/navigation';
 
 // This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
@@ -41,31 +41,26 @@ export default async function ShopPage({ searchParams, params }) {
   }
 
   const first = 20; // Number of products per page
-  const sortField = finalSearchParams?.sort || "DATE"; // Default sort by date
-  const sortOrder = finalSearchParams?.order || "DESC"; // Default sort direction
-  const searchQuery = finalSearchParams?.search || ""; // Get search query from URL
-  const category = finalSearchParams?.category || ""; // Get category from URL
-  const maxPrice = finalSearchParams?.max_price || ""; // Get max price from URL
-  const minPrice = finalSearchParams?.min_price || ""; // Get min price from URL
-
-  console.log(`Max price: ${maxPrice}`);
-  console.log(`Min price: ${minPrice}`);
+  const sortField = finalSearchParams?.sort || 'DATE'; // Default sort by date
+  const sortOrder = finalSearchParams?.order || 'DESC'; // Default sort direction
+  const searchQuery = finalSearchParams?.search || ''; // Get search query from URL
+  const category = finalSearchParams?.category || ''; // Get category from URL
 
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
 
   // Create a cache for storing page-to-cursor mappings
   // In production, this could be moved to Redis or another persistent cache
-  if (typeof global.cursorCache === "undefined") {
+  if (typeof global.cursorCache === 'undefined') {
     global.cursorCache = {};
   }
 
-  const cacheKey = `${section || "all"}-${category || "none"}-${
-    searchQuery || "none"
+  const cacheKey = `${section || 'all'}-${category || 'none'}-${
+    searchQuery || 'none'
   }-${sortField}-${sortOrder}`;
 
   // Initialize after/cursor value
-  let after = "";
+  let after = '';
 
   // Check if we can use a cached cursor for this page
   if (currentPage > 1 && global.cursorCache[cacheKey]?.[currentPage - 1]) {
@@ -80,7 +75,7 @@ export default async function ShopPage({ searchParams, params }) {
     }
 
     // Start from the beginning and fetch all pages up to the requested one
-    let lastCursor = "";
+    let lastCursor = '';
 
     for (let page = 1; page < currentPage; page++) {
       const prevPageResult = await client.query({
@@ -92,7 +87,7 @@ export default async function ShopPage({ searchParams, params }) {
           search: searchQuery,
           category: category ? category : section,
         },
-        fetchPolicy: "network-only",
+        fetchPolicy: 'network-only',
       });
 
       if (!prevPageResult.data.products.pageInfo.hasNextPage) {
@@ -122,7 +117,7 @@ export default async function ShopPage({ searchParams, params }) {
       search: searchQuery,
       category: category ? category : section,
     },
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   });
 
   const products = data.products.nodes;
@@ -159,7 +154,7 @@ export default async function ShopPage({ searchParams, params }) {
       totalPages = Math.ceil(totalProducts / first);
     }
   } catch (error) {
-    console.error("Error calculating total pages:", error);
+    console.error('Error calculating total pages:', error);
   }
 
   console.log(`PageInfo: `, pageInfo);
@@ -204,7 +199,7 @@ export default async function ShopPage({ searchParams, params }) {
               ? `Search Results for "${searchQuery}"`
               : category
                 ? `${category}`
-                : "Products"}
+                : 'Products'}
           </h1>
           <div className="text-sm text-muted-foreground">{products.length} products</div>
         </div>

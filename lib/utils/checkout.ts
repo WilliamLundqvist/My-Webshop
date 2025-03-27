@@ -1,4 +1,4 @@
-import { Cart, CustomerAddressInput, CountriesEnum } from "../graphql/generated/graphql";
+import { CustomerAddressInput, CountriesEnum } from '../graphql/generated/graphql';
 
 /**
  * Interface för LineItemInput anpassat för vår implementation
@@ -47,13 +47,13 @@ export const generateDummyTransactionId = (): string => {
 export const validateCheckoutForm = (formData: CheckoutFormData): string[] => {
   const errors: string[] = [];
 
-  if (!formData.firstName) errors.push("Förnamn krävs");
-  if (!formData.lastName) errors.push("Efternamn krävs");
-  if (!formData.email) errors.push("E-post krävs");
-  if (!formData.address1) errors.push("Adress krävs");
-  if (!formData.city) errors.push("Stad krävs");
-  if (!formData.postcode) errors.push("Postnummer krävs");
-  if (!formData.phone) errors.push("Telefonnummer krävs");
+  if (!formData.firstName) errors.push('Förnamn krävs');
+  if (!formData.lastName) errors.push('Efternamn krävs');
+  if (!formData.email) errors.push('E-post krävs');
+  if (!formData.address1) errors.push('Adress krävs');
+  if (!formData.city) errors.push('Stad krävs');
+  if (!formData.postcode) errors.push('Postnummer krävs');
+  if (!formData.phone) errors.push('Telefonnummer krävs');
 
   return errors;
 };
@@ -82,14 +82,14 @@ export const formDataToAddress = (formData: CheckoutFormData): CustomerAddressIn
     firstName: formData.firstName,
     lastName: formData.lastName,
     address1: formData.address1,
-    address2: formData.address2 || "",
+    address2: formData.address2 || '',
     city: formData.city,
-    state: formData.state || "",
+    state: formData.state || '',
     postcode: formData.postcode,
     country: formData.country,
     email: formData.email,
     phone: formData.phone,
-    company: "",
+    company: '',
     overwrite: true,
   };
 };

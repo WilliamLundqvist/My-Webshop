@@ -18,6 +18,7 @@ alwaysApply: true
     - Always add loading and error states to data fetching components
     - Implement error handling and error logging
     - Use semantic HTML elements where possible
+    - When using types always prioritise generated types from graphQL instead of making you own typess
     
     General preferences:
     

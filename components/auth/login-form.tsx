@@ -1,16 +1,17 @@
-import { cn } from "@/lib/utils/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { loginAction } from "@/app/login/action";
-import { useFormState } from "react-dom";
-import Link from "next/link";
-export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+import { cn } from '@/lib/utils/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { loginAction } from '@/app/(auth)/login/action';
+import { useFormState } from 'react-dom';
+import Link from 'next/link';
+
+export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const [state, formAction, isPending] = useFormState(loginAction, {});
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="py-6">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -45,7 +46,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" disabled={isPending} className="w-full">
-                  {isPending ? "Logging in..." : "Login"}
+                  {isPending ? 'Logging in...' : 'Login'}
                 </Button>
               </div>
             </div>

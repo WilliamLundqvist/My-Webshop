@@ -1,4 +1,4 @@
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { gql, TypedDocumentNode } from '@apollo/client';
 
 // När typerna har genererats korrekt, ta bort kommentarerna nedan
 
@@ -19,9 +19,10 @@ import {
   GetCategoriesAndUnderCategoriesBySectionQueryVariables,
   GetViewerQuery,
   GetHomepageQuery,
-  GetHomepageQueryVariables,
-} from "./generated/graphql";
-import { cartFragment, heroFragment } from "./fragments";
+  GetCustomerQueryVariables,
+  GetCustomerQuery,
+} from './generated/graphql';
+import { cartFragment, heroFragment } from './fragments';
 export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryVariables> = gql`
   query GetProducts(
     $first: Int
@@ -30,7 +31,11 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryV
     $search: String
     $category: String
   ) {
-    products(first: $first, after: $after, where: { orderby: $orderby, search: $search }) {
+    products(
+      first: $first
+      after: $after
+      where: { orderby: $orderby, search: $search, category: $category }
+    ) {
       nodes {
         id
         name
@@ -235,25 +240,13 @@ export const GET_CART: TypedDocumentNode<GetCartQuery, GetCartQueryVariables> = 
   ${cartFragment}
 `;
 
-export const GET_CUSTOMER = gql`
+export const GET_CUSTOMER: TypedDocumentNode<GetCustomerQuery, GetCustomerQueryVariables> = gql`
   query GetCustomer {
     customer {
+      id
       firstName
       lastName
       email
-      billing {
-        firstName
-        lastName
-        address1
-        address2
-        city
-        state
-        postcode
-        country
-        email
-        phone
-        company
-      }
       shipping {
         firstName
         lastName
@@ -265,6 +258,50 @@ export const GET_CUSTOMER = gql`
         country
         phone
         company
+      }
+      orders {
+        nodes {
+          id
+          status
+          subtotal
+          billing {
+            address1
+            address2
+            city
+            company
+            country
+            email
+            firstName
+            lastName
+            phone
+            postcode
+            state
+          }
+          lineItems {
+            nodes {
+              product {
+                node {
+                  ... on SimpleProduct {
+                    id
+                    name
+                    price
+                    image {
+                      sourceUrl
+                    }
+                  }
+                  ... on VariableProduct {
+                    id
+                    name
+                    price
+                    image {
+                      sourceUrl
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

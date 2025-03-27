@@ -25,18 +25,21 @@ import {
 } from "@/components/ui/table";
 
 const CartPage = () => {
-  const { cart, loading, processingItems, removeCartItem, updateCartItem } = useCart();
+  const { cart, loading, processingItems, removeCartItem, updateCartItem } =
+    useCart();
 
   const cartItems = getCartItems(cart);
   const isCartEmpty = checkCartEmpty(cart);
 
-  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(() => {
-    const quantities: Record<string, number> = {};
-    cartItems.forEach((item) => {
-      quantities[item.key] = item.quantity || 0;
-    });
-    return quantities;
-  });
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(
+    () => {
+      const quantities: Record<string, number> = {};
+      cartItems.forEach((item) => {
+        quantities[item.key] = item.quantity || 0;
+      });
+      return quantities;
+    },
+  );
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -51,7 +54,7 @@ const CartPage = () => {
   const debouncedUpdateCartItem = useDebounce(
     (input: { key: string; quantity: number }) => updateCartItem(input),
     700,
-    [updateCartItem]
+    [updateCartItem],
   );
 
   const handleQuantityChange = (key: string, newQuantity: number) => {
@@ -114,8 +117,16 @@ const CartPage = () => {
                         )}
                         <div className="ml-2">
                           <div className="font-medium">{product.name}</div>
-                          {color && <div className="text-sm text-gray-500">Färg: {color}</div>}
-                          {size && <div className="text-sm text-gray-500">Storlek: {size}</div>}
+                          {color && (
+                            <div className="text-sm text-gray-500">
+                              Färg: {color}
+                            </div>
+                          )}
+                          {size && (
+                            <div className="text-sm text-gray-500">
+                              Storlek: {size}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </TableCell>
@@ -124,7 +135,7 @@ const CartPage = () => {
                         item.product.node.__typename === "SimpleProduct" ||
                           item.product.node.__typename === "VariableProduct"
                           ? item.product.node.price
-                          : "Pris saknas"
+                          : "Pris saknas",
                       )}
                     </TableCell>
                     <TableCell>
@@ -132,18 +143,26 @@ const CartPage = () => {
                         <Button
                           variant="outline"
                           onClick={() =>
-                            handleQuantityChange(item.key, itemQuantities[item.key] - 1)
+                            handleQuantityChange(
+                              item.key,
+                              itemQuantities[item.key] - 1,
+                            )
                           }
                           disabled={isProcessing || processingItems.length > 0}
                           size="icon"
                         >
                           <Minus className="w-4 h-4" />
                         </Button>
-                        <span className="text-sm font-medium">{itemQuantities[item.key] || 0}</span>
+                        <span className="text-sm font-medium">
+                          {itemQuantities[item.key] || 0}
+                        </span>
                         <Button
                           variant="outline"
                           onClick={() =>
-                            handleQuantityChange(item.key, itemQuantities[item.key] + 1)
+                            handleQuantityChange(
+                              item.key,
+                              itemQuantities[item.key] + 1,
+                            )
                           }
                           disabled={isProcessing || processingItems.length > 0}
                           size="icon"
@@ -181,7 +200,9 @@ const CartPage = () => {
           <div className="p-4 border-t">
             <div className="flex justify-between mb-4">
               <span className="font-medium">Totalt:</span>
-              <span className="font-bold">{cart?.total ? formatPrice(cart.total) : "0 kr"}</span>
+              <span className="font-bold">
+                {cart?.total ? formatPrice(cart.total) : "0 kr"}
+              </span>
             </div>
             <div className="flex flex-col space-y-2">
               <Link

@@ -1,12 +1,12 @@
-import { Metadata } from "next";
-import { getAuthClient } from "@faustwp/experimental-app-router";
-import { redirect } from "next/navigation";
-import { GET_CUSTOMER, GET_PAYMENT_METHODS } from "@/lib/graphql/queries";
-import CheckoutForm from "../../components/shop/checkout-form";
+import { Metadata } from 'next';
+import { getAuthClient } from '@faustwp/experimental-app-router';
+import { redirect } from 'next/navigation';
+import { GET_CUSTOMER, GET_PAYMENT_METHODS } from '@/lib/graphql/queries';
+import CheckoutForm from '../../../components/shop/checkout-form';
 
 export const metadata: Metadata = {
-  title: "Checkout",
-  description: "Genomför din beställning",
+  title: 'Checkout',
+  description: 'Genomför din beställning',
 };
 
 export default async function CheckoutPage() {
@@ -15,18 +15,18 @@ export default async function CheckoutPage() {
 
   // Redirecta till login om användaren inte är autentiserad
   if (!client) {
-    return redirect("/login");
+    return redirect('/login');
   }
 
   // Hämta kundinformation och betalningsmetoder
   const [customerResponse, paymentMethodsResponse] = await Promise.all([
     client.query({
       query: GET_CUSTOMER,
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
     }),
     client.query({
       query: GET_PAYMENT_METHODS,
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
     }),
   ]);
 

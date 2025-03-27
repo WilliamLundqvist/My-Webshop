@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useCallback } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import React, { useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +9,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from '@/components/ui/pagination';
 
 interface ShopPaginationProps {
   currentPage: number;
@@ -37,11 +37,11 @@ export default function ShopPagination({
   const createPageUrl = useCallback(
     (pageNum: number) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(pageNum));
+      params.set('page', String(pageNum));
 
       // Remove any cursor parameters if they exist
-      params.delete("after");
-      params.delete("before");
+      params.delete('after');
+      params.delete('before');
 
       return `${pathname}?${params.toString()}`;
     },
@@ -52,10 +52,7 @@ export default function ShopPagination({
   const handlePageChange = useCallback(
     (pageNum: number) => {
       // Ensure page number is valid
-      const validPage = Math.max(
-        1,
-        Math.min(pageNum, totalPages || Number.MAX_SAFE_INTEGER)
-      );
+      const validPage = Math.max(1, Math.min(pageNum, totalPages || Number.MAX_SAFE_INTEGER));
 
       if (validPage === currentPage) return;
 
@@ -80,10 +77,8 @@ export default function ShopPagination({
             {/* Previous button */}
             <PaginationItem>
               <PaginationPrevious
-                href={hasPreviousPage ? createPageUrl(currentPage - 1) : "#"}
-                className={
-                  !hasPreviousPage ? "pointer-events-none opacity-50" : ""
-                }
+                href={hasPreviousPage ? createPageUrl(currentPage - 1) : '#'}
+                className={!hasPreviousPage ? 'pointer-events-none opacity-50' : ''}
                 onClick={(e) => {
                   if (hasPreviousPage) {
                     e.preventDefault();
@@ -96,56 +91,54 @@ export default function ShopPagination({
 
             {/* Current page indicator - for mobile */}
             <span className="text-sm sm:hidden">
-              {currentPage}/{totalPages > 0 ? totalPages : "?"}
+              {currentPage}/{totalPages > 0 ? totalPages : '?'}
             </span>
 
             {/* Page numbers for larger screens */}
-            <div className="hidden sm:flex items-center">
+            <div className="hidden sm:flex gap-2 items-center">
               {/* Generate simplified page numbers */}
-              {Array.from({ length: Math.min(5, totalPages || 5) }).map(
-                (_, i) => {
-                  let pageNum = currentPage;
+              {Array.from({ length: Math.min(5, totalPages || 5) }).map((_, i) => {
+                let pageNum = currentPage;
 
-                  // Simple pagination logic for small number of pages
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  }
-                  // More complex logic for many pages
-                  else {
-                    if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                  }
-
-                  return (
-                    <PaginationItem key={pageNum}>
-                      <PaginationLink
-                        href={createPageUrl(pageNum)}
-                        isActive={currentPage === pageNum}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (currentPage !== pageNum) {
-                            handlePageChange(pageNum);
-                          }
-                        }}
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
+                // Simple pagination logic for small number of pages
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
                 }
-              )}
+                // More complex logic for many pages
+                else {
+                  if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                }
+
+                return (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href={createPageUrl(pageNum)}
+                      isActive={currentPage === pageNum}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage !== pageNum) {
+                          handlePageChange(pageNum);
+                        }
+                      }}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
             </div>
 
             {/* Next button */}
             <PaginationItem>
               <PaginationNext
-                href={hasNextPage ? createPageUrl(currentPage + 1) : "#"}
-                className={!hasNextPage ? "pointer-events-none opacity-50" : ""}
+                href={hasNextPage ? createPageUrl(currentPage + 1) : '#'}
+                className={!hasNextPage ? 'pointer-events-none opacity-50' : ''}
                 onClick={(e) => {
                   if (hasNextPage) {
                     e.preventDefault();

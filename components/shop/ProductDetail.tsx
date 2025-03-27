@@ -1,21 +1,14 @@
-"use client";
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  getAllProductImages,
-  getColorImages,
-  hasVariations,
-  getVariations,
-  getDatabaseId,
-  getPrice,
-} from "@/lib/utils/productUtils";
-import ItemCarousel from "./ItemCarousel";
-import ItemSelector from "./ItemSelector";
-import { formatPrice } from "@/lib/utils/formatters";
+'use client';
+import React, { useState, useEffect, useCallback } from 'react';
+import { getAllProductImages, getColorImages, getPrice } from '@/lib/utils/productUtils';
+import ItemCarousel from './ItemCarousel';
+import ItemSelector from './ItemSelector';
+import { formatPrice } from '@/lib/utils/formatters';
 
 export const ProductDetail = ({ product }) => {
   console.log(product);
   const [galleryImages, setGalleryImages] = useState<{ sourceUrl: string }[]>([]);
-  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [colorImages, setColorImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -68,12 +61,12 @@ export const ProductDetail = ({ product }) => {
           <div>
             <h1 className="text-2xl font-bold">{product.name}</h1>
             {productPrice &&
-              (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") &&
+              (product.__typename == 'SimpleProduct' || product.__typename == 'VariableProduct') &&
               !product.onSale && (
                 <p className="text-xl font-medium mt-2">{formatPrice(productPrice)}</p>
               )}
             {productPrice &&
-              (product.__typename == "SimpleProduct" || product.__typename == "VariableProduct") &&
+              (product.__typename == 'SimpleProduct' || product.__typename == 'VariableProduct') &&
               product.onSale && (
                 <div className="flex items-center gap-2">
                   <p className="text-xl font-medium mt-2">{formatPrice(productPrice)}</p>
@@ -85,7 +78,7 @@ export const ProductDetail = ({ product }) => {
           </div>
           <div
             className="prose prose-sm"
-            dangerouslySetInnerHTML={{ __html: product.description || "" }}
+            dangerouslySetInnerHTML={{ __html: product.description || '' }}
           />
 
           {/* ItemSelector with color selection callback */}

@@ -1,28 +1,27 @@
-"use client";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Filter, ChevronRight, Search } from "lucide-react";
-import { useState, useCallback, useMemo, memo, useEffect } from "react";
-import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { useDebounce } from "@/lib/hooks/useDebounce";
+'use client';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Filter, ChevronRight, Search } from 'lucide-react';
+import { useState, useCallback, useMemo, memo } from 'react';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-} from "@/components/ui/sidebar";
-import { useCategoryData } from "@/lib/hooks/useCategoryData";
+} from '@/components/ui/sidebar';
+import { useCategoryData } from '@/lib/hooks/useCategoryData';
 
 // Define min/max price constants
 const MIN_PRICE = 0;
@@ -30,11 +29,11 @@ const MAX_PRICE = 500;
 
 // Memoize sort options to prevent recreating on each render
 const sortOptions = [
-  { value: "DATE", order: "DESC", label: "Newest" },
-  { value: "PRICE", order: "ASC", label: "Price: Low to High" },
-  { value: "PRICE", order: "DESC", label: "Price: High to Low" },
-  { value: "NAME", order: "ASC", label: "Name: A to Z" },
-  { value: "NAME", order: "DESC", label: "Name: Z to A" },
+  { value: 'DATE', order: 'DESC', label: 'Newest' },
+  { value: 'PRICE', order: 'ASC', label: 'Price: Low to High' },
+  { value: 'PRICE', order: 'DESC', label: 'Price: High to Low' },
+  { value: 'NAME', order: 'ASC', label: 'Name: A to Z' },
+  { value: 'NAME', order: 'DESC', label: 'Name: Z to A' },
 ];
 
 function FilterSidebarComponent() {
@@ -43,15 +42,15 @@ function FilterSidebarComponent() {
   const pathname = usePathname();
 
   // Använd useMemo endast för komplexa operationer
-  const section = pathname.split("/")[3];
+  const section = pathname.split('/')[3];
 
   // Hämta URL-parametrar direkt utan onödig memoization
-  const currentSort = searchParams.get("sort") || "DATE";
-  const currentOrder = searchParams.get("order") || "DESC";
-  const currentCategory = searchParams.get("category") || "";
-  const searchQuery = searchParams.get("search") || "";
-  const currentPriceMin = Number(searchParams.get("min_price") || MIN_PRICE);
-  const currentPriceMax = Number(searchParams.get("max_price") || MAX_PRICE);
+  const currentSort = searchParams.get('sort') || 'DATE';
+  const currentOrder = searchParams.get('order') || 'DESC';
+  const currentCategory = searchParams.get('category') || '';
+  const searchQuery = searchParams.get('search') || '';
+  const currentPriceMin = Number(searchParams.get('min_price') || MIN_PRICE);
+  const currentPriceMax = Number(searchParams.get('max_price') || MAX_PRICE);
 
   // Memoize sortKey för att förenkla hantering av sort+order kombinationen
   const sortKey = useMemo(() => `${currentSort}-${currentOrder}`, [currentSort, currentOrder]);
@@ -59,7 +58,7 @@ function FilterSidebarComponent() {
   // Local state to track selected values - initialize only once
   const [selectedSort, setSelectedSort] = useState(() => sortKey);
   const [selectedCategory, setSelectedCategory] = useState(() => currentCategory);
-  const [searchTerm, setSearchTerm] = useState(() => searchQuery || "");
+  const [searchTerm, setSearchTerm] = useState(() => searchQuery || '');
 
   // Memoize the navigation function to prevent recreating it on each render
   const navigateWithParams = useCallback(
@@ -75,26 +74,26 @@ function FilterSidebarComponent() {
       const params = new URLSearchParams(searchParams.toString());
 
       // Reset pagination when filters change
-      params.delete("page");
+      params.delete('page');
 
       // Update parameters if provided
       if (sort !== undefined) {
-        params.set("sort", sort);
+        params.set('sort', sort);
       }
       if (order !== undefined) {
-        params.set("order", order);
+        params.set('order', order);
       }
       if (category !== undefined) {
         if (category) {
-          params.set("category", category);
+          params.set('category', category);
         } else {
-          params.delete("category");
+          params.delete('category');
         }
       }
 
       // Maintain search query if it exists
       if (searchQuery) {
-        params.set("search", searchQuery);
+        params.set('search', searchQuery);
       }
 
       // Navigate to the new URL
@@ -109,9 +108,9 @@ function FilterSidebarComponent() {
       const params = new URLSearchParams(searchParams.toString());
 
       if (value) {
-        params.set("search", value);
+        params.set('search', value);
       } else {
-        params.delete("search");
+        params.delete('search');
       }
 
       navigateWithParams(params);
@@ -159,8 +158,8 @@ function FilterSidebarComponent() {
   // Clear all filters
   const clearFilters = useCallback(() => {
     setSelectedSort(`DATE-DESC`);
-    setSelectedCategory("");
-    setSearchTerm("");
+    setSelectedCategory('');
+    setSearchTerm('');
 
     const params = new URLSearchParams();
     navigateWithParams(params);
@@ -176,7 +175,7 @@ function FilterSidebarComponent() {
       <div key={category.id} className="space-y-1">
         <div
           className={`px-4 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-            selectedCategory === category.slug ? "bg-slate-100 font-medium" : ""
+            selectedCategory === category.slug ? 'bg-slate-100 font-medium' : ''
           }`}
           onClick={() => handleCategoryChange(category.slug)}
         >
@@ -195,7 +194,7 @@ function FilterSidebarComponent() {
               <div
                 key={grandchild.id}
                 className={`px-3 py-1.5 rounded-md cursor-pointer hover:bg-slate-100 ${
-                  selectedCategory === grandchild.slug ? "bg-slate-100 font-medium" : ""
+                  selectedCategory === grandchild.slug ? 'bg-slate-100 font-medium' : ''
                 }`}
                 onClick={() => handleCategoryChange(grandchild.slug)}
               >
@@ -229,7 +228,7 @@ function FilterSidebarComponent() {
   }, [selectedSort]);
 
   return (
-    <Sidebar variant="floating" className="h-[calc(100vh-80px)] sticky top-[70px]">
+    <Sidebar variant="floating" className="sticky top-[70px]">
       <SidebarHeader className="border-b p-4 bp-6 ">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
@@ -260,7 +259,7 @@ function FilterSidebarComponent() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <Accordion type="multiple" defaultValue={["sort", "categories", "price"]}>
+          <Accordion type="multiple" defaultValue={['sort', 'categories', 'price']}>
             <AccordionItem value="sort">
               <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
                 Sort By
@@ -282,11 +281,6 @@ function FilterSidebarComponent() {
               <AccordionContent>
                 <div className="space-y-2">{categoryList}</div>
               </AccordionContent>
-            </AccordionItem>
-            <AccordionItem defaultValue="price" value="price">
-              <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
-                Price Range
-              </AccordionTrigger>
             </AccordionItem>
           </Accordion>
         </SidebarGroup>

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Product } from "@/types/product";
-import { Button } from "@/components/ui/button";
-import { hasVariations, getVariations, getDatabaseId } from "@/lib/utils/productUtils";
-import { Loader2 } from "lucide-react";
-import { useCart } from "@/lib/context/CartContext";
-import { AddToCartMutationVariables } from "@/lib/graphql/generated/graphql";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Product } from '@/types/product';
+import { Button } from '@/components/ui/button';
+import { hasVariations, getVariations, getDatabaseId } from '@/lib/utils/productUtils';
+import { Loader2 } from 'lucide-react';
+import { useCart } from '@/lib/context/CartContext';
+import { AddToCartMutationVariables } from '@/lib/graphql/generated/graphql';
 
 interface ItemSelectorProps {
   product: Product;
@@ -13,31 +13,30 @@ interface ItemSelectorProps {
 
 const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) => {
   // Använd cart context
-  const { addToCart } = useCart();
+  const { addToCart, setDropdownOpen } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
 
   // Kontrollera om produkten har variationer och hämta dem säkert
   const hasProductVariations = hasVariations(product);
-  const variations = hasProductVariations ? getVariations(product) : [];
 
   // Extrahera tillgängliga färger och storlekar från produktattribut
   const attributes =
-    product.__typename === "VariableProduct" ? product.attributes?.nodes || [] : [];
+    product.__typename === 'VariableProduct' ? product.attributes?.nodes || [] : [];
 
   const colorAttribute = attributes.find(
-    (attr) => attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg"
+    (attr) => attr.name.toLowerCase() === 'color' || attr.name.toLowerCase() === 'färg'
   );
 
   const sizeAttribute = attributes.find(
-    (attr) => attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
+    (attr) => attr.name.toLowerCase() === 'size' || attr.name.toLowerCase() === 'storlek'
   );
 
-  const colors = colorAttribute?.options || [];
+  const colors = useMemo(() => colorAttribute?.options || [], [colorAttribute]);
   const sizes = sizeAttribute?.options || [];
 
   // State för vald färg och storlek
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<string>('');
 
   // Hämta tillgängliga storlekar för en färg
   const getAvailableSizesForColor = useCallback(
@@ -45,11 +44,12 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
       if (!color || !hasProductVariations) return [];
 
       // Filtrera variationer efter vald färg
+      const variations = hasProductVariations ? getVariations(product) : [];
       const matchingVariations = variations.filter((variation) => {
         const variationAttrs = variation.attributes?.nodes || [];
         return variationAttrs.some(
           (attr) =>
-            (attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg") &&
+            (attr.name.toLowerCase() === 'color' || attr.name.toLowerCase() === 'färg') &&
             attr.value === color
         );
       });
@@ -58,15 +58,15 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
       const availableSizes = matchingVariations
         .map((variation) => {
           const sizeAttr = variation.attributes?.nodes?.find(
-            (attr) => attr.name.toLowerCase() === "size" || attr.name.toLowerCase() === "storlek"
+            (attr) => attr.name.toLowerCase() === 'size' || attr.name.toLowerCase() === 'storlek'
           );
-          return sizeAttr?.value || "";
+          return sizeAttr?.value || '';
         })
         .filter(Boolean);
 
       return Array.from(new Set(availableSizes)); // Ta bort dubbletter
     },
-    [variations, hasProductVariations]
+    [product, hasProductVariations]
   );
 
   // Memoize tillgängliga storlekar för aktuell färg
@@ -111,7 +111,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
     setAddingToCart(true);
     try {
       const productId = getDatabaseId(product);
-      console.log("productId", productId);
+      console.log('productId', productId);
       const input: AddToCartMutationVariables = {
         input: {
           productId,
@@ -126,12 +126,13 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
       const success = await addToCart(input);
 
       if (success) {
-        let productInfo = `Added to cart: ${
-          product.__typename === "SimpleProduct" && product.name
+        const productInfo = `Added to cart: ${
+          product.__typename === 'SimpleProduct' && product.name
         }`;
+        console.log(productInfo);
       }
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      console.error('Failed to add to cart:', error);
     } finally {
       setAddingToCart(false);
     }
@@ -143,26 +144,26 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
 
     setAddingToCart(true);
     try {
-      let variationId = null;
+      let variationId: number | null = null;
 
       // Om det är en variabel produkt och både färg och storlek är angivna
-      if (hasProductVariations && color && size) {
+      if (hasProductVariations && color && size && product.__typename === 'VariableProduct') {
         const variations = getVariations(product);
-        const variation = variations.find((v: any) => {
+        const variation = variations.find((v) => {
           const colorAttr = v.attributes?.nodes?.find(
-            (attr: any) =>
-              (attr.name.toLowerCase() === "color" || attr.name.toLowerCase() === "färg") &&
+            (attr) =>
+              (attr.name.toLowerCase() === 'color' || attr.name.toLowerCase() === 'färg') &&
               attr.value === color
           );
 
           const sizeAttr = v.attributes?.nodes?.find(
-            (attr: any) => attr.name.toLowerCase() === "size" && attr.value === size
+            (attr) => attr.name.toLowerCase() === 'size' && attr.value === size
           );
 
           return colorAttr && sizeAttr;
         });
 
-        if (variation) {
+        if (variation?.databaseId) {
           variationId = variation.databaseId;
         }
       }
@@ -170,7 +171,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
       // Hämta databaseId säkert
       const productId = getDatabaseId(product);
 
-      console.log("Adding to cart:", {
+      console.log('Adding to cart:', {
         productId,
         variationId,
         color,
@@ -179,13 +180,13 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
       });
 
       if (!productId) {
-        console.error("Missing productId");
+        console.error('Missing productId');
         return;
       }
 
       // Om vi inte kunde hitta en variationId för en variabel produkt, avbryt
       if (hasProductVariations && !variationId && (color || size)) {
-        console.error("Could not find matching variation");
+        console.error('Could not find matching variation');
         return;
       }
 
@@ -205,7 +206,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
 
       if (success) {
         let productInfo = `Added to cart: ${
-          product.__typename === "VariableProduct" && product.name
+          product.__typename === 'VariableProduct' ? product.name : ''
         }`;
         if (color) productInfo += `, Color: ${color}`;
         if (size) productInfo += `, Size: ${size}`;
@@ -214,7 +215,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
         // Visa bekräftelse för användaren
       }
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      console.error('Failed to add to cart:', error);
       // Visa felmeddelande för användaren
     } finally {
       setAddingToCart(false);
@@ -244,11 +245,11 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
                     key={color}
                     onClick={() => handleColorSelect(color)}
                     className={`w-10 h-10 rounded-full border-2 ${
-                      selectedColor === color ? "border-black" : "border-transparent"
+                      selectedColor === color ? 'border-black' : 'border-transparent'
                     }`}
                     style={{
                       backgroundColor: color.toLowerCase(),
-                      boxShadow: selectedColor === color ? "0 0 0 2px white inset" : "none",
+                      boxShadow: selectedColor === color ? '0 0 0 2px white inset' : 'none',
                     }}
                     aria-label={`Välj färg ${color}`}
                   />
@@ -276,10 +277,10 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
                       disabled={!isAvailable}
                       className={`py-2 border-2 ${
                         selectedSize === size
-                          ? "bg-black text-white border-black hover:bg-black/90 hover:text-white"
+                          ? 'bg-black text-white border-black hover:bg-black/90 hover:text-white'
                           : isAvailable
-                            ? "border-gray-300 bg-accent hover:border-black"
-                            : "border-gray-200 text-gray-300 cursor-not-allowed"
+                            ? 'border-gray-300 bg-accent hover:border-black'
+                            : 'border-gray-200 text-gray-300 cursor-not-allowed'
                       }`}
                     >
                       {size}
@@ -294,7 +295,10 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
 
       {/* Lägg till i kundvagn-knapp */}
       <button
-        onClick={handleAddToCart}
+        onClick={() => {
+          handleAddToCart();
+          setDropdownOpen(true);
+        }}
         disabled={
           addingToCart ||
           (hasProductVariations &&
@@ -308,7 +312,7 @@ const ItemSelector: React.FC<ItemSelectorProps> = ({ product, onColorSelect }) =
             Lägger till...
           </div>
         ) : (
-          "Lägg till i varukorg"
+          'Lägg till i varukorg'
         )}
       </button>
     </div>

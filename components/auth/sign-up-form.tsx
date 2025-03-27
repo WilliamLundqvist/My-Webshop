@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { cn } from "@/lib/utils/utils";
-import Link from "next/link";
-import { signUpAction } from "@/app/sign-up/action";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
-import { registerSchema, type RegisterFormData } from "@/lib/validation/registerSchema";
-import { CountriesEnum } from "@/lib/graphql/generated/graphql";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { cn } from '@/lib/utils/utils';
+import Link from 'next/link';
+import { signUpAction } from '@/app/(auth)/sign-up/action';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTransition } from 'react';
+import { registerSchema, type RegisterFormData } from '@/lib/validation/registerSchema';
+import { CountriesEnum } from '@/lib/graphql/generated/graphql';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 
 const SignUpForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -40,7 +40,7 @@ const SignUpForm = () => {
       const formData = new FormData();
       // Lägg till alla fält till FormData
       Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value === undefined ? "" : value.toString());
+        formData.append(key, value === undefined ? '' : value.toString());
       });
 
       // Anropa server action
@@ -50,7 +50,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className={cn("flex flex-col gap-6 ")}>
+    <div className={cn('flex flex-col gap-6 ')}>
       <Card className="py-6">
         <CardHeader>
           <CardTitle>Create an account</CardTitle>
@@ -74,10 +74,10 @@ const SignUpForm = () => {
                     </Label>
                     <Input
                       id="firstName"
-                      {...register("firstName")}
+                      {...register('firstName')}
                       type="text"
                       placeholder="First name"
-                      className={errors.firstName ? "border-destructive" : ""}
+                      className={errors.firstName ? 'border-destructive' : ''}
                     />
                     {errors.firstName && (
                       <p className="text-sm text-destructive mt-1">{errors.firstName.message}</p>
@@ -89,10 +89,10 @@ const SignUpForm = () => {
                     </Label>
                     <Input
                       id="lastName"
-                      {...register("lastName")}
+                      {...register('lastName')}
                       type="text"
                       placeholder="Last name"
-                      className={errors.lastName ? "border-destructive" : ""}
+                      className={errors.lastName ? 'border-destructive' : ''}
                     />
                     {errors.lastName && (
                       <p className="text-sm text-destructive mt-1">{errors.lastName.message}</p>
@@ -103,10 +103,10 @@ const SignUpForm = () => {
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
-                    {...register("email")}
+                    {...register('email')}
                     type="email"
                     placeholder="Email address"
-                    className={errors.email ? "border-destructive" : ""}
+                    className={errors.email ? 'border-destructive' : ''}
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
@@ -116,10 +116,10 @@ const SignUpForm = () => {
                   <Label htmlFor="phone">Phone</Label>
                   <Input
                     id="phone"
-                    {...register("phone")}
+                    {...register('phone')}
                     type="tel"
                     placeholder="Phone number"
-                    className={errors.phone ? "border-destructive" : ""}
+                    className={errors.phone ? 'border-destructive' : ''}
                   />
                   {errors.phone && (
                     <p className="text-sm text-destructive mt-1">{errors.phone.message}</p>
@@ -131,9 +131,9 @@ const SignUpForm = () => {
                     <Label htmlFor="password">Password</Label>
                     <Input
                       id="password"
-                      {...register("password")}
+                      {...register('password')}
                       type="password"
-                      className={errors.password ? "border-destructive" : ""}
+                      className={errors.password ? 'border-destructive' : ''}
                     />
                     {errors.password && (
                       <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
@@ -143,9 +143,9 @@ const SignUpForm = () => {
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <Input
                       id="confirmPassword"
-                      {...register("confirmPassword")}
+                      {...register('confirmPassword')}
                       type="password"
-                      className={errors.confirmPassword ? "border-destructive" : ""}
+                      className={errors.confirmPassword ? 'border-destructive' : ''}
                     />
                     {errors.confirmPassword && (
                       <p className="text-sm text-destructive mt-1">
@@ -162,10 +162,10 @@ const SignUpForm = () => {
                   <Label htmlFor="address1">Address Line 1</Label>
                   <Input
                     id="address1"
-                    {...register("address1")}
+                    {...register('address1')}
                     type="text"
                     placeholder="Street address"
-                    className={errors.address1 ? "border-destructive" : ""}
+                    className={errors.address1 ? 'border-destructive' : ''}
                   />
                   {errors.address1 && (
                     <p className="text-sm text-destructive mt-1">{errors.address1.message}</p>
@@ -175,10 +175,10 @@ const SignUpForm = () => {
                   <Label htmlFor="address2">Address Line 2 (Optional)</Label>
                   <Input
                     id="address2"
-                    {...register("address2")}
+                    {...register('address2')}
                     type="text"
                     placeholder="Apartment, suite, etc."
-                    className={errors.address2 ? "border-destructive" : ""}
+                    className={errors.address2 ? 'border-destructive' : ''}
                   />
                   {errors.address2 && (
                     <p className="text-sm text-destructive mt-1">{errors.address2.message}</p>
@@ -191,10 +191,10 @@ const SignUpForm = () => {
                     </Label>
                     <Input
                       id="city"
-                      {...register("city")}
+                      {...register('city')}
                       type="text"
                       placeholder="City"
-                      className={errors.city ? "border-destructive" : ""}
+                      className={errors.city ? 'border-destructive' : ''}
                     />
                     {errors.city && (
                       <p className="text-sm text-destructive mt-1">{errors.city.message}</p>
@@ -206,10 +206,10 @@ const SignUpForm = () => {
                     </Label>
                     <Input
                       id="postcode"
-                      {...register("postcode")}
+                      {...register('postcode')}
                       type="text"
                       placeholder="Postal code"
-                      className={errors.postcode ? "border-destructive" : ""}
+                      className={errors.postcode ? 'border-destructive' : ''}
                     />
                     {errors.postcode && (
                       <p className="text-sm text-destructive mt-1">{errors.postcode.message}</p>
@@ -219,9 +219,9 @@ const SignUpForm = () => {
                 <div className="grid gap-3">
                   <Label htmlFor="country">Country</Label>
                   <Select
-                    {...register("country")}
+                    {...register('country')}
                     onValueChange={(value) => {
-                      setValue("country", value);
+                      setValue('country', value);
                     }}
                   >
                     <SelectTrigger>
@@ -243,7 +243,7 @@ const SignUpForm = () => {
             </div>
             <div className="flex flex-col gap-3 mt-4">
               <Button type="submit" disabled={isPending} className="w-full">
-                {isPending ? "Creating account..." : "Sign Up"}
+                {isPending ? 'Creating account...' : 'Sign Up'}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

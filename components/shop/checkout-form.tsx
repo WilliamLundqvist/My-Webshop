@@ -1,22 +1,23 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_CART } from "../../lib/graphql/queries";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { CountriesEnum } from "../../lib/graphql/generated/graphql";
-import { handleCheckout } from "@/app/checkout/actions";
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { CountriesEnum } from '../../lib/graphql/generated/graphql';
+import { handleCheckout } from '@/app/(shop)/checkout/actions';
 
 // UI Components
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { useCart } from "@/lib/context/CartContext";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { useCart } from '@/lib/context/CartContext';
+import Image from 'next/image';
+import { getCartItems } from '@/lib/utils/cartUtils';
+
 type PaymentMethod = {
   id: string;
   title: string;
@@ -31,24 +32,24 @@ type CheckoutFormProps = {
 
 // Zod schema för formulärvalidering
 const checkoutSchema = z.object({
-  firstName: z.string().min(1, "Förnamn krävs"),
-  lastName: z.string().min(1, "Efternamn krävs"),
-  email: z.string().email("Ogiltig e-postadress"),
-  phone: z.string().min(1, "Telefonnummer krävs"),
-  address1: z.string().min(1, "Adress krävs"),
+  firstName: z.string().min(1, 'Förnamn krävs'),
+  lastName: z.string().min(1, 'Efternamn krävs'),
+  email: z.string().email('Ogiltig e-postadress'),
+  phone: z.string().min(1, 'Telefonnummer krävs'),
+  address1: z.string().min(1, 'Adress krävs'),
   address2: z.string().optional(),
-  city: z.string().min(1, "Stad krävs"),
+  city: z.string().min(1, 'Stad krävs'),
   state: z.string().optional(),
-  postcode: z.string().min(1, "Postnummer krävs"),
-  country: z.string().min(1, "Land krävs"),
-  paymentMethod: z.string().min(1, "Välj en betalningsmetod"),
+  postcode: z.string().min(1, 'Postnummer krävs'),
+  country: z.string().min(1, 'Land krävs'),
+  paymentMethod: z.string().min(1, 'Välj en betalningsmetod'),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutForm({ initialCustomerData, paymentMethods }: CheckoutFormProps) {
   const [orderCompleted, setOrderCompleted] = React.useState(false);
-  const [orderNumber, setOrderNumber] = React.useState("");
+  const [orderNumber, setOrderNumber] = React.useState('');
   const [isPending, startTransition] = React.useTransition();
   const [formState, setFormState] = React.useState<{
     success?: string;
@@ -77,22 +78,22 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
       const customer = initialCustomerData.customer;
       const billing = customer.billing;
 
-      setValue("firstName", billing.firstName || customer.firstName || "");
-      setValue("lastName", billing.lastName || customer.lastName || "");
-      setValue("email", billing.email || customer.email || "");
-      setValue("address1", billing.address1 || "");
-      setValue("address2", billing.address2 || "");
-      setValue("city", billing.city || "");
-      setValue("state", billing.state || "");
-      setValue("postcode", billing.postcode || "");
-      setValue("country", billing.country || CountriesEnum.Se);
-      setValue("phone", billing.phone || "");
+      setValue('firstName', billing.firstName || customer.firstName || '');
+      setValue('lastName', billing.lastName || customer.lastName || '');
+      setValue('email', billing.email || customer.email || '');
+      setValue('address1', billing.address1 || '');
+      setValue('address2', billing.address2 || '');
+      setValue('city', billing.city || '');
+      setValue('state', billing.state || '');
+      setValue('postcode', billing.postcode || '');
+      setValue('country', billing.country || CountriesEnum.Se);
+      setValue('phone', billing.phone || '');
     }
   }, [initialCustomerData, setValue]);
 
   const onSubmit = async (data: CheckoutFormData) => {
     if (!cart) {
-      setFormState({ error: "Din varukorg är tom" });
+      setFormState({ error: 'Din varukorg är tom' });
       return;
     }
 
@@ -110,27 +111,27 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
           postcode: data.postcode,
           country: data.country,
           paymentMethod: data.paymentMethod,
-          company: "", // Lägg till detta fält som server action förväntar sig
+          company: '', // Lägg till detta fält som server action förväntar sig
         });
 
         if (result.success && result.order) {
           setOrderCompleted(true);
           setOrderNumber(result.order.orderNumber);
-          setFormState({ success: "Beställningen har slutförts!" });
+          setFormState({ success: 'Beställningen har slutförts!' });
         } else {
-          setFormState({ error: result.error || "Ett okänt fel inträffade" });
+          setFormState({ error: result.error || 'Ett okänt fel inträffade' });
         }
       } catch (err: any) {
-        console.error("Error during checkout:", err);
-        setFormState({ error: "Ett fel uppstod när ordern skapades. Försök igen." });
+        console.error('Error during checkout:', err);
+        setFormState({ error: 'Ett fel uppstod när ordern skapades. Försök igen.' });
       }
     });
   };
 
   // Beräkna summor från kundvagn
-  const cartItems = cart?.contents?.nodes || [];
-  const subtotal = cart?.subtotal || "0";
-  const total = cart?.total || "0";
+  const cartItems = getCartItems(cart);
+  const subtotal = cart?.subtotal || '0';
+  const total = cart?.total || '0';
   const itemCount = cart?.contents?.itemCount || 0;
 
   if (orderCompleted) {
@@ -191,8 +192,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                   <Label htmlFor="firstName">Förnamn</Label>
                   <Input
                     id="firstName"
-                    {...register("firstName")}
-                    className={errors.firstName ? "border-destructive" : ""}
+                    {...register('firstName')}
+                    className={errors.firstName ? 'border-destructive' : ''}
                   />
                   {errors.firstName && (
                     <p className="text-sm text-destructive mt-1">{errors.firstName.message}</p>
@@ -202,8 +203,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                   <Label htmlFor="lastName">Efternamn</Label>
                   <Input
                     id="lastName"
-                    {...register("lastName")}
-                    className={errors.lastName ? "border-destructive" : ""}
+                    {...register('lastName')}
+                    className={errors.lastName ? 'border-destructive' : ''}
                   />
                   {errors.lastName && (
                     <p className="text-sm text-destructive mt-1">{errors.lastName.message}</p>
@@ -216,8 +217,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 <Input
                   id="email"
                   type="email"
-                  {...register("email")}
-                  className={errors.email ? "border-destructive" : ""}
+                  {...register('email')}
+                  className={errors.email ? 'border-destructive' : ''}
                 />
                 {errors.email && (
                   <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
@@ -229,8 +230,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 <Input
                   id="phone"
                   type="tel"
-                  {...register("phone")}
-                  className={errors.phone ? "border-destructive" : ""}
+                  {...register('phone')}
+                  className={errors.phone ? 'border-destructive' : ''}
                 />
                 {errors.phone && (
                   <p className="text-sm text-destructive mt-1">{errors.phone.message}</p>
@@ -241,8 +242,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                   <Label htmlFor="city">Stad</Label>
                   <Input
                     id="city"
-                    {...register("city")}
-                    className={errors.city ? "border-destructive" : "basis-1/2"}
+                    {...register('city')}
+                    className={errors.city ? 'border-destructive' : 'basis-1/2'}
                   />
                   {errors.city && (
                     <p className="text-sm text-destructive mt-1">{errors.city.message}</p>
@@ -252,8 +253,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                   <Label htmlFor="postcode">Postnummer</Label>
                   <Input
                     id="postcode"
-                    {...register("postcode")}
-                    className={errors.postcode ? "border-destructive" : ""}
+                    {...register('postcode')}
+                    className={errors.postcode ? 'border-destructive' : ''}
                   />
                   {errors.postcode && (
                     <p className="text-sm text-destructive mt-1">{errors.postcode.message}</p>
@@ -263,12 +264,12 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 <div>
                   <Label htmlFor="country">Land</Label>
                   <Select
-                    onValueChange={(value) => setValue("country", value)}
-                    defaultValue={watch("country")}
+                    onValueChange={(value) => setValue('country', value)}
+                    defaultValue={watch('country')}
                   >
                     <SelectTrigger
                       id="country"
-                      className={errors.country ? "border-destructive" : ""}
+                      className={errors.country ? 'border-destructive' : ''}
                     >
                       <SelectValue placeholder="Välj land" />
                     </SelectTrigger>
@@ -290,8 +291,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 <Label htmlFor="address1">Adress</Label>
                 <Input
                   id="address1"
-                  {...register("address1")}
-                  className={errors.address1 ? "border-destructive" : ""}
+                  {...register('address1')}
+                  className={errors.address1 ? 'border-destructive' : ''}
                 />
                 {errors.address1 && (
                   <p className="text-sm text-destructive mt-1">{errors.address1.message}</p>
@@ -302,8 +303,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                 <Label htmlFor="address2">Adress (rad 2)</Label>
                 <Input
                   id="address2"
-                  {...register("address2")}
-                  className={errors.address2 ? "border-destructive" : ""}
+                  {...register('address2')}
+                  className={errors.address2 ? 'border-destructive' : ''}
                 />
                 {errors.address2 && (
                   <p className="text-sm text-destructive mt-1">{errors.address2.message}</p>
@@ -328,13 +329,13 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                           const attributes = variation?.attributes?.nodes || [];
                           const color = attributes.find(
                             (attr) =>
-                              attr.name.toLowerCase() === "color" ||
-                              attr.name.toLowerCase() === "färg"
+                              attr.name.toLowerCase() === 'color' ||
+                              attr.name.toLowerCase() === 'färg'
                           )?.value;
                           const size = attributes.find(
                             (attr) =>
-                              attr.name.toLowerCase() === "size" ||
-                              attr.name.toLowerCase() === "storlek"
+                              attr.name.toLowerCase() === 'size' ||
+                              attr.name.toLowerCase() === 'storlek'
                           )?.value;
 
                           return (
@@ -343,12 +344,24 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                               className="flex justify-between items-start py-2 border-b"
                             >
                               <div className="flex gap-3">
-                                {product.image?.sourceUrl && (
+                                {variation?.image?.sourceUrl ? (
                                   <div className="w-12 h-12 rounded-md overflow-hidden">
-                                    <img
+                                    <Image
+                                      src={variation.image.sourceUrl}
+                                      alt={product.name}
+                                      className="w-full h-full object-cover"
+                                      width={100}
+                                      height={100}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="w-12 h-12 rounded-md overflow-hidden">
+                                    <Image
                                       src={product.image.sourceUrl}
                                       alt={product.name}
                                       className="w-full h-full object-cover"
+                                      width={100}
+                                      height={100}
                                     />
                                   </div>
                                 )}
@@ -357,7 +370,7 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
                                   {(color || size) && (
                                     <p className="text-sm text-muted-foreground">
                                       {color && `Färg: ${color}`}
-                                      {color && size && " | "}
+                                      {color && size && ' | '}
                                       {size && `Storlek: ${size}`}
                                     </p>
                                   )}
@@ -399,8 +412,8 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
 
               <h3 className="text-lg font-medium mt-4">Betalningsmetod</h3>
               <RadioGroup
-                onValueChange={(value) => setValue("paymentMethod", value)}
-                defaultValue={watch("paymentMethod")}
+                onValueChange={(value) => setValue('paymentMethod', value)}
+                defaultValue={watch('paymentMethod')}
                 className="space-y-3"
               >
                 {paymentMethods.map((method) => (
@@ -427,7 +440,7 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
           </div>
 
           <Button type="submit" className="w-full mt-6" disabled={isPending}>
-            {isPending ? "Bearbetar..." : "Slutför beställning"}
+            {isPending ? 'Bearbetar...' : 'Slutför beställning'}
           </Button>
         </form>
       </CardContent>

@@ -1,8 +1,8 @@
-"use client";
-import { SlidersHorizontal } from "lucide-react";
+'use client';
+import { SlidersHorizontal } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
+import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function StickyFilterButton() {
   const { toggleSidebar } = useSidebar();
