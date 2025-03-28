@@ -42,6 +42,7 @@ export default async function RootLayout({ children }) {
                 generalSettings={headerData.data.generalSettings}
                 primaryMenuItems={headerData.data.primaryMenuItems}
               />
+
               <main className="flex-1">{children}</main>
               <Footer
                 menuItems={footerData.data.footerMenuItems.nodes || []}
