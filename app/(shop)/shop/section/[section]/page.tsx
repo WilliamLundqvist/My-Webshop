@@ -16,27 +16,32 @@ import { redirect } from 'next/navigation';
 // This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
   const client = await getClient();
-  const section = params.section;
 
-  const finalSearchParams = { ...searchParams };
-  if (searchParams.ref_search) {
-    finalSearchParams.search = searchParams.ref_search;
+  // Await params och searchParams innan du använder deras egenskaper
+  const awaitedParams = await params;
+  const awaitedSearchParams = await searchParams;
+
+  const section = awaitedParams.section;
+
+  const finalSearchParams = { ...awaitedSearchParams };
+  if (awaitedSearchParams.ref_search) {
+    finalSearchParams.search = awaitedSearchParams.ref_search;
     delete finalSearchParams.ref_search;
   }
-  if (searchParams.ref_sort) {
-    finalSearchParams.sort = searchParams.ref_sort;
+  if (awaitedSearchParams.ref_sort) {
+    finalSearchParams.sort = awaitedSearchParams.ref_sort;
     delete finalSearchParams.ref_sort;
   }
-  if (searchParams.ref_order) {
-    finalSearchParams.order = searchParams.ref_order;
+  if (awaitedSearchParams.ref_order) {
+    finalSearchParams.order = awaitedSearchParams.ref_order;
     delete finalSearchParams.ref_order;
   }
-  if (searchParams.ref_page) {
-    finalSearchParams.page = searchParams.ref_page;
+  if (awaitedSearchParams.ref_page) {
+    finalSearchParams.page = awaitedSearchParams.ref_page;
     delete finalSearchParams.ref_page;
   }
-  if (searchParams.ref_category) {
-    finalSearchParams.category = searchParams.ref_category;
+  if (awaitedSearchParams.ref_category) {
+    finalSearchParams.category = awaitedSearchParams.ref_category;
     delete finalSearchParams.ref_category;
   }
 
@@ -64,7 +69,6 @@ export default async function ShopPage({ searchParams, params }) {
         category: category ? category : section,
       },
     });
-
     if (countResponse.data.products.found) {
       totalProducts = countResponse.data.products.found;
       totalPages = Math.ceil(totalProducts / productsPerPage);
@@ -93,9 +97,6 @@ export default async function ShopPage({ searchParams, params }) {
   });
 
   const products = data.products.nodes;
-  const pageInfo = data.products.pageInfo;
-
-  console.log(`PageInfo: `, pageInfo);
 
   // Determine if there are more pages
   const hasNextPage = currentPage < totalPages;

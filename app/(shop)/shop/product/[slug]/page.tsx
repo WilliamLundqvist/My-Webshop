@@ -7,15 +7,20 @@ import { GET_PRODUCT_BY_SLUG } from '@/lib/graphql/queries';
 import { Product } from '@/types/product';
 import BackButton from '@/components/shop/BackButton';
 export default async function ProductPage({ params, searchParams }) {
-  const slug = params.slug;
-  const section = params.section;
+  // Await params först
+  const awaitedParams = await params;
+  const slug = awaitedParams.slug;
+  const section = awaitedParams.section;
+
+  // Await searchParams först
+  const awaitedSearchParams = await searchParams;
 
   // Extract reference search parameters
-  const refSearch = searchParams?.ref_search;
-  const refSort = searchParams?.ref_sort;
-  const refOrder = searchParams?.ref_order;
-  const refPage = searchParams?.ref_page;
-  const refCategory = searchParams?.ref_category;
+  const refSearch = awaitedSearchParams?.ref_search;
+  const refSort = awaitedSearchParams?.ref_sort;
+  const refOrder = awaitedSearchParams?.ref_order;
+  const refPage = awaitedSearchParams?.ref_page;
+  const refCategory = awaitedSearchParams?.ref_category;
 
   // Build the back link URL with preserved search context
   const buildBackToResultsUrl = () => {

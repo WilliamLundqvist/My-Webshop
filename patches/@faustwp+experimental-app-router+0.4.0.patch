@@ -75,7 +75,7 @@ index 59e5d20..4580e7b 100644
          default: {
              return notFound();
 diff --git a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
-index 236a491..1cba083 100644
+index 236a491..880927e 100644
 --- a/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
 +++ b/node_modules/@faustwp/experimental-app-router/dist/server/routeHandler/tokenHandler.js
 @@ -1,6 +1,8 @@
@@ -100,15 +100,13 @@ index 236a491..1cba083 100644
          if (!refreshToken && !code) {
              return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                  status: 401,
-@@ -32,21 +34,16 @@ export async function tokenHandler(req, s) {
+@@ -32,21 +34,14 @@ export async function tokenHandler(req, s) {
                  refreshToken,
              }),
          });
 +
 +        // Log response status and body
-+        console.log('Response status:', response.status);
 +        const responseBody = await response.text();
-+        console.log('Response body:', responseBody);
 +
          if (!response.ok) {
 -            /**
@@ -130,7 +128,7 @@ index 236a491..1cba083 100644
              return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                  status: 401,
                  headers: {
-@@ -54,24 +51,26 @@ export async function tokenHandler(req, s) {
+@@ -54,24 +49,23 @@ export async function tokenHandler(req, s) {
                  },
              });
          }
@@ -147,9 +145,6 @@ index 236a491..1cba083 100644
              status: 200,
          });
 -        res.cookies.set(cookieName, data.refreshToken, {
-+
-+        console.log("data", data);
-+        console.log("res", res);
 +
 +        await res.cookies.set(cookieName, data.refreshToken, {
              secure: true,
