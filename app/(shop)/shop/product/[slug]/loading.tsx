@@ -1,11 +1,4 @@
-import { Button } from "@/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import ItemSelector from "@/components/shop/ItemSelector";
+import { Button } from '@/components/ui/button';
 
 export default function ItemLoading() {
   return (

@@ -72,7 +72,7 @@ export default async function HomePage() {
                   className="group flex flex-col items-center gap-2 text-center"
                 >
                   <div className="overflow-hidden rounded-full">
-                    <img
+                    <Image
                       src={category.image || 'https://placehold.co/300x300'}
                       alt={category.name}
                       width={150}

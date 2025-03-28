@@ -1,24 +1,20 @@
-import React from "react";
+import React from 'react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel";
-import { Products } from "@/types/product";
+} from '../ui/carousel';
+import { Products } from '@/types/product';
+import Image from 'next/image';
 
 interface ItemCarouselProps {
   galleryImages: { sourceUrl: string }[];
-  product: Products["products"]["nodes"][number];
-  selectedColor?: string;
+  product: Products['products']['nodes'][number];
 }
 
-const ItemCarousel: React.FC<ItemCarouselProps> = ({
-  galleryImages,
-  product,
-  selectedColor,
-}) => {
+const ItemCarousel: React.FC<ItemCarouselProps> = ({ galleryImages, product }) => {
   return (
     <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
       {galleryImages.length > 0 ? (
@@ -27,10 +23,12 @@ const ItemCarousel: React.FC<ItemCarouselProps> = ({
             {galleryImages.map((image, index) => (
               <CarouselItem key={`gallery-image-${index}`}>
                 <div className="h-full w-full flex items-center justify-center p-0">
-                  <img
+                  <Image
                     src={image.sourceUrl}
                     alt={`${product.name} - Image ${index + 1}`}
                     className="w-full h-full object-cover"
+                    width={400}
+                    height={400}
                   />
                 </div>
               </CarouselItem>
