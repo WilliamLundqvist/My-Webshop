@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Products } from '@/types/product';
 import * as productUtils from '@/lib/utils/productUtils';
 import { formatPrice } from '@/lib/utils/formatters';
+import Image from 'next/image';
 
 export interface ProductCardProps {
   product: Products['products']['nodes'][number];
@@ -61,7 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
           <Card className="gap-2 md:gap-4 h-full border-[3px]">
             <div className="aspect-square overflow-hidden relative">
               {/* Base image */}
-              <img
+              <Image
                 src={baseImage}
                 alt={product.name || 'Product'}
                 width={400}
@@ -70,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
                 loading="lazy"
               />
               {/* Hover image - positioned absolute on top */}
-              <img
+              <Image
                 src={galleryImage}
                 alt={`${product.name || 'Product'} alternate view`}
                 width={400}
