@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CountriesEnum } from '../../lib/graphql/generated/graphql';
+import { CountriesEnum, GetCustomerQuery } from '../../lib/graphql/generated/graphql';
 import { handleCheckout } from '@/app/(shop)/checkout/actions';
 
 // UI Components
@@ -26,7 +26,7 @@ type PaymentMethod = {
 };
 
 type CheckoutFormProps = {
-  initialCustomerData?: any;
+  initialCustomerData?: GetCustomerQuery;
   paymentMethods: PaymentMethod[];
 };
 
@@ -76,18 +76,18 @@ export default function CheckoutForm({ initialCustomerData, paymentMethods }: Ch
   useEffect(() => {
     if (initialCustomerData?.customer) {
       const customer = initialCustomerData.customer;
-      const billing = customer.billing;
+      const shipping = customer.shipping;
 
-      setValue('firstName', billing.firstName || customer.firstName || '');
-      setValue('lastName', billing.lastName || customer.lastName || '');
-      setValue('email', billing.email || customer.email || '');
-      setValue('address1', billing.address1 || '');
-      setValue('address2', billing.address2 || '');
-      setValue('city', billing.city || '');
-      setValue('state', billing.state || '');
-      setValue('postcode', billing.postcode || '');
-      setValue('country', billing.country || CountriesEnum.Se);
-      setValue('phone', billing.phone || '');
+      setValue('firstName', shipping?.firstName || customer.firstName || '');
+      setValue('lastName', shipping?.lastName || customer.lastName || '');
+      setValue('email', customer.email || '');
+      setValue('address1', shipping?.address1 || '');
+      setValue('address2', shipping?.address2 || '');
+      setValue('city', shipping?.city || '');
+      setValue('state', shipping?.state || '');
+      setValue('postcode', shipping?.postcode || '');
+      setValue('country', shipping?.country || CountriesEnum.Se);
+      setValue('phone', shipping?.phone || '');
     }
   }, [initialCustomerData, setValue]);
 
