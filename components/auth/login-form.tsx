@@ -4,11 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { loginAction } from '@/app/(auth)/login/action';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import Link from 'next/link';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
-  const [state, formAction, isPending] = useFormState(loginAction, {});
+  const [state, formAction, isPending] = useActionState(loginAction, {});
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

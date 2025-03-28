@@ -40,7 +40,7 @@ export default async function ShopPage({ searchParams, params }) {
     delete finalSearchParams.ref_category;
   }
 
-  const first = 20; // Number of products per page
+  const productsPerPage = 20; // Number of products per page
   const sortField = finalSearchParams?.sort || 'DATE'; // Default sort by date
   const sortOrder = finalSearchParams?.order || 'DESC'; // Default sort direction
   const searchQuery = finalSearchParams?.search || ''; // Get search query from URL
@@ -49,96 +49,12 @@ export default async function ShopPage({ searchParams, params }) {
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
 
-  // Create a cache for storing page-to-cursor mappings
-  // In production, this could be moved to Redis or another persistent cache
-  if (typeof global.cursorCache === 'undefined') {
-    global.cursorCache = {};
-  }
+  // Calculate offset for pagination
+  const offset = (currentPage - 1) * productsPerPage;
 
-  const cacheKey = `${section || 'all'}-${category || 'none'}-${
-    searchQuery || 'none'
-  }-${sortField}-${sortOrder}`;
-
-  // Initialize after/cursor value
-  let after = '';
-
-  // Check if we can use a cached cursor for this page
-  if (currentPage > 1 && global.cursorCache[cacheKey]?.[currentPage - 1]) {
-    after = global.cursorCache[cacheKey][currentPage - 1];
-    console.log(`Using cached cursor for page ${currentPage}: ${after}`);
-  }
-  // For pages beyond page 1 without a cached cursor, we need to fetch sequentially
-  else if (currentPage > 1) {
-    // Create cache entry for this filter combination if it doesn't exist
-    if (!global.cursorCache[cacheKey]) {
-      global.cursorCache[cacheKey] = {};
-    }
-
-    // Start from the beginning and fetch all pages up to the requested one
-    let lastCursor = '';
-
-    for (let page = 1; page < currentPage; page++) {
-      const prevPageResult = await client.query({
-        query: GET_PRODUCTS,
-        variables: {
-          first,
-          after: lastCursor,
-          orderby: [{ field: sortField, order: sortOrder }],
-          search: searchQuery,
-          category: category ? category : section,
-        },
-        fetchPolicy: 'network-only',
-      });
-
-      if (!prevPageResult.data.products.pageInfo.hasNextPage) {
-        // We've reached the end but user requested a later page
-        console.log(`Page ${currentPage} is beyond the last page (${page})`);
-        // Redirect to the last valid page
-        return redirect(`/shop/section/${section}?page=${page}`);
-      }
-
-      lastCursor = prevPageResult.data.products.pageInfo.endCursor;
-
-      // Cache this cursor for future use
-      global.cursorCache[cacheKey][page] = lastCursor;
-      console.log(`Cached cursor for page ${page}: ${lastCursor}`);
-    }
-
-    after = lastCursor;
-  }
-
-  // Now fetch the current page data
-  const { data } = await client.query({
-    query: GET_PRODUCTS,
-    variables: {
-      first,
-      after,
-      orderby: [{ field: sortField, order: sortOrder }],
-      search: searchQuery,
-      category: category ? category : section,
-    },
-    fetchPolicy: 'network-only',
-  });
-
-  const products = data.products.nodes;
-  const pageInfo = data.products.pageInfo;
-
-  // Store this page's endCursor for future requests
-  if (pageInfo.hasNextPage) {
-    if (!global.cursorCache[cacheKey]) {
-      global.cursorCache[cacheKey] = {};
-    }
-    global.cursorCache[cacheKey][currentPage] = pageInfo.endCursor;
-  }
-
-  // Calculate total pages - fallback if the count query fails
+  // Get total count of products for pagination
+  let totalProducts = 0;
   let totalPages = 1;
-
-  if (pageInfo.hasNextPage) {
-    totalPages = currentPage + 1; // At least one more page
-  } else {
-    totalPages = currentPage; // Current page is the last page
-  }
 
   try {
     const countResponse = await client.query({
@@ -150,16 +66,40 @@ export default async function ShopPage({ searchParams, params }) {
     });
 
     if (countResponse.data.products.found) {
-      const totalProducts = countResponse.data.products.found;
-      totalPages = Math.ceil(totalProducts / first);
+      totalProducts = countResponse.data.products.found;
+      totalPages = Math.ceil(totalProducts / productsPerPage);
+
+      // If user requests a page beyond the last page, redirect to the last page
+      if (currentPage > totalPages && totalPages > 0) {
+        return redirect(`/shop/section/${section}?page=${totalPages}`);
+      }
     }
   } catch (error) {
     console.error('Error calculating total pages:', error);
   }
 
+  // Now fetch the current page data using offset-based pagination
+  const { data } = await client.query({
+    query: GET_PRODUCTS,
+    variables: {
+      first: productsPerPage,
+      after: null, // Not needed for offset pagination
+      orderby: [{ field: sortField, order: sortOrder }],
+      search: searchQuery,
+      category: category ? category : section,
+      offset: offset,
+    },
+    fetchPolicy: 'network-only',
+  });
+
+  const products = data.products.nodes;
+  const pageInfo = data.products.pageInfo;
+
   console.log(`PageInfo: `, pageInfo);
 
-  // Create a helper function for page URL generation
+  // Determine if there are more pages
+  const hasNextPage = currentPage < totalPages;
+  const hasPreviousPage = currentPage > 1;
 
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
@@ -215,11 +155,11 @@ export default async function ShopPage({ searchParams, params }) {
         <ShopPagination
           currentPage={currentPage}
           totalPages={totalPages}
-          hasNextPage={pageInfo.hasNextPage}
-          hasPreviousPage={currentPage > 1}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
           pageInfo={{
-            startCursor: pageInfo.startCursor,
-            endCursor: pageInfo.endCursor,
+            startCursor: null,
+            endCursor: null,
           }}
         />
       </SidebarInset>

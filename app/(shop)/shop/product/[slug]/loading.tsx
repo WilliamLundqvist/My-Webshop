@@ -28,7 +28,7 @@ export default function ItemLoading() {
                   <Button
                     variant="outline"
                     key={index}
-                    className="bg-gray-200 animate-pulse rounded-full"
+                    className="bg-gray-200 animate-pulse"
                     disabled={true}
                   >
                     &nbsp;
@@ -58,7 +58,7 @@ export default function ItemLoading() {
             </div>
 
             {/* Add to Cart Button */}
-            <Button className="w-full py-6 text-lg font-medium bg-gray-200 rounded-full animate-pulse"></Button>
+            <Button className="w-full py-6 text-lg font-medium bg-gray-200 animate-pulse"></Button>
           </div>
 
           {/* Product Details Accordion */}

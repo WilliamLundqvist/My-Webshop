@@ -30,11 +30,17 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryV
     $orderby: [ProductsOrderbyInput]
     $search: String
     $category: String
+    $offset: Int
   ) {
     products(
       first: $first
       after: $after
-      where: { orderby: $orderby, search: $search, category: $category }
+      where: {
+        orderby: $orderby
+        search: $search
+        category: $category
+        offsetPagination: { offset: $offset, size: $first }
+      }
     ) {
       nodes {
         id
@@ -72,6 +78,11 @@ export const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryV
         hasPreviousPage
         startCursor
         endCursor
+        offsetPagination {
+          total
+          hasMore
+          hasPrevious
+        }
       }
     }
   }

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useMemo, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/utils';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import CartDropdown from './CartDropdown';
 
 interface NavigationProps {
@@ -46,7 +45,6 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="max-w-[1400px] mx-auto px-6 flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
