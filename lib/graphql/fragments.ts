@@ -1,5 +1,5 @@
-import { gql, TypedDocumentNode } from "@apollo/client";
-import { GetHomepageQuery, HeroFragmentFragment } from "./generated/graphql";
+import { gql, TypedDocumentNode } from '@apollo/client';
+import { HeroFragmentFragment } from './generated/graphql';
 
 export const cartFragment = gql`
   fragment CartFragment on Cart {

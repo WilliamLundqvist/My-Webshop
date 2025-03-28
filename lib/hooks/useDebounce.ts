@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
-import debounce from "lodash/debounce";
+import { useCallback, useEffect, useRef } from 'react';
+import debounce from 'lodash/debounce';
 
 /**
  * Hook för att skapa en debounced version av en funktion.
@@ -23,13 +23,15 @@ export function useDebounce<T extends (...args: any[]) => any>(
   // Använd en ref för att alltid ha den senaste callback-funktionen
   const callbackRef = useRef(callback);
 
-  // Uppdatera callbackRef när callback ändras
+  // Uppdatera callbackRef när callback eller dependencies ändras
   useEffect(() => {
     callbackRef.current = callback;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callback, ...dependencies]);
 
   // Skapa den debounced-funktionen en gång
   const debouncedCallback = useCallback(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     debounce((...args: Parameters<T>) => {
       callbackRef.current(...args);
     }, delay),
