@@ -10,9 +10,6 @@ export default async function ProductPage({ params, searchParams }) {
   const slug = params.slug;
   const section = params.section;
 
-  // Await hela searchParams-objektet
-  searchParams = await searchParams;
-
   // Extract reference search parameters
   const refSearch = searchParams?.ref_search;
   const refSort = searchParams?.ref_sort;

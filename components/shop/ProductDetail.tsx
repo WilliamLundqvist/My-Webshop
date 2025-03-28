@@ -49,11 +49,7 @@ export const ProductDetail = ({ product }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <ItemCarousel
-            galleryImages={getOrderedImages()}
-            product={product}
-            selectedColor={selectedColor}
-          />
+          <ItemCarousel galleryImages={getOrderedImages()} product={product} />
         </div>
 
         {/* Product Info */}

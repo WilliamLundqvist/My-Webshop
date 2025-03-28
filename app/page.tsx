@@ -78,6 +78,7 @@ export default async function HomePage() {
                       width={150}
                       height={150}
                       className="aspect-square h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
                     />
                   </div>
                   <span className="font-medium">{category.name}</span>
@@ -194,6 +195,7 @@ export default async function HomePage() {
                   className="h-full w-full object-cover"
                   width={800}
                   height={600}
+                  loading="lazy"
                 />
               </div>
             </div>

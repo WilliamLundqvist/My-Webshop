@@ -68,6 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
                 width={400}
                 height={400}
                 className="h-full w-full object-cover object-top transition-opacity duration-300 group-hover:opacity-0"
+                loading="lazy"
               />
               {/* Hover image - positioned absolute on top */}
               <Image
@@ -76,6 +77,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
                 width={400}
                 height={400}
                 className="absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                loading="lazy"
               />
             </div>
             <div className="flex flex-col flex-grow">

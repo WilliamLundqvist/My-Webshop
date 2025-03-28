@@ -16,10 +16,7 @@ import { redirect } from 'next/navigation';
 // This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
   const client = await getClient();
-  const section = await params.section;
-
-  // Await hela searchParams-objektet
-  searchParams = await searchParams;
+  const section = params.section;
 
   const finalSearchParams = { ...searchParams };
   if (searchParams.ref_search) {
