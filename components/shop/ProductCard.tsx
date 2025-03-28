@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 export interface ProductCardProps {
   product: Products['products']['nodes'][number];
-  searchParams: URLSearchParams;
+  searchParams: URLSearchParams | null;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {

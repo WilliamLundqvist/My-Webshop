@@ -1,4 +1,4 @@
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { gql, TypedDocumentNode } from '@apollo/client';
 import {
   RemoveItemsFromCartMutation,
   UpdateCartItemQuantitiesMutation,
@@ -6,8 +6,8 @@ import {
   AddToCartMutation,
   CheckoutMutation,
   CheckoutMutationVariables,
-} from "./generated/graphql";
-import { cartFragment } from "./fragments";
+} from './generated/graphql';
+import { cartFragment } from './fragments';
 
 export const ADD_TO_CART: TypedDocumentNode<AddToCartMutation> = gql`
   mutation AddToCart($input: AddToCartInput!) {

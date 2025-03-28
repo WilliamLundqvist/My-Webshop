@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { GET_PRODUCT_BY_SLUG } from '@/lib/graphql/queries';
 import { Product } from '@/types/product';
 import BackButton from '@/components/shop/BackButton';
+import { RelatedProducts } from '@/components/shop/Related-Products';
+
 export default async function ProductPage({ params, searchParams }) {
   // Await params först
   const awaitedParams = await params;
@@ -70,6 +72,7 @@ export default async function ProductPage({ params, searchParams }) {
     <div className="container mx-auto px-md">
       <BackButton className="my-4" />
       <ProductDetail product={product} />
+      <RelatedProducts products={product} />
     </div>
   );
 }

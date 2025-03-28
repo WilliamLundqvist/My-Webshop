@@ -1,2 +1,17 @@
-schema: 'schema.graphql'
-documents: 'src/**/*.{graphql,js,ts,jsx,tsx}'
+schema: http://localhost:8000/graphql
+
+documents: 'lib/graphql/**/*.{graphql,js,ts,jsx,tsx}'
+
+extensions:
+  codegen:
+    generates:
+      lib/graphql/generated/graphql.ts:
+        plugins:
+          - typescript
+          - typescript-operations
+          - typescript-react-apollo
+        config:
+          withHooks: true
+          withComponent: false
+          withHOC: false
+          skipTypename: false

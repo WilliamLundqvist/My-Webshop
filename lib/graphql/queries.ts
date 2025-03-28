@@ -105,6 +105,16 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<
     products(where: { slugIn: $slug }) {
       nodes {
         ... on SimpleProduct {
+          related(first: 4) {
+            nodes {
+              id
+              name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
           id
           name
           description(format: RAW)
@@ -120,6 +130,16 @@ export const GET_PRODUCT_BY_SLUG: TypedDocumentNode<
           }
         }
         ... on VariableProduct {
+          related(first: 4) {
+            nodes {
+              id
+              name
+              slug
+              image {
+                sourceUrl
+              }
+            }
+          }
           id
           databaseId
           name
