@@ -1,7 +1,3 @@
-'use client';
-
-import React, { useEffect, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -28,9 +24,6 @@ export default function ShopPagination({
   baseUrl,
   searchParams,
 }: ShopPaginationProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-
   const createPageUrl = (pageNum: number) => {
     const params = new URLSearchParams();
     Object.keys(searchParams || {}).forEach((key) => {
@@ -42,81 +35,23 @@ export default function ShopPagination({
     return `${baseUrl}?${params.toString()}`;
   };
 
-  // Prefetch adjacent pages for faster navigation
-  useEffect(() => {
-    // Prefetch next page
-    if (hasNextPage) {
-      router.prefetch(createPageUrl(currentPage + 1));
-    }
-
-    // Prefetch previous page
-    if (hasPreviousPage) {
-      router.prefetch(createPageUrl(currentPage - 1));
-    }
-
-    // For pages shown in pagination, prefetch them too
-    const pagesToPrefetch = [];
-
-    if (totalPages <= 5) {
-      // Prefetch all pages if 5 or fewer
-      for (let i = 1; i <= totalPages; i++) {
-        if (i !== currentPage) pagesToPrefetch.push(i);
-      }
-    } else {
-      // Prefetch pages around current page
-      if (currentPage <= 3) {
-        // First pages
-        for (let i = 1; i <= 5; i++) {
-          if (i !== currentPage) pagesToPrefetch.push(i);
-        }
-      } else if (currentPage >= totalPages - 2) {
-        // Last pages
-        for (let i = totalPages - 4; i <= totalPages; i++) {
-          if (i !== currentPage) pagesToPrefetch.push(i);
-        }
-      } else {
-        // Middle pages
-        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-          if (i !== currentPage) pagesToPrefetch.push(i);
-        }
-      }
-    }
-
-    // Actually prefetch the calculated pages
-    pagesToPrefetch.forEach((pageNum) => {
-      router.prefetch(createPageUrl(pageNum));
-    });
-  }, [currentPage, totalPages, hasNextPage, hasPreviousPage]);
-
-  const handlePageChange = (pageNum: number) => {
-    // Use startTransition to mark this update as non-urgent
-    // This helps keep the UI responsive during navigation
-    startTransition(() => {
-      router.push(createPageUrl(pageNum));
-    });
-  };
+  // Prefetch adjacent pages for faster navigatio
 
   if (totalPages <= 1 && !hasNextPage && !hasPreviousPage) {
     return null;
   }
 
   return (
-    <div className={`my-8 ${isPending ? 'opacity-70 pointer-events-none' : ''}`}>
+    <div className={`my-8`}>
       <Pagination>
         <PaginationContent className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             {/* Previous button */}
             <PaginationItem>
               <PaginationPrevious
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (hasPreviousPage) {
-                    handlePageChange(currentPage - 1);
-                  }
-                }}
+                href={hasPreviousPage ? createPageUrl(currentPage - 1) : '#'}
                 className={!hasPreviousPage ? 'pointer-events-none opacity-50' : ''}
                 aria-disabled={!hasPreviousPage}
-                href="#"
               />
             </PaginationItem>
 
@@ -142,11 +77,7 @@ export default function ShopPagination({
                 return (
                   <PaginationItem key={pageNum}>
                     <PaginationLink
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handlePageChange(pageNum);
-                      }}
-                      href="#"
+                      href={createPageUrl(pageNum)}
                       isActive={currentPage === pageNum}
                     >
                       {pageNum}
@@ -159,15 +90,9 @@ export default function ShopPagination({
             {/* Next button */}
             <PaginationItem>
               <PaginationNext
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (hasNextPage) {
-                    handlePageChange(currentPage + 1);
-                  }
-                }}
+                href={hasNextPage ? createPageUrl(currentPage + 1) : '#'}
                 className={!hasNextPage ? 'pointer-events-none opacity-50' : ''}
                 aria-disabled={!hasNextPage}
-                href="#"
               />
             </PaginationItem>
           </div>
