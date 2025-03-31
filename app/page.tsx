@@ -1,137 +1,267 @@
-import { Suspense } from 'react';
-import { Hero } from '@/components/Hero';
-import { ProductGrid } from '@/components/ProductGrid';
-import { ItemCarousel } from '@/components/ItemCarousel';
-import { GET_HOMEPAGE_DATA, GET_PRODUCTS } from '@/graphql/queries';
-import { getClient } from '@/lib/client';
-import CategoryRows from '@/components/CategoryRows';
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ProductCard from '../components/shop/ProductCard';
+import { getClient } from '@faustwp/experimental-app-router';
+import { GET_HOMEPAGE } from '@/lib/graphql/queries';
 import Image from 'next/image';
-import { ProductCategory } from '@/generated/graphql';
 
 export default async function HomePage() {
-  const client = getClient();
-  
-  const { data: homeData } = await client.query({
-    query: GET_HOMEPAGE_DATA,
-    context: {
-      fetchOptions: {
-        next: { revalidate: 60 }, // revalidate the data at most every 60 seconds
-      },
-    },
+  const client = await getClient();
+
+  const { data } = await client.query({
+    query: GET_HOMEPAGE,
   });
 
-  const { data: productsData } = await client.query({
-    query: GET_PRODUCTS,
-    variables: {
-      first: 8,
-    },
-    context: {
-      fetchOptions: {
-        next: { revalidate: 60 }, // revalidate the data at most every 60 seconds
-      },
-    },
-  });
+  const searchParams = new URLSearchParams();
 
   return (
-    <div className="flex flex-col">
-      <Hero 
-        title={homeData.homepageSections?.heroSection?.title || 'Welcome to Our Shop'} 
-        subtitle={homeData.homepageSections?.heroSection?.subtitle || 'Find the best products for you'} 
-        ctaText={homeData.homepageSections?.heroSection?.ctaText || 'Shop Now'} 
-        ctaLink={homeData.homepageSections?.heroSection?.ctaLink || '/shop'} 
-        backgroundImage={homeData.homepageSections?.heroSection?.backgroundImage?.url || '/hero-bg.jpg'} 
-      />
-
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center">New Arrivals</h2>
-          <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading...</div>}>
-            <ProductGrid products={productsData.products.edges.map(edge => edge.node)} limit={4} searchParams={{}} />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="py-12 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Featured Collections</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="relative overflow-hidden group rounded-lg shadow-lg h-80">
-              <Image 
-                src="/collection-men.jpg" 
-                alt="Men's Collection" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                width={600}
-                height={400}
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">Men's Collection</h3>
-                  <a href="/shop?category=men" className="inline-block bg-white text-black font-semibold py-2 px-4 rounded-md hover:bg-gray-200 transition">Shop Now</a>
-                </div>
-              </div>
+    <div className="flex min-h-screen flex-col">
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative">
+          <div className="relative h-[500px] w-full overflow-hidden bg-gray-900">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${data?.page?.hero?.heroImage?.node?.sourceUrl})`,
+              }}
+            >
+              <div className="absolute inset-0 bg-black/40" />
             </div>
-            <div className="relative overflow-hidden group rounded-lg shadow-lg h-80">
-              <Image 
-                src="/collection-women.jpg" 
-                alt="Women's Collection" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                width={600}
-                height={400}
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">Women's Collection</h3>
-                  <a href="/shop?category=women" className="inline-block bg-white text-black font-semibold py-2 px-4 rounded-md hover:bg-gray-200 transition">Shop Now</a>
-                </div>
+            <div className="container relative flex h-full flex-col items-start justify-center gap-4 text-white">
+              <h1 className="max-w-xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+                {data?.page?.hero?.heroHeading}
+              </h1>
+              <p className="max-w-md text-lg">{data?.page?.hero?.heroSubheading}</p>
+              <div className="flex gap-4">
+                <Link href={data?.page?.hero?.heroButton1?.url || '#'}>
+                  <Button size="lg" className="font-medium">
+                    {data?.page?.hero?.heroButton1?.title}
+                  </Button>
+                </Link>
+                <Link href={data?.page?.hero?.heroButton2?.url || '#'}>
+                  <Button size="lg" className="border-white text-white hover:bg-white/10">
+                    {data?.page?.hero?.heroButton2?.title}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center">Popular Products</h2>
-          <Suspense fallback={<div className="h-48 flex items-center justify-center">Loading carousel...</div>}>
-            <ItemCarousel products={productsData.products.edges.map(edge => edge.node)} searchParams={{}} />
-          </Suspense>
-        </div>
-      </section>
-
-      <section className="py-12 bg-gray-100 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center">Shop By Category</h2>
-          <CategoryRows 
-            categories={[
-              { name: 'Shoes', slug: 'shoes', imageUrl: '/category-shoes.jpg', tag: ProductCategory.Shoes },
-              { name: 'Accessories', slug: 'accessories', imageUrl: '/category-accessories.jpg', tag: ProductCategory.Accessories },
-              { name: 'Clothing', slug: 'clothing', imageUrl: '/category-clothing.jpg', tag: ProductCategory.Clothing },
-              { name: 'Sports', slug: 'sports', imageUrl: '/category-sports.jpg', tag: ProductCategory.Sports }
-            ]} 
-          />
-        </div>
-      </section>
-
-      <section className="py-12 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Stay updated with the latest products, exclusive offers, and fashion tips.
-          </p>
-          <div className="max-w-md mx-auto flex">
-            <input
-              type="email"
-              placeholder="Your email address"
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button className="bg-primary text-white px-6 py-2 rounded-r-md hover:bg-primary-dark transition">
-              Subscribe
-            </button>
+        {/* Category Navigation */}
+        <section className="border-b py-8">
+          <div className="container ">
+            <h2 className="mb-6 text-2xl font-bold">Shop By Category</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {[
+                { name: 'Dumbbells', image: 'https://placehold.co/300x300' },
+                { name: 'Kettlebells', image: 'https://placehold.co/300x300' },
+                { name: 'Barbells', image: 'https://placehold.co/300x300' },
+                { name: 'Benches', image: 'https://placehold.co/300x300' },
+                { name: 'Racks', image: 'https://placehold.co/300x300' },
+                { name: 'Accessories', image: 'https://placehold.co/300x300' },
+              ].map((category) => (
+                <Link
+                  key={category.name}
+                  href="#"
+                  className="group flex flex-col items-center gap-2 text-center"
+                >
+                  <div className="overflow-hidden rounded-full">
+                    <Image
+                      src={category.image || 'https://placehold.co/300x300'}
+                      alt={category.name}
+                      width={150}
+                      height={150}
+                      className="aspect-square h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="font-medium">{category.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Featured Products */}
+        <section className="py-12">
+          <div className="container">
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Featured Equipment</h2>
+              <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
+                View All
+              </Link>
+            </div>
+
+            <Tabs defaultValue="bestsellers" className="mb-8">
+              <TabsList className="mb-6">
+                <TabsTrigger value="bestsellers">Bestsellers</TabsTrigger>
+                <TabsTrigger value="new">New Arrivals</TabsTrigger>
+                <TabsTrigger value="sale">On Sale</TabsTrigger>
+              </TabsList>
+              <TabsContent value="bestsellers" className="mt-0">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {[
+                    {
+                      id: 'product-1',
+                      name: 'Premium Yoga Mat',
+                      slug: 'premium-yoga-mat',
+                      sku: 'YM001',
+                      price: 49.99,
+                      image: 'https://placehold.co/400x400',
+                      rating: 4.5,
+                      reviews: 210,
+                    },
+                    {
+                      id: 'product-2',
+                      name: 'Resistance Bands Set',
+                      slug: 'resistance-bands-set',
+                      sku: 'RB002',
+                      price: 29.99,
+                      image: 'https://placehold.co/400x400',
+                      rating: 4.3,
+                      reviews: 185,
+                    },
+                    {
+                      id: 'product-3',
+                      name: 'Adjustable Weight Bench',
+                      slug: 'adjustable-weight-bench',
+                      sku: 'WB003',
+                      price: 179.99,
+                      image: 'https://placehold.co/400x400',
+                      rating: 4.7,
+                      reviews: 128,
+                    },
+                    {
+                      id: 'product-4',
+                      name: 'Competition Kettlebell Set',
+                      slug: 'competition-kettlebell-set',
+                      sku: 'KB004',
+                      price: 349.99,
+                      image: 'https://placehold.co/400x400',
+                      rating: 4.8,
+                      reviews: 97,
+                    },
+                  ].map((product, index) => (
+                    <ProductCard key={index} product={product as any} searchParams={searchParams} />
+                  ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="new" className="mt-0">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {/* New arrivals products would go here */}
+                  <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
+                    <p className="text-muted-foreground">New arrivals coming soon</p>
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent value="sale" className="mt-0">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {/* Sale products would go here */}
+                  <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
+                    <p className="text-muted-foreground">Sale items coming soon</p>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </section>
+
+        {/* Featured Collection */}
+        <section className="bg-muted py-12">
+          <div className="container">
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="flex flex-col justify-center">
+                <h2 className="mb-4 text-3xl font-bold">The Home Gym Collection</h2>
+                <p className="mb-6 text-lg text-muted-foreground">
+                  Everything you need to build the perfect home gym in one convenient package. Save
+                  up to 20% when you buy the complete set.
+                </p>
+                <div>
+                  <Button size="lg" className="font-medium">
+                    Shop Collection
+                  </Button>
+                </div>
+              </div>
+              <div className="relative h-[300px] overflow-hidden rounded-lg md:h-auto">
+                <Image
+                  src="https://placehold.co/800x600"
+                  alt="Home Gym Collection"
+                  className="h-full w-full object-cover"
+                  width={800}
+                  height={600}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-12">
+          <div className="container">
+            <h2 className="mb-8 text-center text-2xl font-bold">Why Choose PowerFit</h2>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: 'Premium Quality',
+                  description: 'Commercial-grade equipment built to last with premium materials',
+                },
+                {
+                  title: 'Free Shipping',
+                  description: 'Free shipping on all orders over $100',
+                },
+                {
+                  title: 'Expert Support',
+                  description: 'Get advice from fitness professionals on the right equipment',
+                },
+                {
+                  title: 'Easy Returns',
+                  description: '30-day money-back guarantee on all products',
+                },
+              ].map((benefit, index) => (
+                <div key={index} className="flex flex-col items-center text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <div className="h-8 w-8 rounded-full bg-primary" />
+                  </div>
+                  <h3 className="mb-2 font-semibold">{benefit.title}</h3>
+                  <p className="text-muted-foreground">{benefit.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Newsletter */}
+        <section className="bg-primary py-12 text-primary-foreground">
+          <div className="container">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2 className="mb-4 text-3xl font-bold">Join Our Community</h2>
+              <p className="mb-6">
+                Subscribe to our newsletter for exclusive deals, fitness tips, and new product
+                announcements.
+              </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-primary-foreground text-primary"
+                />
+                <Button variant="secondary" className="sm:flex-shrink-0">
+                  Subscribe
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
     </div>
   );
 }
