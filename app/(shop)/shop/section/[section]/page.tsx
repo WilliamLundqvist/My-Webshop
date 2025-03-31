@@ -158,10 +158,8 @@ export default async function ShopPage({ searchParams, params }) {
           totalPages={totalPages}
           hasNextPage={hasNextPage}
           hasPreviousPage={hasPreviousPage}
-          pageInfo={{
-            startCursor: null,
-            endCursor: null,
-          }}
+          baseUrl={`/shop/section/${section}`}
+          searchParams={finalSearchParams}
         />
       </SidebarInset>
     </div>
