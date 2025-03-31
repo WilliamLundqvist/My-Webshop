@@ -28,6 +28,11 @@ export default withFaust({
       },
       {
         protocol: 'https',
+        hostname: '*.considbrs.se',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: '*.ngrok-free.app',
         pathname: '/wp-content/uploads/**',
       },
