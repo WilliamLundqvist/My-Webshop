@@ -73,7 +73,7 @@ export const ProductDetail = ({ product }) => {
               )}
           </div>
           <div
-            className="prose prose-sm"
+            className="prose prose-md"
             dangerouslySetInnerHTML={{ __html: product.description || '' }}
           />
 

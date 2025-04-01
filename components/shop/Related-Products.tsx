@@ -9,8 +9,8 @@ export function RelatedProducts({ products }: { products: Product }) {
   }
 
   return (
-    <div>
-      <h2>Relaterade produkter</h2>
+    <div className="my-4">
+      <h2 className="text-2xl my-4 font-bold">Relaterade produkter</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {relatedProducts.map((product) => (
           <ProductCard key={product.id} product={product} searchParams={null} />

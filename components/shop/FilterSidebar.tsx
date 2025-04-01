@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Filter, ChevronRight, Search } from 'lucide-react';
+import { Filter, ChevronRight, Search, Loader2 } from 'lucide-react';
 import { useState, useCallback, useMemo, memo } from 'react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -161,7 +161,12 @@ function FilterSidebarComponent() {
 
   // Memoize the category list rendering to prevent recreating on each render
   const categoryList = useMemo(() => {
-    if (loading) return <div>Loading categories...</div>;
+    if (loading)
+      return (
+        <div className="flex items-center justify-center">
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </div>
+      );
     if (error) return <div>Error loading categories</div>;
     if (categories.length === 0) return <div>No categories found</div>;
 

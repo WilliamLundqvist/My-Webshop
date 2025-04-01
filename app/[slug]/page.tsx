@@ -113,7 +113,7 @@ export default function Page() {
         </div>
       ) : (
         <div
-          className="prose prose-lg max-w-none wordpress-blocks-container"
+          className="prose prose-sm max-w-none wordpress-blocks-container"
           dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? '' }}
         />
       )}
