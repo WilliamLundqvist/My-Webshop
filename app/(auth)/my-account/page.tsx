@@ -8,7 +8,7 @@ import { User, MapPin, LogOut } from 'lucide-react';
 
 export default function Page() {
   const customer = useCustomer();
-  const { firstName, lastName, email } = customer?.customer || {;
+  const { firstName, lastName, email } = customer?.customer || {};
   const shipping = customer?.customer?.shipping;
 
   return (
