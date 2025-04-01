@@ -11,7 +11,6 @@ import ProductGrid from '@/components/shop/ProductGrid';
 import ShopPagination from '@/components/shop/ShopPagination';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
-import { FilterSidebar } from '@/components/shop/FilterSidebar';
 
 // This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
