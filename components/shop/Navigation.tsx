@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Menu, User } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/utils';
 import CartDropdown from './CartDropdown';
