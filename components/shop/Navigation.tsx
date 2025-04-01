@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Menu, User } from 'lucide-react';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useMemo, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
@@ -30,17 +30,6 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
   // Extract menu items directly from props - memoize to prevent unnecessary processing
   const menuItems = useMemo(() => primaryMenuItems?.nodes || [], [primaryMenuItems]);
 
-  // Function to check if a menu item is a category link
-  const isCategoryLink = useCallback((uri: string) => {
-    return uri.includes('/shop/section/') || uri.includes('/shop/section/%3D');
-  }, []);
-
-  // Non-category menu items - memoize to prevent recalculation on every render
-  const nonCategoryMenuItems = useMemo(
-    () => menuItems.filter((item) => !isCategoryLink(item.uri)),
-    [menuItems, isCategoryLink]
-  );
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="max-w-[1400px] mx-auto px-6 flex h-16 items-center justify-between">
@@ -52,15 +41,20 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-80">
-              <SheetTitle>Menu</SheetTitle>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
               <div className="flex flex-col space-y-4 py-6">
-                <nav className="flex flex-col space-y-2">
-                  {nonCategoryMenuItems.map((item) => (
+                <nav className="flex flex-col gap-2 space-y-2">
+                  {menuItems.map((item) => (
                     <Button
                       key={item.id}
                       variant={pathname === item.uri ? 'secondary' : 'ghost'}
-                      className={cn('justify-start', pathname === item.uri && 'font-semibold')}
+                      className={cn(
+                        'justify-start px-4 mx-2',
+                        pathname === item.uri && 'font-semibold'
+                      )}
                       asChild
                     >
                       <Link href={item.uri}>{item.label}</Link>
