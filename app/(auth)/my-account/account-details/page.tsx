@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AccountDetailsFormData } from '@/lib/utils/customer';
-
+import { Separator } from '@/components/ui/separator';
 // Schema för formuläret
 const accountSchema = z
   .object({
@@ -95,10 +95,15 @@ const AccountDetailsPage = () => {
   }
 
   return (
-    <div>
+    <div className="container mx-auto py-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Kontouppgifter</h1>
+        <p className="text-muted-foreground">Uppdatera dina kontouppgifter</p>
+      </div>
+
+      <Separator />
       <Card>
-        <CardHeader className="py-6">
-          <CardTitle className="text-xl">Kontouppgifter</CardTitle>
+        <CardHeader>
           {formState.success && (
             <CardDescription className="text-green-600">{formState.success}</CardDescription>
           )}

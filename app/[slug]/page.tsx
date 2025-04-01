@@ -1,25 +1,25 @@
-"use client";
-import { gql, useQuery } from "@apollo/client";
-import { useParams } from "next/navigation";
-import { WordPressBlocksViewer } from "@faustwp/blocks";
-import { flatListToHierarchical } from "@faustwp/core";
-import blocks from "@/wp-blocks";
-import { useState, useEffect } from "react";
+'use client';
+import { gql, useQuery } from '@apollo/client';
+import { useParams } from 'next/navigation';
+import { WordPressBlocksViewer } from '@faustwp/blocks';
+import { flatListToHierarchical } from '@faustwp/core';
+import blocks from '@/wp-blocks';
+import { LoaderCircle } from 'lucide-react';
 
 // Definiera query med nödvändiga fragment
 const GET_CONTENT_NODE = gql`
-  ${blocks.CoreParagraph?.fragments.entry || ""}
-  ${blocks.CoreHeading?.fragments.entry || ""}
-  ${blocks.CoreImage?.fragments.entry || ""}
-  ${blocks.CoreSeparator?.fragments.entry || ""}
-  ${blocks.CoreList?.fragments.entry || ""}
-  ${blocks.CoreListItem?.fragments.entry || ""}
-  ${blocks.CoreButton?.fragments.entry || ""}
-  ${blocks.CoreButtons?.fragments.entry || ""}
-  ${blocks.CoreCode?.fragments.entry || ""}
-  ${blocks.CoreQuote?.fragments.entry || ""}
-  ${blocks.CoreColumns?.fragments.entry || ""}
-  ${blocks.CoreColumn?.fragments.entry || ""}
+  ${blocks.CoreParagraph?.fragments.entry || ''}
+  ${blocks.CoreHeading?.fragments.entry || ''}
+  ${blocks.CoreImage?.fragments.entry || ''}
+  ${blocks.CoreSeparator?.fragments.entry || ''}
+  ${blocks.CoreList?.fragments.entry || ''}
+  ${blocks.CoreListItem?.fragments.entry || ''}
+  ${blocks.CoreButton?.fragments.entry || ''}
+  ${blocks.CoreButtons?.fragments.entry || ''}
+  ${blocks.CoreCode?.fragments.entry || ''}
+  ${blocks.CoreQuote?.fragments.entry || ''}
+  ${blocks.CoreColumns?.fragments.entry || ''}
+  ${blocks.CoreColumn?.fragments.entry || ''}
   query GetContentNode($id: ID!) {
     contentNode(id: $id, idType: URI) {
       ... on Post {
@@ -31,18 +31,18 @@ const GET_CONTENT_NODE = gql`
           renderedHtml
           id: clientId
           parentId: parentClientId
-          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ""}
-          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ""}
-          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ""}
-          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ""}
-          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ""}
-          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ""}
-          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ""}
-          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ""}
-          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ""}
-          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ""}
-          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ""}
-          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ""}
+          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ''}
+          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ''}
+          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ''}
+          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ''}
+          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ''}
+          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ''}
+          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ''}
+          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ''}
+          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ''}
+          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ''}
+          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ''}
+          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ''}
         }
       }
       ... on Page {
@@ -54,18 +54,18 @@ const GET_CONTENT_NODE = gql`
           renderedHtml
           id: clientId
           parentId: parentClientId
-          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ""}
-          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ""}
-          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ""}
-          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ""}
-          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ""}
-          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ""}
-          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ""}
-          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ""}
-          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ""}
-          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ""}
-          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ""}
-          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ""}
+          ${blocks.CoreParagraph?.fragments.key ? `...${blocks.CoreParagraph.fragments.key}` : ''}
+          ${blocks.CoreHeading?.fragments.key ? `...${blocks.CoreHeading.fragments.key}` : ''}
+          ${blocks.CoreImage?.fragments.key ? `...${blocks.CoreImage.fragments.key}` : ''}
+          ${blocks.CoreSeparator?.fragments.key ? `...${blocks.CoreSeparator.fragments.key}` : ''}
+          ${blocks.CoreList?.fragments.key ? `...${blocks.CoreList.fragments.key}` : ''}
+          ${blocks.CoreListItem?.fragments.key ? `...${blocks.CoreListItem.fragments.key}` : ''}
+          ${blocks.CoreButton?.fragments.key ? `...${blocks.CoreButton.fragments.key}` : ''}
+          ${blocks.CoreButtons?.fragments.key ? `...${blocks.CoreButtons.fragments.key}` : ''}
+          ${blocks.CoreCode?.fragments.key ? `...${blocks.CoreCode.fragments.key}` : ''}
+          ${blocks.CoreQuote?.fragments.key ? `...${blocks.CoreQuote.fragments.key}` : ''}
+          ${blocks.CoreColumns?.fragments.key ? `...${blocks.CoreColumns.fragments.key}` : ''}
+          ${blocks.CoreColumn?.fragments.key ? `...${blocks.CoreColumn.fragments.key}` : ''}
         }
       }
       date
@@ -77,13 +77,6 @@ export default function Page() {
   const params = useParams();
   const slug = params.slug;
 
-  // För att undvika hydration error
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   const { loading, error, data } = useQuery(GET_CONTENT_NODE, {
     variables: {
       id: slug,
@@ -92,18 +85,20 @@ export default function Page() {
   });
 
   // Om vi inte är klient än, visa enbart laddningssidan
-  if (!isClient) {
-    return <div>Laddar...</div>;
-  }
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoaderCircle className="animate-spin  " size={64} />
+      </div>
+    );
 
-  if (loading) return <div>Laddar...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data?.contentNode) return <div>Innehållet kunde inte hittas</div>;
 
   // Konvertera platt lista till hierarkisk struktur
   const blockList = data?.contentNode?.editorBlocks
     ? flatListToHierarchical(data.contentNode.editorBlocks, {
-        childrenKey: "innerBlocks",
+        childrenKey: 'innerBlocks',
       })
     : [];
 
@@ -116,7 +111,7 @@ export default function Page() {
           <WordPressBlocksViewer blocks={blockList} />
         </div>
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? "" }} />
+        <div dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? '' }} />
       )}
     </main>
   );

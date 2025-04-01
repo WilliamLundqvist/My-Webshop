@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { AddressFormData as AddressFormDataType } from '@/lib/utils/customer';
 import { CountriesEnum } from '@/lib/graphql/generated/graphql';
+import { Separator } from '@/components/ui/separator';
 
 // Schema för formuläret
 const addressSchema = z.object({
@@ -96,15 +97,16 @@ const AddressesPage = () => {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Din adress</h2>
-      <p className="text-sm mb-6 text-muted-foreground">
-        Din faktureringsadress kommer automatiskt att vara samma som din leveransadress.
-      </p>
+    <div className="container mx-auto py-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Leveransadress</h1>
+        <p className="text-muted-foreground">Uppdatera din leveransadress</p>
+      </div>
+
+      <Separator />
 
       <Card>
-        <CardHeader className="py-6">
-          <CardTitle className="text-lg">Leveransadress</CardTitle>
+        <CardHeader>
           {formState.success && (
             <CardDescription className="text-green-600">{formState.success}</CardDescription>
           )}

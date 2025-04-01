@@ -26,7 +26,6 @@ interface CartContextType {
   refreshCart: () => Promise<GetCartQuery['cart']>;
   updateCartItem: (items: UpdateCartItemQuantitiesMutationVariables) => Promise<boolean>;
   removeCartItem: (keys: string[], all: boolean) => Promise<boolean>;
-  // Fler metoder...
 }
 
 // Tom kundvagn för fallback
@@ -70,10 +69,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setActionError(null);
 
     try {
-      // Optimistisk uppdatering - anta att det kommer att lyckas
-      // Detta gör att UI uppdateras omedelbart medan API-anropet görs
-
-      // Anropa API
       const updatedCart = await apiAddToCart(input);
 
       // Om vi får false tillbaka, betyder det att användaren behöver logga in

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { ReactNode, useMemo } from "react";
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { ReactNode, useMemo } from 'react';
 
 // Skapa en ApolloClient-instans
 function createApolloClient() {
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "http://localhost:8000/graphql",
+    uri: process.env.NEXT_PUBLIC_WORDPRESS_URL + '/graphql' || 'http://localhost:8000/graphql',
   });
 
   // Sätt eventuella auth headers om det behövs
@@ -24,7 +24,7 @@ function createApolloClient() {
     cache: new InMemoryCache(),
     defaultOptions: {
       query: {
-        fetchPolicy: "network-only",
+        fetchPolicy: 'network-only',
       },
     },
   });

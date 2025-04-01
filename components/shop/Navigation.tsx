@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Menu, User } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useMemo, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
@@ -53,6 +53,7 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-80">
+              <SheetTitle>Menu</SheetTitle>
               <div className="flex flex-col space-y-4 py-6">
                 <nav className="flex flex-col space-y-2">
                   {nonCategoryMenuItems.map((item) => (
