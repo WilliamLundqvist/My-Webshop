@@ -60,20 +60,25 @@ const OrdersPage = () => {
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-base">Order #{order.databaseId}</CardTitle>
+                    <div className="flex items-start gap-2">
+                      <CardTitle className="text-base">Order #{order.databaseId}</CardTitle>
+                      <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
+                    </div>
                     <CardDescription className="flex items-center text-xs mt-1">
                       <Calendar className="h-3 w-3 mr-1" />
                       {order.date ? formatDate(order.date) : 'Date unavailable'}
                     </CardDescription>
                   </div>
-                  <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
                 </div>
               </CardHeader>
               <Separator />
               <CardContent className="pt-4 space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total</span>
-                  <span className="font-medium">{order.total}</span>
+                  <span
+                    className="font-medium"
+                    dangerouslySetInnerHTML={{ __html: order.total }}
+                  ></span>
                 </div>
 
                 <div>
