@@ -16,13 +16,13 @@ interface ItemCarouselProps {
 
 const ItemCarousel: React.FC<ItemCarouselProps> = ({ galleryImages, product }) => {
   return (
-    <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+    <div className="aspect-square  rounded-lg overflow-hidden">
       {galleryImages.length > 0 ? (
         <Carousel className="w-full h-full">
           <CarouselContent>
             {galleryImages.map((image, index) => (
               <CarouselItem key={`gallery-image-${index}`}>
-                <div className="h-full w-full flex items-center justify-center p-0">
+                <div className="h-full w-full flex items-center  justify-center p-0">
                   <Image
                     src={image.sourceUrl}
                     alt={`${product.name} - Image ${index + 1}`}

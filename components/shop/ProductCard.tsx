@@ -81,15 +81,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
               />
             </div>
             <div className="flex flex-col flex-grow">
-              <CardContent>
-                <h2 className="line-clamp-2 font-medium text-md">{product.name}</h2>
+              <CardContent className="px-4">
+                <h2 className="line-clamp-2 font-medium text-primary text-md">{product.name}</h2>
 
                 {/* Display price if available */}
                 {productPrice &&
                   (product.__typename === 'SimpleProduct' ||
                     product.__typename === 'VariableProduct') &&
                   !product.onSale && (
-                    <p className="text-sm font-medium mt-2" data-price={productPrice}>
+                    <p className="text-sm font-semibold mt-2" data-price={productPrice}>
                       {formatPrice(productPrice)}
                     </p>
                   )}

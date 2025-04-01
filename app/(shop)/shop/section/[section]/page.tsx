@@ -11,6 +11,7 @@ import ProductGrid from '@/components/shop/ProductGrid';
 import ShopPagination from '@/components/shop/ShopPagination';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
+import { FilterSidebar } from '@/components/shop/FilterSidebar';
 
 // This is the server component that fetches data
 export default async function ShopPage({ searchParams, params }) {
@@ -91,7 +92,6 @@ export default async function ShopPage({ searchParams, params }) {
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
       <SidebarInset>
-        <StickyFilterButton />
         <Breadcrumb className="py-4">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -130,6 +130,7 @@ export default async function ShopPage({ searchParams, params }) {
           </h1>
           <div className="text-sm text-muted-foreground">{products.length} products</div>
         </div>
+        <StickyFilterButton />
 
         {products.length > 0 ? (
           <ProductGrid products={products} searchParams={finalSearchParams} />

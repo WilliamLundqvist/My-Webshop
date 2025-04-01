@@ -229,7 +229,7 @@ function FilterSidebarComponent() {
   return (
     <Sidebar
       variant="floating"
-      className="sticky top-[70px] max-h-[calc(100vh-75px)] overflow-y-auto"
+      className="sticky top-[70px] mt-[105px] mb-[90px] max-h-[calc(100vh-75px)] overflow-y-auto"
     >
       <SidebarHeader className="border-b p-4 bp-6 ">
         <div className="flex flex-col gap-4">

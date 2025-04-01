@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 export const ProductSkeleton = () => (
-  <Card className="gap-2 md:gap-4 h-full">
+  <Card className="gap-2 pt-0 md:gap-4 h-full">
     <div className="aspect-square overflow-hidden">
       <div className="w-full h-full bg-gray-200 rounded animate-pulse" />
     </div>
