@@ -15,6 +15,7 @@ export default withFaust({
   },
 
   images: {
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',

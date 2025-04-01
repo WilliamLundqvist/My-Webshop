@@ -58,45 +58,32 @@ export default async function ShopPage({ searchParams, params }) {
   const offset = (currentPage - 1) * productsPerPage;
 
   // Get total count of products for pagination
-  let totalProducts = 0;
-  let totalPages = 1;
 
-  try {
-    const countResponse = await client.query({
+  const [countResponse, productsResponse] = await Promise.all([
+    client.query({
       query: GET_PRODUCT_COUNT,
       variables: {
         search: searchQuery,
         category: category ? category : section,
       },
-    });
-    if (countResponse.data.products.found) {
-      totalProducts = countResponse.data.products.found;
-      totalPages = Math.ceil(totalProducts / productsPerPage);
+    }),
+    client.query({
+      query: GET_PRODUCTS,
+      variables: {
+        first: productsPerPage,
+        after: null,
+        orderby: [{ field: sortField, order: sortOrder }],
+        search: searchQuery,
+        category: category ? category : section,
+        offset: offset,
+      },
+      fetchPolicy: 'cache-first',
+    }),
+  ]);
 
-      // If user requests a page beyond the last page, redirect to the last page
-      if (currentPage > totalPages && totalPages > 0) {
-        return redirect(`/shop/section/${section}?page=${totalPages}`);
-      }
-    }
-  } catch (error) {
-    console.error('Error calculating total pages:', error);
-  }
-
-  // Now fetch the current page data using offset-based pagination
-  const { data } = await client.query({
-    query: GET_PRODUCTS,
-    variables: {
-      first: productsPerPage,
-      after: null, // Not needed for offset pagination
-      orderby: [{ field: sortField, order: sortOrder }],
-      search: searchQuery,
-      category: category ? category : section,
-      offset: offset,
-    },
-    fetchPolicy: 'network-only',
-  });
-
-  const products = data.products.nodes;
+  const products = productsResponse.data.products.nodes;
+  const totalProducts = countResponse.data.products.found;
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
 
   // Determine if there are more pages
   const hasNextPage = currentPage < totalPages;

@@ -49,7 +49,7 @@ export default async function ProductPage({ params, searchParams }) {
   const { data } = await client.query({
     query: GET_PRODUCT_BY_SLUG,
     variables: { slug },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
   });
 
   // Fix: Get the first product from the nodes array

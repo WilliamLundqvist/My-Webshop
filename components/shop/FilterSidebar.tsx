@@ -222,7 +222,10 @@ function FilterSidebarComponent() {
   }, [selectedSort]);
 
   return (
-    <Sidebar variant="floating" className="sticky top-[70px]">
+    <Sidebar
+      variant="floating"
+      className="sticky top-[70px] max-h-[calc(100vh-75px)] overflow-y-auto"
+    >
       <SidebarHeader className="border-b p-4 bp-6 ">
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
@@ -253,7 +256,10 @@ function FilterSidebarComponent() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <Accordion type="multiple" defaultValue={['sort', 'categories', 'price']}>
+          <Accordion
+            type="multiple"
+            defaultValue={selectedCategory ? ['sort', 'categories'] : ['sort']}
+          >
             <AccordionItem value="sort">
               <AccordionTrigger className="text-base font-semibold flex items-center justify-between">
                 Sort By
