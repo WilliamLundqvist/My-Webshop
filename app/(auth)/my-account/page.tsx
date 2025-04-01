@@ -4,12 +4,12 @@ import { logout } from './actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, MapPin, LogOut } from 'lucide-react';
+import { User, MapPin, LogOut } from 'lucide-react';
 
 export default function Page() {
   const customer = useCustomer();
   const { firstName, lastName, email } = customer?.customer || {};
-  const shipping = customer?.customer?.shipping || {};
+  const shipping = customer?.customer?.shipping;
 
   return (
     <div className="container mx-auto py-6 space-y-6">

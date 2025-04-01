@@ -1,11 +1,11 @@
-import { CodegenConfig } from "@graphql-codegen/cli";
+import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: "http://localhost:8000/graphql",
-  documents: ["lib/graphql/**/*.ts"],
+  schema: 'https://william.considbrs.se/graphql',
+  documents: ['lib/graphql/**/*.ts'],
   generates: {
-    "./lib/graphql/generated/graphql.ts": {
-      plugins: ["typescript", "typescript-operations", "typescript-react-apollo"],
+    './lib/graphql/generated/graphql.ts': {
+      plugins: ['typescript', 'typescript-operations', 'typescript-react-apollo'],
       config: {
         withHooks: true,
         withComponent: false,

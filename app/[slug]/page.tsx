@@ -5,6 +5,7 @@ import { WordPressBlocksViewer } from '@faustwp/blocks';
 import { flatListToHierarchical } from '@faustwp/core';
 import blocks from '@/wp-blocks';
 import { LoaderCircle } from 'lucide-react';
+import '../styles/wordpress-blocks.css';
 
 // Definiera query med nödvändiga fragment
 const GET_CONTENT_NODE = gql`
@@ -103,15 +104,18 @@ export default function Page() {
     : [];
 
   return (
-    <main className="wordpress-blocks-container max-w-screen-xl mx-auto px-4 py-8">
+    <main className="max-w-screen-xl mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-8">{data?.contentNode?.title}</h2>
 
       {blockList.length > 0 ? (
-        <div className="wp-blocks-wrapper">
+        <div className="prose prose-lg max-w-none wordpress-blocks-container">
           <WordPressBlocksViewer blocks={blockList} />
         </div>
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? '' }} />
+        <div
+          className="prose prose-lg max-w-none wordpress-blocks-container"
+          dangerouslySetInnerHTML={{ __html: data?.contentNode?.content ?? '' }}
+        />
       )}
     </main>
   );

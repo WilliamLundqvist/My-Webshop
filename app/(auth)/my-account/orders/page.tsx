@@ -50,7 +50,7 @@ const OrdersPage = () => {
           <CardContent className="flex flex-col items-center justify-center py-10">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-xl font-medium">No orders found</p>
-            <p className="text-muted-foreground">You haven't placed any orders yet</p>
+            <p className="text-muted-foreground">You haven&apos;t placed any orders yet</p>
           </CardContent>
         </Card>
       ) : (

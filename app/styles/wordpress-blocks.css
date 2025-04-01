@@ -45,3 +45,43 @@
  */
 
 /* Container för WordPress-block */
+.wordpress-blocks-container {
+  /* Specifika override för att säkerställa att WordPress styling fungerar med Tailwind prose */
+  & figure {
+    margin: 2em 0;
+  }
+
+  & .wp-block-image img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  & .wp-block-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+  }
+
+  & .wp-block-column {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  & .wp-block-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+  }
+
+  /* Säkerställ att proseClass inte förstör WordPress styling */
+  &.prose .wp-block-button__link {
+    text-decoration: none;
+  }
+
+  /* Anpassa responsive design för kolumner */
+  @media (max-width: 768px) {
+    & .wp-block-columns {
+      flex-direction: column;
+    }
+  }
+}

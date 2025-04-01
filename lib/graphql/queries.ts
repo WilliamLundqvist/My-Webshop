@@ -295,6 +295,9 @@ export const GET_CUSTOMER: TypedDocumentNode<GetCustomerQuery, GetCustomerQueryV
           id
           status
           subtotal
+          total
+          databaseId
+          date
           billing {
             address1
             address2
