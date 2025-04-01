@@ -28,6 +28,7 @@ export const cartFragment = gql`
             }
           }
         }
+
         variation {
           node {
             id
@@ -44,8 +45,10 @@ export const cartFragment = gql`
           }
         }
         quantity
+
         total
       }
+
       itemCount
     }
     subtotal

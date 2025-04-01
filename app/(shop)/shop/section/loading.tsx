@@ -14,7 +14,6 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
@@ -58,7 +57,6 @@ export default function ShopLoading() {
               <div className="bg-gray-200 h-4 w-24 rounded animate-pulse"></div>
             </div>
           </div>
-
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 w-full my-6">
             {Array.from({ length: 20 }).map((_, index) => (
               <div key={`skeleton-${index}`}>
@@ -84,7 +82,6 @@ export default function ShopLoading() {
           </Pagination>
         </div>
       </SidebarInset>
-      <StickyFilterButton />
     </SidebarProvider>
   );
 }

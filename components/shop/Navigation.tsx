@@ -2,7 +2,14 @@
 
 import Link from 'next/link';
 import { Menu, User } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
@@ -26,7 +33,6 @@ interface NavigationProps {
 
 export default function Navigation({ generalSettings, primaryMenuItems }: NavigationProps) {
   const pathname = usePathname();
-
   // Extract menu items directly from props - memoize to prevent unnecessary processing
   const menuItems = useMemo(() => primaryMenuItems?.nodes || [], [primaryMenuItems]);
 
@@ -48,17 +54,18 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
               <div className="flex flex-col space-y-4 py-6">
                 <nav className="flex flex-col gap-2 space-y-2">
                   {menuItems.map((item) => (
-                    <Button
-                      key={item.id}
-                      variant={pathname === item.uri ? 'secondary' : 'ghost'}
-                      className={cn(
-                        'justify-start px-4 mx-2',
-                        pathname === item.uri && 'font-semibold'
-                      )}
-                      asChild
-                    >
-                      <Link href={item.uri}>{item.label}</Link>
-                    </Button>
+                    <SheetClose key={item.id} asChild>
+                      <Button
+                        variant={pathname === item.uri ? 'secondary' : 'ghost'}
+                        className={cn(
+                          'justify-start px-4 mx-2',
+                          pathname === item.uri && 'font-semibold'
+                        )}
+                        asChild
+                      >
+                        <Link href={item.uri}>{item.label}</Link>
+                      </Button>
+                    </SheetClose>
                   ))}
                 </nav>
               </div>
