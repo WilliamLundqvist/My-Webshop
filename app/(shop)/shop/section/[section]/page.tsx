@@ -103,9 +103,7 @@ export default async function ShopPage({ searchParams, params }) {
             {category && (
               <>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <Link href={`/shop/section/${section}?category=${category}`}>{category}</Link>
-                </BreadcrumbItem>
+                <BreadcrumbItem>x </BreadcrumbItem>
               </>
             )}
             {searchQuery && (

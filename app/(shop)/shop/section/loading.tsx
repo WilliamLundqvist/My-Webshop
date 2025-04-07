@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,7 +13,6 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 export const ProductSkeleton = () => (
@@ -40,7 +38,7 @@ export default function ShopLoading() {
           <Breadcrumb className="py-4">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <Link href="/shop">Shop</Link>
+                <span>Shop</span>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
