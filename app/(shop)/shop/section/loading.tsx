@@ -12,7 +12,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 export const ProductSkeleton = () => (
@@ -32,54 +31,50 @@ export const ProductSkeleton = () => (
 
 export default function ShopLoading() {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <SidebarInset>
-        <div className="mx-auto w-full px-2 md:px-4">
-          <Breadcrumb className="py-4">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <span>Shop</span>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <div className="bg-gray-200 h-4 w-20 rounded animate-pulse"></div>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+    <div className="mx-auto w-full px-2 md:px-4">
+      <Breadcrumb className="py-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <span>Shop</span>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <div className="bg-gray-200 h-4 w-20 rounded animate-pulse"></div>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-semibold text-text-primary">
-              <div className="bg-gray-200 h-8 w-40 rounded animate-pulse"></div>
-            </h1>
-            <div className="text-sm text-muted-foreground">
-              <div className="bg-gray-200 h-4 w-24 rounded animate-pulse"></div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 w-full my-6">
-            {Array.from({ length: 20 }).map((_, index) => (
-              <div key={`skeleton-${index}`}>
-                <ProductSkeleton />
-              </div>
-            ))}
-          </div>
-
-          <Pagination className="my-8">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" className="pointer-events-none opacity-50" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive={true}>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" className="pointer-events-none opacity-50" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-semibold text-text-primary">
+          <div className="bg-gray-200 h-8 w-40 rounded animate-pulse"></div>
+        </h1>
+        <div className="text-sm text-muted-foreground">
+          <div className="bg-gray-200 h-4 w-24 rounded animate-pulse"></div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 w-full my-6">
+        {Array.from({ length: 20 }).map((_, index) => (
+          <div key={`skeleton-${index}`}>
+            <ProductSkeleton />
+          </div>
+        ))}
+      </div>
+
+      <Pagination className="my-8">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" className="pointer-events-none opacity-50" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive={true}>
+              1
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" className="pointer-events-none opacity-50" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 }

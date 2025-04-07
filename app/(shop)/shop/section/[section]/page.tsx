@@ -103,7 +103,9 @@ export default async function ShopPage({ searchParams, params }) {
             {category && (
               <>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem>x </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <span>{category}</span>
+                </BreadcrumbItem>
               </>
             )}
             {searchQuery && (
