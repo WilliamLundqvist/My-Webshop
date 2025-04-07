@@ -7,6 +7,7 @@ import Navigation from '../components/shop/Navigation';
 import Footer from '../components/shop/Footer';
 import { Poppins } from 'next/font/google';
 import { CartProvider } from '@/lib/context/CartContext';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }) {
             />
           </CartProvider>
         </FaustProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
