@@ -11,74 +11,74 @@ import ProductGrid from '@/components/shop/ProductGrid';
 import ShopPagination from '@/components/shop/ShopPagination';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
+import { OrderEnum } from '@/lib/graphql/generated/graphql';
+import { ProductsOrderByEnum } from '@/lib/graphql/generated/graphql';
+
+// Definiera typer för søkeparametrar
+interface ShopSearchParams {
+  sort?: string;
+  order?: string;
+  search?: string;
+  category?: string;
+  page?: string;
+  [key: string]: string | undefined;
+}
 
 // This is the server component that fetches data
-export default async function ShopPage({ searchParams, params }) {
+export default async function ShopPage({
+  searchParams,
+  params,
+}: {
+  searchParams: Record<string, string>;
+  params: { section: string };
+}) {
   const client = await getClient();
+  const section = params.section;
 
-  // Await params och searchParams innan du använder deras egenskaper
-  const awaitedParams = await params;
-  const awaitedSearchParams = await searchParams;
+  // Korrekt typat objekt med explicit typannotering
+  const finalSearchParams: ShopSearchParams = {};
 
-  const section = awaitedParams.section;
-
-  const finalSearchParams = { ...awaitedSearchParams };
-  if (awaitedSearchParams.ref_search) {
-    finalSearchParams.search = awaitedSearchParams.ref_search;
-    delete finalSearchParams.ref_search;
-  }
-  if (awaitedSearchParams.ref_sort) {
-    finalSearchParams.sort = awaitedSearchParams.ref_sort;
-    delete finalSearchParams.ref_sort;
-  }
-  if (awaitedSearchParams.ref_order) {
-    finalSearchParams.order = awaitedSearchParams.ref_order;
-    delete finalSearchParams.ref_order;
-  }
-  if (awaitedSearchParams.ref_page) {
-    finalSearchParams.page = awaitedSearchParams.ref_page;
-    delete finalSearchParams.ref_page;
-  }
-  if (awaitedSearchParams.ref_category) {
-    finalSearchParams.category = awaitedSearchParams.ref_category;
-    delete finalSearchParams.ref_category;
-  }
+  // Generisk hantering av ref_parametrar
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key.startsWith('ref_')) {
+      const actualKey = key.replace('ref_', '');
+      finalSearchParams[actualKey] = value;
+    } else {
+      finalSearchParams[key] = value;
+    }
+  });
 
   const productsPerPage = 20; // Number of products per page
-  const sortField = finalSearchParams?.sort || 'DATE'; // Default sort by date
-  const sortOrder = finalSearchParams?.order || 'DESC'; // Default sort direction
-  const searchQuery = finalSearchParams?.search || ''; // Get search query from URL
-  const category = finalSearchParams?.category || ''; // Get category from URL
+  const sortField = finalSearchParams.sort || 'DATE'; // Default sort by date
+  const sortOrder = finalSearchParams.order || 'DESC'; // Default sort direction
+  const searchQuery = finalSearchParams.search || ''; // Get search query from URL
+  const category = finalSearchParams.category || ''; // Get category from URL
 
   // Get page from URL params or default to 1
-  const currentPage = Number.parseInt(finalSearchParams?.page) || 1;
+  const currentPage = Number.parseInt(finalSearchParams.page || '1');
 
   // Calculate offset for pagination
   const offset = (currentPage - 1) * productsPerPage;
 
-  // Get total count of products for pagination
+  const productsResponse = await client.query({
+    query: GET_PRODUCTS,
+    variables: {
+      first: productsPerPage,
+      after: null,
+      orderby: [{ field: sortField as ProductsOrderByEnum, order: sortOrder as OrderEnum }],
+      search: searchQuery,
+      category: category ? category : section,
+      offset: offset,
+    },
+  });
 
-  const [countResponse, productsResponse] = await Promise.all([
-    client.query({
-      query: GET_PRODUCT_COUNT,
-      variables: {
-        search: searchQuery,
-        category: category ? category : section,
-      },
-    }),
-    client.query({
-      query: GET_PRODUCTS,
-      variables: {
-        first: productsPerPage,
-        after: null,
-        orderby: [{ field: sortField, order: sortOrder }],
-        search: searchQuery,
-        category: category ? category : section,
-        offset: offset,
-      },
-      fetchPolicy: 'cache-first',
-    }),
-  ]);
+  const countResponse = await client.query({
+    query: GET_PRODUCT_COUNT,
+    variables: {
+      search: searchQuery,
+      category: category ? category : section,
+    },
+  });
 
   const products = productsResponse.data.products.nodes;
   const totalProducts = countResponse.data.products.found;
@@ -87,6 +87,14 @@ export default async function ShopPage({ searchParams, params }) {
   // Determine if there are more pages
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
+
+  // För att lösa URLSearchParams-felet till ProductGrid
+  const searchParamsForProductGrid = new URLSearchParams();
+  Object.entries(finalSearchParams).forEach(([key, value]) => {
+    if (value) {
+      searchParamsForProductGrid.set(key, value);
+    }
+  });
 
   return (
     <div className="mx-auto px-2 md:px-4 flex flex-col gap-4">
@@ -132,7 +140,7 @@ export default async function ShopPage({ searchParams, params }) {
         <StickyFilterButton />
 
         {products.length > 0 ? (
-          <ProductGrid products={products} searchParams={finalSearchParams} />
+          <ProductGrid products={products} searchParams={searchParamsForProductGrid} />
         ) : (
           <div className="py-xl text-center">
             <p className="text-lg text-text-secondary">No products found.</p>

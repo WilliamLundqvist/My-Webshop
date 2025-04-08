@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 export default function ItemLoading() {
   return (
     <div className="container mx-auto px-4 py-8">
+      <Button className="w-20 animate-pulse bg-gray-200 mb-4"></Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">

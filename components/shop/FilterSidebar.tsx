@@ -247,6 +247,7 @@ function FilterSidebarComponent() {
               className="pl-10 text-sm w-full"
               value={searchTerm}
               onChange={handleSearchChange}
+              autoFocus={false}
             />
           </div>
         </div>
