@@ -24,35 +24,40 @@ interface ShopSearchParams {
   [key: string]: string | undefined;
 }
 
-// This is the server component that fetches data
+// Använd korrekt typning för Next.js i ditt projekt
 export default async function ShopPage({
   searchParams,
   params,
 }: {
-  searchParams: ShopSearchParams;
-  params: { section: string };
+  searchParams: any; // Eller Promise<Record<string, string>> om det behövs
+  params: Promise<{ section: string }>; // Här är nyckeln - params som Promise
 }) {
   const client = await getClient();
-  const section = params.section;
+
+  // Await params för att få ut värden
+  const awaitedParams = await params;
+  const awaitedSearchParams = await searchParams;
+
+  const section = awaitedParams.section;
 
   // Korrekt typat objekt med explicit typannotering
   const finalSearchParams: ShopSearchParams = {};
 
   // Generisk hantering av ref_parametrar
-  Object.entries(searchParams).forEach(([key, value]) => {
+  Object.entries(awaitedSearchParams).forEach(([key, value]) => {
     if (key.startsWith('ref_')) {
       const actualKey = key.replace('ref_', '');
-      finalSearchParams[actualKey] = value;
+      finalSearchParams[actualKey] = value as string;
     } else {
-      finalSearchParams[key] = value;
+      finalSearchParams[key] = value as string;
     }
   });
 
-  const productsPerPage = 20; // Number of products per page
-  const sortField = finalSearchParams.sort || 'DATE'; // Default sort by date
-  const sortOrder = finalSearchParams.order || 'DESC'; // Default sort direction
-  const searchQuery = finalSearchParams.search || ''; // Get search query from URL
-  const category = finalSearchParams.category || ''; // Get category from URL
+  const productsPerPage = 20;
+  const sortField = finalSearchParams.sort || 'DATE';
+  const sortOrder = finalSearchParams.order || 'DESC';
+  const searchQuery = finalSearchParams.search || '';
+  const category = finalSearchParams.category || '';
 
   // Get page from URL params or default to 1
   const currentPage = Number.parseInt(finalSearchParams.page || '1');
