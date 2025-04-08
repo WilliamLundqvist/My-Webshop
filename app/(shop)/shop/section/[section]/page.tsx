@@ -29,7 +29,7 @@ export default async function ShopPage({
   searchParams,
   params,
 }: {
-  searchParams: Record<string, string>;
+  searchParams: ShopSearchParams;
   params: { section: string };
 }) {
   const client = await getClient();
