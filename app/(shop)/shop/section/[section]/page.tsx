@@ -1,4 +1,3 @@
-import { getClient } from '@faustwp/experimental-app-router';
 import Link from 'next/link';
 import {
   Breadcrumb,
@@ -6,81 +5,40 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { GET_PRODUCTS } from '@/lib/graphql/queries';
 import ProductGrid from '@/components/shop/ProductGrid';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
-import { OrderEnum } from '@/lib/graphql/generated/graphql';
-import { ProductsOrderByEnum } from '@/lib/graphql/generated/graphql';
 import { Suspense } from 'react';
 import PaginationContainer from '@/components/shop/PaginationContainer';
 
 // Definiera typer för søkeparametrar
-interface ShopSearchParams {
-  sort?: string;
-  order?: string;
-  search?: string;
-  category?: string;
-  page?: string;
-  [key: string]: string | undefined;
-}
+
+type Params = Promise<{ section: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 // Använd korrekt typning för Next.js i ditt projekt
-export default async function ShopPage({
-  searchParams,
-  params,
-}: {
-  searchParams: any; // Eller Promise<Record<string, string>> om det behövs
-  params: Promise<{ section: string }>; // Här är nyckeln - params som Promise
-}) {
-  const client = await getClient();
-
+export default async function ShopPage(props: { params: Params; searchParams: SearchParams }) {
   // Await params för att få ut värden
-  const awaitedParams = await params;
-  const awaitedSearchParams = await searchParams;
-
-  const section = awaitedParams.section;
-
-  // Skapa finalSearchParams direkt från awaitedSearchParams utan ref_ logik
-  const finalSearchParams: ShopSearchParams = { ...awaitedSearchParams };
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+  const section = params.section;
 
   const productsPerPage = 20;
-  const sortField = finalSearchParams.sort || 'DATE';
-  const sortOrder = finalSearchParams.order || 'DESC';
-  const searchQuery = finalSearchParams.search || '';
-  const category = finalSearchParams.category || '';
+  const searchQuery = searchParams.search || '';
+  const category = searchParams.category || '';
+  const pageParam = searchParams.page;
+  const sortField = searchParams.sort || 'DATE';
+  const sortOrder = searchParams.order || 'DESC';
+  const currentPage = Number.parseInt(typeof pageParam === 'string' ? pageParam : '1');
 
-  // Get page from URL params or default to 1
-  const currentPage = Number.parseInt(finalSearchParams.page || '1');
-
-  // Calculate offset for pagination
-  const offset = (currentPage - 1) * productsPerPage;
-
-  // Hämta bara produktdata
-  const productsResponse = await client.query({
-    query: GET_PRODUCTS,
-    variables: {
-      first: productsPerPage,
-      after: null,
-      orderby: [{ field: sortField as ProductsOrderByEnum, order: sortOrder as OrderEnum }],
-      search: searchQuery,
-      category: category ? category : section,
-      offset: offset,
-    },
-    fetchPolicy: 'cache-first',
-    context: {
-      categorySlug: category || section,
-      page: currentPage,
-    },
-  });
-
-  const products = productsResponse.data.products.nodes;
-
-  // För att lösa URLSearchParams-felet till ProductGrid
   const searchParamsForProductGrid = new URLSearchParams();
-  Object.entries(finalSearchParams).forEach(([key, value]) => {
+  Object.entries(searchParams).forEach(([key, value]) => {
     if (value) {
-      searchParamsForProductGrid.set(key, value);
+      if (Array.isArray(value)) {
+        searchParamsForProductGrid.set(key, value[0]);
+      } else {
+        searchParamsForProductGrid.set(key, value);
+      }
     }
   });
 
@@ -123,27 +81,29 @@ export default async function ShopPage({
                 ? `${category}`
                 : 'Products'}
           </h1>
-          <div className="text-sm text-muted-foreground">{products.length} products</div>
+          <div className="text-sm text-muted-foreground">{productsPerPage} products</div>
         </div>
         <StickyFilterButton />
 
-        {products.length > 0 ? (
-          <ProductGrid products={products} searchParams={searchParamsForProductGrid} />
-        ) : (
-          <div className="py-xl text-center">
-            <p className="text-lg text-text-secondary">No products found.</p>
-          </div>
-        )}
+        <ProductGrid
+          searchParams={searchParamsForProductGrid}
+          section={section}
+          category={category as string}
+          searchQuery={searchQuery as string}
+          currentPage={currentPage}
+          sortOrder={sortOrder as string}
+          sortField={sortField as string}
+        />
 
         {/* Här är det viktiga: vi wrapped PaginationContainer i Suspense */}
         <Suspense fallback={<PaginationSkeleton />}>
           <PaginationContainer
             section={section}
-            category={category}
-            searchQuery={searchQuery}
+            category={category as string}
+            searchQuery={searchQuery as string}
             productsPerPage={productsPerPage}
             currentPage={currentPage}
-            searchParams={finalSearchParams}
+            searchParams={searchParams as Record<string, string>}
           />
         </Suspense>
       </SidebarInset>

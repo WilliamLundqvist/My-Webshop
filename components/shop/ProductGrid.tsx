@@ -1,12 +1,53 @@
 import React from 'react';
-import { Products } from '@/types/product';
 import ProductCard from './ProductCard';
+import { getClient } from '@faustwp/experimental-app-router';
+import { GET_PRODUCTS } from '@/lib/graphql/queries';
+import { ProductsOrderByEnum, OrderEnum } from '@/lib/graphql/generated/graphql';
 interface ProductGridProps {
-  products: Products['products']['nodes'];
   searchParams: URLSearchParams;
+  section: string;
+  category: string;
+  searchQuery: string;
+  currentPage: number;
+  sortOrder: string;
+  sortField: string;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, searchParams }) => {
+const ProductGrid: React.FC<ProductGridProps> = async ({
+  searchParams,
+  section,
+  category,
+  searchQuery,
+  currentPage,
+  sortOrder,
+  sortField,
+}) => {
+  const productsPerPage = 20;
+
+  // Calculate offset for pagination
+  const offset = (currentPage - 1) * productsPerPage;
+
+  const client = await getClient();
+
+  const productsResponse = await client.query({
+    query: GET_PRODUCTS,
+    variables: {
+      first: productsPerPage,
+      after: null,
+      orderby: [{ field: sortField as ProductsOrderByEnum, order: sortOrder as OrderEnum }],
+      search: searchQuery,
+      category: category ? category : section,
+      offset: offset,
+    },
+    fetchPolicy: 'cache-first',
+    context: {
+      categorySlug: category || section,
+      page: currentPage,
+    },
+  });
+
+  const products = productsResponse.data.products.nodes;
+
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
