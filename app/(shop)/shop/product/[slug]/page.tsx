@@ -8,14 +8,13 @@ import { Product } from '@/types/product';
 import BackButton from '@/components/shop/BackButton';
 import { RelatedProducts } from '@/components/shop/Related-Products';
 
-export default async function ProductPage({ params, searchParams }) {
+export default async function ProductPage({ params }) {
   // Await params först
   const awaitedParams = await params;
   const slug = awaitedParams.slug;
   const section = awaitedParams.section;
 
   // Await searchParams först
-  const awaitedSearchParams = await searchParams;
 
   /* BORTTAGET: ref_searchParams logik
   // Extract reference search parameters
