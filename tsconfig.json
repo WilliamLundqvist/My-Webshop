@@ -1,13 +1,7 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "types": [
-      "react-dom/experimental"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["react-dom/experimental"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -21,9 +15,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
     "plugins": [
       {
@@ -36,9 +28,8 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "app/(shop)/shop/section/loading.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

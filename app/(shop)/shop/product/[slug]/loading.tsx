@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ProductSkeleton } from '../../section/loading';
+import { ProductSkeleton } from '../../section/loading.jsx';
 
 export default function ItemLoading() {
   return (
