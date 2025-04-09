@@ -28,6 +28,7 @@ export default async function PaginationContainer({
       search: searchQuery || '',
       category: category || section,
     },
+    fetchPolicy: 'cache-first',
   });
 
   const totalProducts = countResponse.data.products.found;

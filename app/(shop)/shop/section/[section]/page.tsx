@@ -41,18 +41,8 @@ export default async function ShopPage({
 
   const section = awaitedParams.section;
 
-  // Korrekt typat objekt med explicit typannotering
-  const finalSearchParams: ShopSearchParams = {};
-
-  // Generisk hantering av ref_parametrar
-  Object.entries(awaitedSearchParams).forEach(([key, value]) => {
-    if (key.startsWith('ref_')) {
-      const actualKey = key.replace('ref_', '');
-      finalSearchParams[actualKey] = value as string;
-    } else {
-      finalSearchParams[key] = value as string;
-    }
-  });
+  // Skapa finalSearchParams direkt från awaitedSearchParams utan ref_ logik
+  const finalSearchParams: ShopSearchParams = { ...awaitedSearchParams };
 
   const productsPerPage = 20;
   const sortField = finalSearchParams.sort || 'DATE';
@@ -77,6 +67,7 @@ export default async function ShopPage({
       category: category ? category : section,
       offset: offset,
     },
+    fetchPolicy: 'cache-first',
   });
 
   const products = productsResponse.data.products.nodes;

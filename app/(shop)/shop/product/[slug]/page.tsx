@@ -17,6 +17,7 @@ export default async function ProductPage({ params, searchParams }) {
   // Await searchParams först
   const awaitedSearchParams = await searchParams;
 
+  /* BORTTAGET: ref_searchParams logik
   // Extract reference search parameters
   const refSearch = awaitedSearchParams?.ref_search;
   const refSort = awaitedSearchParams?.ref_sort;
@@ -43,6 +44,11 @@ export default async function ProductPage({ params, searchParams }) {
 
   const backUrl = buildBackToResultsUrl();
   const hasSearchContext = refSearch || refSort || refPage || refCategory;
+  */
+
+  // Förenkla med en enkel tillbakalänk till sektionen istället
+  const backUrl = `/shop/section/${section}`;
+  const hasSearchContext = false; // Eftersom vi inte längre kollar ref-parametrar
 
   const client = await getClient();
 
