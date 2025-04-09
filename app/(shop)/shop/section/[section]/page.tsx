@@ -68,6 +68,10 @@ export default async function ShopPage({
       offset: offset,
     },
     fetchPolicy: 'cache-first',
+    context: {
+      categorySlug: category || section,
+      page: currentPage,
+    },
   });
 
   const products = productsResponse.data.products.nodes;

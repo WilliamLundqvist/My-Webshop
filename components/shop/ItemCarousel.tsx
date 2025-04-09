@@ -16,7 +16,7 @@ interface ItemCarouselProps {
 
 const ItemCarousel: React.FC<ItemCarouselProps> = ({ galleryImages, product }) => {
   return (
-    <div className="aspect-square  rounded-lg overflow-hidden">
+    <div className="aspect-square border border-gray-200 rounded-lg overflow-hidden">
       {galleryImages.length > 0 ? (
         <Carousel className="w-full h-full">
           <CarouselContent>

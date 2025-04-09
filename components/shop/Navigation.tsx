@@ -37,7 +37,7 @@ export default function Navigation({ generalSettings, primaryMenuItems }: Naviga
   const menuItems = useMemo(() => primaryMenuItems?.nodes || [], [primaryMenuItems]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/90 backdrop-blur-sm">
       <div className="max-w-[1400px] mx-auto px-6 flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Sheet>

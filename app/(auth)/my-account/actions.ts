@@ -12,6 +12,7 @@ import {
   validateAddress,
   addressFormToInput,
 } from '@/lib/utils/customer';
+import { UPDATE_CUSTOMER_PASSWORD } from '@/lib/graphql/mutations';
 
 export async function logout() {
   await onLogout();
@@ -65,15 +66,7 @@ export async function updateAccountDetails(formData: AccountDetailsFormData) {
     // If password change is requested
     if (formData.newPassword && formData.currentPassword) {
       const { errors: pwdErrors } = await client.mutate({
-        mutation: gql`
-          mutation UpdateCustomerPassword($input: UpdateCustomerPasswordInput!) {
-            updateCustomerPassword(input: $input) {
-              customer {
-                id
-              }
-            }
-          }
-        `,
+        mutation: UPDATE_CUSTOMER_PASSWORD,
         variables: {
           input: {
             password: formData.newPassword,

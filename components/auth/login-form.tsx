@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { loginAction } from '@/app/(auth)/login/action';
 import { useActionState } from 'react';
 import Link from 'next/link';
+import { AlertCircle } from 'lucide-react';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const [state, formAction, isPending] = useActionState(loginAction, {});
@@ -16,7 +17,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           {state?.error && (
-            <CardDescription className="text-destructive">{state.error}</CardDescription>
+            <CardDescription className="text-destructive">
+              <AlertCircle className="w-4 h-4" />
+              <p dangerouslySetInnerHTML={{ __html: state.error }}></p>
+            </CardDescription>
           )}
         </CardHeader>
         <CardContent>

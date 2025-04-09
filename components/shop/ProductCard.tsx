@@ -59,7 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, searchParams }) => {
     <div className="flex flex-col h-full">
       <div className="relative flex-grow rounded-l-full">
         <Link href={createProductUrl()}>
-          <Card className="gap-2 md:gap-4 pt-0 px-0 h-full border-[3px]">
+          <Card className="gap-2 md:gap-4 pt-0 px-0 h-full border-[1px]">
             <div className="aspect-square group overflow-hidden relative">
               {/* Base image */}
               <Image

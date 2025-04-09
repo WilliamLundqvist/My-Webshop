@@ -14,38 +14,6 @@ export default async function ProductPage({ params }) {
   const slug = awaitedParams.slug;
   const section = awaitedParams.section;
 
-  // Await searchParams först
-
-  /* BORTTAGET: ref_searchParams logik
-  // Extract reference search parameters
-  const refSearch = awaitedSearchParams?.ref_search;
-  const refSort = awaitedSearchParams?.ref_sort;
-  const refOrder = awaitedSearchParams?.ref_order;
-  const refPage = awaitedSearchParams?.ref_page;
-  const refCategory = awaitedSearchParams?.ref_category;
-
-  // Build the back link URL with preserved search context
-  const buildBackToResultsUrl = () => {
-    const params = new URLSearchParams();
-
-    if (refSearch) params.set('search', refSearch);
-    if (refSort) params.set('sort', refSort);
-    if (refOrder) params.set('order', refOrder);
-    if (refPage) params.set('page', refPage);
-    if (refCategory) params.set('category', refCategory);
-
-    if (params.toString()) {
-      return `/shop/section/${section}?${params.toString()}`;
-    }
-
-    return `/shop/section/${section}`;
-  };
-
-  const backUrl = buildBackToResultsUrl();
-  const hasSearchContext = refSearch || refSort || refPage || refCategory;
-  */
-
-  // Förenkla med en enkel tillbakalänk till sektionen istället
   const backUrl = `/shop/section/${section}`;
   const hasSearchContext = false; // Eftersom vi inte längre kollar ref-parametrar
 

@@ -107,3 +107,13 @@ export const CHECKOUT: TypedDocumentNode<CheckoutMutation, CheckoutMutationVaria
     }
   }
 `;
+
+export const UPDATE_CUSTOMER_PASSWORD = gql`
+  mutation UpdateCustomerPassword($input: UpdateCustomerInput!) {
+    updateCustomer(input: $input) {
+      customer {
+        id
+      }
+    }
+  }
+`;
