@@ -6,13 +6,14 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { GET_PRODUCTS, GET_PRODUCT_COUNT } from '@/lib/graphql/queries';
+import { GET_PRODUCTS } from '@/lib/graphql/queries';
 import ProductGrid from '@/components/shop/ProductGrid';
-import ShopPagination from '@/components/shop/ShopPagination';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { StickyFilterButton } from '@/components/shop/StickyFilterButton';
 import { OrderEnum } from '@/lib/graphql/generated/graphql';
 import { ProductsOrderByEnum } from '@/lib/graphql/generated/graphql';
+import { Suspense } from 'react';
+import PaginationContainer from '@/components/shop/PaginationContainer';
 
 // Definiera typer för søkeparametrar
 interface ShopSearchParams {
@@ -65,6 +66,7 @@ export default async function ShopPage({
   // Calculate offset for pagination
   const offset = (currentPage - 1) * productsPerPage;
 
+  // Hämta bara produktdata
   const productsResponse = await client.query({
     query: GET_PRODUCTS,
     variables: {
@@ -77,21 +79,7 @@ export default async function ShopPage({
     },
   });
 
-  const countResponse = await client.query({
-    query: GET_PRODUCT_COUNT,
-    variables: {
-      search: searchQuery,
-      category: category ? category : section,
-    },
-  });
-
   const products = productsResponse.data.products.nodes;
-  const totalProducts = countResponse.data.products.found;
-  const totalPages = Math.ceil(totalProducts / productsPerPage);
-
-  // Determine if there are more pages
-  const hasNextPage = currentPage < totalPages;
-  const hasPreviousPage = currentPage > 1;
 
   // För att lösa URLSearchParams-felet till ProductGrid
   const searchParamsForProductGrid = new URLSearchParams();
@@ -152,15 +140,31 @@ export default async function ShopPage({
           </div>
         )}
 
-        <ShopPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasNextPage={hasNextPage}
-          hasPreviousPage={hasPreviousPage}
-          baseUrl={`/shop/section/${section}`}
-          searchParams={finalSearchParams}
-        />
+        {/* Här är det viktiga: vi wrapped PaginationContainer i Suspense */}
+        <Suspense fallback={<PaginationSkeleton />}>
+          <PaginationContainer
+            section={section}
+            category={category}
+            searchQuery={searchQuery}
+            productsPerPage={productsPerPage}
+            currentPage={currentPage}
+            searchParams={finalSearchParams}
+          />
+        </Suspense>
       </SidebarInset>
+    </div>
+  );
+}
+
+// Skelettet som visas medan pagineringen laddar
+function PaginationSkeleton() {
+  return (
+    <div className="my-8 animate-pulse">
+      <div className="flex justify-center gap-4">
+        <div className="h-10 w-10 bg-gray-200 rounded"></div>
+        <div className="h-10 w-10 bg-gray-200 rounded"></div>
+        <div className="h-10 w-10 bg-gray-200 rounded"></div>
+      </div>
     </div>
   );
 }
